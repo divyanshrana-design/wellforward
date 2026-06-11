@@ -1,324 +1,176 @@
 "use client";
 
-import { useState } from "react";
-import { MapPin, Bus, Coffee, BookOpen, Dumbbell, Printer, UtensilsCrossed } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { MapPin } from "lucide-react";
 
-const CAMPUS_DATA = {
-  belfield: {
-    name: "UCD Belfield",
-    tagline: "The main campus. Big, leafy, occasionally confusing.",
-    emoji: "🌳",
-    getHere: [
-      {
-        icon: "🚌",
-        title: "By Bus",
-        detail: "Routes 39A, 11, 17, 46A stop at UCD. The 39A from the city centre (Merrion Square) is the most direct. Download TFI Live to see real-time arrivals.",
-      },
-      {
-        icon: "🚶",
-        title: "On Foot",
-        detail: "20–25 min walk from Donnybrook or Stillorgan. Cycling is popular — there are bike racks across campus.",
-      },
-      {
-        icon: "🚗",
-        title: "By Car",
-        detail: "There's paid parking on campus. Don't bother in the mornings. Dublin traffic is very real.",
-      },
-    ],
-    spots: [
-      {
-        icon: "☕",
-        category: "Coffee",
-        title: "The Gourmet Coffee Bar",
-        detail: "In the main library. Reliable flat white. Often has a queue.",
-      },
-      {
-        icon: "☕",
-        category: "Coffee",
-        title: "The Village",
-        detail: "The campus social hub — coffee, food, and usually the most people. Good for finding study groups.",
-      },
-      {
-        icon: "🍕",
-        category: "Food",
-        title: "The Restaurant at Sutherland School",
-        detail: "Decent lunch options. Not the cheapest, but better than the vending machines.",
-      },
-      {
-        icon: "🍔",
-        category: "Food",
-        title: "The Café at O'Brien Centre",
-        detail: "Close to the engineering buildings. Quick grab-and-go options.",
-      },
-      {
-        icon: "📚",
-        category: "Study",
-        title: "James Joyce Library",
-        detail: "The main library. Quiet study floors at the top. Book a study room online via the library website if you need a group space.",
-      },
-      {
-        icon: "📚",
-        category: "Study",
-        title: "The Agriculture & Food Science Building",
-        detail: "Often overlooked. Has good quiet desk space and decent WiFi.",
-      },
-      {
-        icon: "🖨️",
-        category: "Print",
-        title: "Printing — Library & Student Centre",
-        detail: "Printers in the main library and Student Centre. Load credit on your student account via the UCD printing portal.",
-      },
-      {
-        icon: "💪",
-        category: "Gym",
-        title: "UCD Sport & Fitness",
-        detail: "Full gym on campus. Student membership is subsidised. Swim, gym, classes. Busy in September — sign up early.",
-      },
-      {
-        icon: "🏥",
-        category: "Health",
-        title: "UCD Student Health Service",
-        detail: "On campus, specifically for students. Cheaper than a private GP for Belfield students. Register early in the year.",
-      },
-    ],
-  },
+function useReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { el.classList.add("visible"); obs.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
+const DATA = {
   smurfit: {
     name: "UCD Smurfit",
     tagline: "Blackrock campus. Smaller, more intimate, slightly fancier.",
     emoji: "🏛️",
     getHere: [
-      {
-        icon: "🚂",
-        title: "By DART",
-        detail: "Blackrock DART station is 8 minutes walk from the campus. The DART runs every 15 min from Connolly/Pearse/Tara St. Get the Student Leap Card — DART fares add up fast.",
-      },
-      {
-        icon: "🚌",
-        title: "By Bus",
-        detail: "Route 7 and 7b run to Blackrock from the city centre. Route 145 goes from Heuston. Less reliable than DART for timing.",
-      },
-      {
-        icon: "🚶",
-        title: "Walking from Blackrock",
-        detail: "Blackrock village is a short walk — coffee shops, a great Saturday market, and the DART station. Explore it in your first weekend.",
-      },
+      { icon: "🚂", title: "By DART", detail: "Blackrock DART station is 8 min walk from campus. DART every 15 min from Connolly/Pearse/Tara St. Get the Student Leap Card — DART fares add up." },
+      { icon: "🚌", title: "By Bus",  detail: "Routes 7 and 7b run to Blackrock from the city. Route 145 from Heuston. Less reliable than DART for timing." },
+      { icon: "🚶", title: "Walking", detail: "Blackrock village is a short walk — coffee shops, a great Saturday market, and the DART station. Explore it in your first weekend." },
     ],
     spots: [
-      {
-        icon: "☕",
-        category: "Coffee",
-        title: "The Smurfit Atrium Café",
-        detail: "The main meeting point. Good coffee, usually busy between 9–11am. Grab a window seat if you can.",
-      },
-      {
-        icon: "☕",
-        category: "Coffee",
-        title: "Legit Coffee, Blackrock",
-        detail: "A 5-minute walk from campus. Better coffee than anything on campus. Worth the detour for a morning treat.",
-      },
-      {
-        icon: "🍕",
-        category: "Food",
-        title: "Campus canteen",
-        detail: "Lunch options on weekdays. Not fine dining, but reliable. Wraps and hot food usually gone by 1pm.",
-      },
-      {
-        icon: "🍔",
-        category: "Food",
-        title: "Blackrock Village",
-        detail: "Good variety — Umi Falafel (highly recommended), Tesco Express for cheap lunches, a couple of pubs with food. A 10-minute walk.",
-      },
-      {
-        icon: "📚",
-        category: "Study",
-        title: "The Smurfit Library",
-        detail: "Well stocked for business resources. Quiet floors available. Book group study rooms in advance online.",
-      },
-      {
-        icon: "📚",
-        category: "Study",
-        title: "The Reading Room",
-        detail: "Quieter than the library and better for deep focus work. Preferred by MSc students in second semester.",
-      },
-      {
-        icon: "🖨️",
-        category: "Print",
-        title: "Printing",
-        detail: "Printers in the library. Load credit via the UCD printing portal. Print from your phone using the mobile print app.",
-      },
-      {
-        icon: "🏋️",
-        category: "Gym",
-        title: "Nearest gym",
-        detail: "No gym on Smurfit campus. Nearest options: Energie Fitness in Blackrock, Total Fitness in Dún Laoghaire, or sign up for UCD Belfield Sport (longer journey but great facilities).",
-      },
+      { icon: "☕", cat: "Coffee",  title: "The Smurfit Atrium Café",    detail: "The main meeting point. Good coffee, usually busy between 9–11am. Grab a window seat if you can." },
+      { icon: "☕", cat: "Coffee",  title: "Legit Coffee, Blackrock",    detail: "A 5 min walk from campus. Better coffee than anything on campus. Worth the detour for a morning treat." },
+      { icon: "🍕", cat: "Food",    title: "Campus canteen",             detail: "Lunch on weekdays. Not fine dining, but reliable. Wraps and hot food usually gone by 1pm." },
+      { icon: "🍔", cat: "Food",    title: "Blackrock Village",          detail: "Good variety — Umi Falafel (highly recommended), Tesco Express for cheap lunches, a couple of pubs. 10 min walk." },
+      { icon: "📚", cat: "Study",   title: "The Smurfit Library",        detail: "Well stocked for business resources. Quiet floors available. Book group study rooms online in advance." },
+      { icon: "📚", cat: "Study",   title: "The Reading Room",           detail: "Quieter than the library and better for deep focus. Preferred by MSc students in second semester." },
+      { icon: "🖨️", cat: "Print",   title: "Printing",                   detail: "Printers in the library. Load credit via UCD printing portal. Print from your phone using the mobile print app." },
+      { icon: "💪", cat: "Gym",     title: "Nearest gym",                detail: "No gym on Smurfit campus. Energie Fitness in Blackrock, Total Fitness in Dún Laoghaire, or UCD Belfield Sport." },
+    ],
+  },
+  belfield: {
+    name: "UCD Belfield",
+    tagline: "The main campus. Big, leafy, occasionally confusing.",
+    emoji: "🌳",
+    getHere: [
+      { icon: "🚌", title: "By Bus",      detail: "Routes 39A, 11, 17, 46A stop at UCD. The 39A from Merrion Square is most direct. Download TFI Live for real-time arrivals." },
+      { icon: "🚶", title: "On foot",     detail: "20–25 min walk from Donnybrook or Stillorgan. Cycling is popular — bike racks all over campus." },
+      { icon: "🚗", title: "By car",      detail: "Paid parking on campus. Don't bother in the mornings. Dublin traffic is very real." },
+    ],
+    spots: [
+      { icon: "☕", cat: "Coffee", title: "The Gourmet Coffee Bar",     detail: "In the main library. Reliable flat white. Often has a queue." },
+      { icon: "☕", cat: "Coffee", title: "The Village",                detail: "The campus social hub — coffee, food, usually the most people. Good for finding study groups." },
+      { icon: "🍕", cat: "Food",   title: "Sutherland Restaurant",      detail: "Decent lunch options. Not the cheapest, but better than the vending machines." },
+      { icon: "📚", cat: "Study",  title: "James Joyce Library",        detail: "The main library. Quiet floors at the top. Book study rooms online via the library site." },
+      { icon: "📚", cat: "Study",  title: "Agriculture & Food Sci.",    detail: "Often overlooked. Good quiet desk space and decent WiFi." },
+      { icon: "🖨️", cat: "Print",  title: "Library & Student Centre",   detail: "Load credit on your student account via the UCD printing portal." },
+      { icon: "💪", cat: "Gym",    title: "UCD Sport & Fitness",        detail: "Full gym on campus. Student membership subsidised. Swim, gym, classes. Busy in Sept — sign up early." },
+      { icon: "🏥", cat: "Health", title: "UCD Student Health Service", detail: "On campus, for students only. Cheaper than a private GP. Register early in the year." },
     ],
   },
 };
 
-export default function CampusSection() {
-  const [activeTab, setActiveTab] = useState<"belfield" | "smurfit">("smurfit");
-  const [activeCategory, setActiveCategory] = useState("All");
+type CampusKey = "smurfit" | "belfield";
 
-  const campus = CAMPUS_DATA[activeTab];
-  const categories = ["All", "Coffee", "Food", "Study", "Print", "Gym", "Health"];
-  const filteredSpots =
-    activeCategory === "All"
-      ? campus.spots
-      : campus.spots.filter((s) => s.category === activeCategory);
+export default function CampusSection() {
+  const [tab, setTab]     = useState<CampusKey>("smurfit");
+  const [cat, setCat]     = useState("All");
+  const headerRef = useReveal();
+  const campus = DATA[tab];
+
+  const cats      = ["All", ...Array.from(new Set(campus.spots.map(s => s.cat)))];
+  const spots     = cat === "All" ? campus.spots : campus.spots.filter(s => s.cat === cat);
 
   return (
-    <section
-      id="campus"
-      className="relative z-10 section-padding"
-      aria-labelledby="campus-title"
-    >
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <div
-            className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full text-sm"
-            style={{
-              background: "rgba(200, 184, 255, 0.4)",
-              color: "#6B4EFF",
-              border: "1px solid rgba(124, 92, 255, 0.2)",
-            }}
-          >
-            <MapPin size={14} />
-            Your campus guide
-          </div>
-          <h2
-            id="campus-title"
-            className="font-serif mb-4"
-            style={{
-              fontSize: "clamp(2rem, 5vw, 3.5rem)",
-              color: "#1a1033",
-            }}
-          >
-            Campus{" "}
-            <span className="gradient-text italic">Survival</span>
+    <section id="campus" className="relative z-10 section-padding" aria-labelledby="campus-title">
+      <div className="max-w-5xl mx-auto px-5 sm:px-10">
+
+        <div ref={headerRef} className="reveal mb-10">
+          <span className="section-label"><MapPin size={12} /> campus guide</span>
+          <h2 id="campus-title" className="serif mb-4" style={{ fontSize: "clamp(1.9rem,5vw,3.2rem)", color: "#1c1430" }}>
+            Campus <em className="grad-text" style={{ fontStyle: "italic" }}>Survival</em>
           </h2>
-          <p
-            className="text-base sm:text-lg max-w-xl mx-auto"
-            style={{ color: "#4a3878", lineHeight: 1.65 }}
-          >
-            The honest guide to getting around, finding coffee, and surviving lectures.
+          <p style={{ maxWidth: 440, fontSize: "0.95rem", color: "#3d2f60", lineHeight: 1.65 }}>
+            The honest guide to getting there, finding coffee, printing things, and surviving a week.
           </p>
         </div>
 
-        {/* Campus tabs */}
+        {/* Tab switcher */}
         <div
-          className="flex rounded-2xl p-1.5 mb-8 mx-auto"
           style={{
-            background: "rgba(233, 226, 255, 0.6)",
-            border: "1px solid rgba(200, 184, 255, 0.4)",
-            maxWidth: 380,
+            display: "inline-flex",
+            borderRadius: 12, padding: 5,
+            background: "rgba(233,226,255,0.6)",
+            border: "1px solid rgba(200,184,255,0.35)",
+            marginBottom: 28,
           }}
           role="tablist"
         >
-          {(["smurfit", "belfield"] as const).map((tab) => (
+          {(["smurfit","belfield"] as CampusKey[]).map(t => (
             <button
-              key={tab}
+              key={t}
               role="tab"
-              aria-selected={activeTab === tab}
-              onClick={() => {
-                setActiveTab(tab);
-                setActiveCategory("All");
+              aria-selected={tab === t}
+              onClick={() => { setTab(t); setCat("All"); }}
+              style={{
+                padding: "9px 20px", borderRadius: 8,
+                border: "none", cursor: "pointer",
+                fontSize: "0.85rem", fontWeight: 600,
+                transition: "all 0.2s ease",
+                ...(tab === t
+                  ? { background: "linear-gradient(135deg,#7c5cff,#5a3ee8)", color: "#fff", boxShadow: "0 3px 12px -3px rgba(124,92,255,0.4)" }
+                  : { background: "transparent", color: "#9b8ec8" }),
               }}
-              className="flex-1 py-2.5 px-4 rounded-xl text-sm font-medium transition-all duration-200"
-              style={
-                activeTab === tab
-                  ? {
-                      background: "linear-gradient(135deg, #7C5CFF, #6B4EFF)",
-                      color: "white",
-                      boxShadow: "0 4px 12px -4px rgba(124, 92, 255, 0.4)",
-                    }
-                  : { color: "#7B6EA8" }
-              }
             >
-              {CAMPUS_DATA[tab].emoji} {tab === "smurfit" ? "Smurfit" : "Belfield"}
+              {DATA[t].emoji} {t === "smurfit" ? "Smurfit" : "Belfield"}
             </button>
           ))}
         </div>
 
-        {/* Campus name */}
-        <div className="mb-6">
-          <h3
-            className="font-serif text-2xl mb-1"
-            style={{ color: "#1a1033" }}
-          >
-            {campus.name}
-          </h3>
-          <p className="text-sm" style={{ color: "#7B6EA8" }}>
-            {campus.tagline}
-          </p>
-        </div>
+        <h3 className="serif" style={{ fontSize: "1.4rem", color: "#1c1430", marginBottom: 3 }}>{campus.name}</h3>
+        <p style={{ fontSize: "0.82rem", color: "#9b8ec8", marginBottom: 20 }}>{campus.tagline}</p>
 
-        {/* Getting here */}
-        <div className="mb-8">
-          <h4
-            className="font-semibold text-sm uppercase tracking-wider mb-3"
-            style={{ color: "#9B8EC8" }}
-          >
-            Getting there
-          </h4>
-          <div className="grid sm:grid-cols-3 gap-3">
-            {campus.getHere.map((method) => (
-              <div
-                key={method.title}
-                className="glass-soft rounded-xl p-4"
-                style={{ border: "1px solid rgba(200, 184, 255, 0.3)" }}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xl" aria-hidden="true">{method.icon}</span>
-                  <span className="font-semibold text-sm" style={{ color: "#1a1033" }}>
-                    {method.title}
-                  </span>
-                </div>
-                <p className="text-xs leading-relaxed" style={{ color: "#4a3878" }}>
-                  {method.detail}
-                </p>
+        {/* Getting there */}
+        <h4 style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#b0a0cc", marginBottom: 10 }}>
+          Getting there
+        </h4>
+        <div className="grid sm:grid-cols-3 gap-3 mb-8">
+          {campus.getHere.map(m => (
+            <div
+              key={m.title}
+              style={{
+                background: "rgba(245,241,255,0.7)",
+                border: "1px solid rgba(200,184,255,0.25)",
+                borderRadius: 12, padding: "14px 16px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7 }}>
+                <span style={{ fontSize: "1.2rem" }} aria-hidden="true">{m.icon}</span>
+                <span style={{ fontWeight: 600, fontSize: "0.85rem", color: "#1c1430" }}>{m.title}</span>
               </div>
-            ))}
-          </div>
+              <p style={{ fontSize: "0.78rem", color: "#3d2f60", lineHeight: 1.6 }}>{m.detail}</p>
+            </div>
+          ))}
         </div>
 
         {/* Category filter */}
         <div className="flex flex-wrap gap-2 mb-5">
-          {categories.map((cat) => (
+          {cats.map(c => (
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`chip text-sm py-1.5 px-3 ${activeCategory === cat ? "active" : ""}`}
-              aria-pressed={activeCategory === cat}
+              key={c}
+              onClick={() => setCat(c)}
+              className={`chip ${cat===c?"active":""}`}
+              style={{ padding: "5px 12px" }}
+              aria-pressed={cat === c}
             >
-              {cat}
+              {c}
             </button>
           ))}
         </div>
 
-        {/* Spots grid */}
         <div className="grid sm:grid-cols-2 gap-3">
-          {filteredSpots.map((spot) => (
+          {spots.map((s, i) => (
             <div
-              key={spot.title}
+              key={s.title}
               className="card"
-              style={{ padding: "16px 18px" }}
+              style={{ padding: "14px 16px" }}
             >
-              <div className="flex items-start gap-3">
-                <span className="text-xl flex-shrink-0 mt-0.5" aria-hidden="true">
-                  {spot.icon}
-                </span>
+              <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                <span style={{ fontSize: "1.25rem", flexShrink: 0 }} aria-hidden="true">{s.icon}</span>
                 <div>
-                  <h4
-                    className="font-semibold text-sm mb-1"
-                    style={{ color: "#1a1033" }}
-                  >
-                    {spot.title}
-                  </h4>
-                  <p className="text-xs leading-relaxed" style={{ color: "#4a3878" }}>
-                    {spot.detail}
-                  </p>
+                  <p style={{ fontWeight: 600, fontSize: "0.85rem", color: "#1c1430", marginBottom: 3 }}>{s.title}</p>
+                  <p style={{ fontSize: "0.78rem", color: "#3d2f60", lineHeight: 1.6 }}>{s.detail}</p>
                 </div>
               </div>
             </div>

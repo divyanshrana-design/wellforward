@@ -1,6 +1,7 @@
 "use client";
 
-import { ExternalLink, Mail } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ExternalLink, Mail, Heart, Phone } from "lucide-react";
 
 const USEFUL_LINKS = [
   { label: "ISD — IRP Registration", href: "https://www.irishimmigration.ie" },
@@ -11,123 +12,358 @@ const USEFUL_LINKS = [
   { label: "RTB — Tenants Rights", href: "https://www.rtb.ie" },
 ];
 
+const NAV_LINKS = [
+  { label: "Meet people", href: "#make-a-friend" },
+  { label: "Ask a senior", href: "#ask-a-senior" },
+  { label: "First 30 days", href: "#checklist" },
+  { label: "Glossary", href: "#glossary" },
+  { label: "Campus life", href: "#campus" },
+  { label: "Student voices", href: "#voices" },
+];
+
+function useReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { el.classList.add("visible"); obs.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
 export default function Footer() {
   const year = new Date().getFullYear();
+  const revealRef = useReveal();
+  const [hovered, setHovered] = useState<string | null>(null);
 
   return (
-    <footer
-      className="relative z-10"
-      style={{
-        background: "rgba(59, 46, 140, 0.06)",
-        borderTop: "1px solid rgba(200, 184, 255, 0.3)",
-        paddingTop: "48px",
-        paddingBottom: "32px",
-      }}
-    >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Top row */}
-        <div className="grid sm:grid-cols-3 gap-8 mb-10">
-          {/* Brand */}
-          <div>
-            <h2
-              className="font-serif text-2xl mb-2"
-              style={{ color: "#3B2E8C" }}
-            >
-              Well<span style={{ color: "#7C5CFF" }}>forward</span>
-            </h2>
-            <p className="text-sm leading-relaxed" style={{ color: "#7B6EA8" }}>
-              A platform for UCD international students to find each other, ask seniors, and navigate their first weeks in Dublin.
-            </p>
+    <footer className="relative z-10 overflow-hidden" style={{ background: "linear-gradient(180deg, transparent 0%, rgba(59,46,140,0.04) 30%, rgba(59,46,140,0.09) 100%)" }}>
+      {/* Squiggle top divider */}
+      <div className="squiggle-divider" style={{ opacity: 0.5 }} />
+
+      {/* Subtle orb in footer */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          width: "40vw",
+          height: "40vw",
+          borderRadius: "60% 40% 55% 45% / 50% 60% 40% 50%",
+          background: "radial-gradient(circle, rgba(124,92,255,0.07) 0%, transparent 70%)",
+          bottom: "-15vw",
+          right: "-10vw",
+          filter: "blur(40px)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-10">
+        {/* Header row */}
+        <div ref={revealRef} className="reveal mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            {/* Wordmark */}
+            <div>
+              <span className="section-label" style={{ marginBottom: "10px", display: "inline-block" }}>
+                ✦ made for you
+              </span>
+              <h2
+                style={{
+                  fontFamily: "Georgia, 'Times New Roman', serif",
+                  fontSize: "clamp(2rem, 5vw, 3.4rem)",
+                  fontWeight: 400,
+                  lineHeight: 1.1,
+                  color: "#3B2E8C",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                <em>Well</em>
+                <span style={{ color: "#7C5CFF", fontStyle: "normal" }}>forward</span>
+              </h2>
+              <p
+                style={{
+                  fontSize: "0.92rem",
+                  color: "#7B6EA8",
+                  marginTop: "8px",
+                  maxWidth: "380px",
+                  lineHeight: 1.6,
+                }}
+              >
+                A peer-built platform for UCD international students — finding people, asking questions, and making Dublin feel like home.
+              </p>
+            </div>
+
+            {/* Tagline */}
             <p
-              className="text-xs mt-3"
-              style={{ color: "#9B8EC8", fontStyle: "italic" }}
+              style={{
+                fontFamily: "Georgia, serif",
+                fontStyle: "italic",
+                fontSize: "clamp(0.9rem, 2vw, 1.1rem)",
+                color: "#9B8EC8",
+                maxWidth: "260px",
+                textAlign: "right",
+                lineHeight: 1.5,
+              }}
             >
-              Built by international students at UCD Smurfit as an academic project.
-              Not officially affiliated with University College Dublin.
+              &ldquo;Every senior was once new here too.&rdquo;
             </p>
           </div>
+        </div>
 
-          {/* Links */}
+        {/* Main grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          {/* Explore */}
           <div>
             <h3
-              className="font-semibold text-sm uppercase tracking-wider mb-4"
-              style={{ color: "#9B8EC8" }}
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: 700,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "#9B8EC8",
+                marginBottom: "14px",
+              }}
             >
-              Official resources
+              Explore
             </h3>
-            <ul className="space-y-2">
-              {USEFUL_LINKS.map((link) => (
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "9px" }}>
+              {NAV_LINKS.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm flex items-center gap-1.5 group"
-                    style={{ color: "#7B6EA8", textDecoration: "none" }}
+                    style={{
+                      fontSize: "0.88rem",
+                      color: hovered === link.label ? "#7C5CFF" : "#5a4a8a",
+                      textDecoration: "none",
+                      transition: "color 0.2s",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                    onMouseEnter={() => setHovered(link.label)}
+                    onMouseLeave={() => setHovered(null)}
                   >
-                    <ExternalLink
-                      size={12}
-                      className="flex-shrink-0 group-hover:text-purple-500 transition-colors"
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: "14px",
+                        height: "1px",
+                        background: hovered === link.label ? "#7C5CFF" : "#C8B8FF",
+                        transition: "background 0.2s, width 0.2s",
+                        flexShrink: 0,
+                      }}
                     />
-                    <span className="group-hover:text-purple-600 transition-colors">
-                      {link.label}
-                    </span>
+                    {link.label}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Feedback */}
+          {/* Official resources */}
           <div>
             <h3
-              className="font-semibold text-sm uppercase tracking-wider mb-4"
-              style={{ color: "#9B8EC8" }}
-            >
-              Get in touch
-            </h3>
-            <p className="text-sm mb-4" style={{ color: "#7B6EA8", lineHeight: 1.6 }}>
-              Found an error? Have a suggestion? Want to be added as a senior ambassador? We&apos;d love to hear from you.
-            </p>
-            <a
-              href="mailto:wellforward.ucd@gmail.com"
-              className="btn-primary inline-flex items-center gap-2 px-5 py-2.5 text-sm"
-              style={{ textDecoration: "none" }}
-            >
-              <Mail size={14} />
-              Submit feedback
-            </a>
-
-            {/* Emergency */}
-            <div
-              className="mt-5 rounded-xl p-3"
               style={{
-                background: "rgba(200, 184, 255, 0.2)",
-                border: "1px solid rgba(124, 92, 255, 0.15)",
+                fontSize: "0.7rem",
+                fontWeight: 700,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "#9B8EC8",
+                marginBottom: "14px",
               }}
             >
-              <p className="text-xs font-semibold mb-1" style={{ color: "#6B4EFF" }}>
-                📞 Support
+              Official resources
+            </h3>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "9px" }}>
+              {USEFUL_LINKS.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      fontSize: "0.88rem",
+                      color: hovered === link.href ? "#7C5CFF" : "#5a4a8a",
+                      textDecoration: "none",
+                      transition: "color 0.2s",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                    onMouseEnter={() => setHovered(link.href)}
+                    onMouseLeave={() => setHovered(null)}
+                  >
+                    <ExternalLink
+                      size={11}
+                      style={{
+                        flexShrink: 0,
+                        color: hovered === link.href ? "#7C5CFF" : "#C8B8FF",
+                        transition: "color 0.2s",
+                      }}
+                    />
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Support numbers */}
+          <div>
+            <h3
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: 700,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "#9B8EC8",
+                marginBottom: "14px",
+              }}
+            >
+              Support lines
+            </h3>
+
+            {/* Niteline card */}
+            <div
+              style={{
+                background: "rgba(200,184,255,0.18)",
+                border: "1px solid rgba(124,92,255,0.12)",
+                borderRadius: "12px",
+                padding: "14px",
+                marginBottom: "10px",
+                transform: "rotate(-0.4deg)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "7px", marginBottom: "5px" }}>
+                <Phone size={12} style={{ color: "#7C5CFF" }} />
+                <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#6B4EFF", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                  Niteline
+                </span>
+              </div>
+              <a
+                href="tel:1800793793"
+                style={{ fontSize: "1.05rem", fontWeight: 700, color: "#3B2E8C", textDecoration: "none", fontFamily: "Georgia, serif" }}
+              >
+                1800 793 793
+              </a>
+              <p style={{ fontSize: "0.72rem", color: "#7B6EA8", marginTop: "3px" }}>
+                Night-time listening service
               </p>
-              <p className="text-xs" style={{ color: "#4a3878", lineHeight: 1.5 }}>
-                Niteline (night-time listening): <a href="tel:1800793793" className="font-semibold" style={{ color: "#7C5CFF" }}>1800 793 793</a>
-                <br />
-                Samaritans: <a href="tel:116123" className="font-semibold" style={{ color: "#7C5CFF" }}>116 123</a>
+            </div>
+
+            {/* Samaritans card */}
+            <div
+              style={{
+                background: "rgba(233,226,255,0.35)",
+                border: "1px solid rgba(124,92,255,0.10)",
+                borderRadius: "12px",
+                padding: "14px",
+                transform: "rotate(0.3deg)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "7px", marginBottom: "5px" }}>
+                <Heart size={12} style={{ color: "#7C5CFF" }} />
+                <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#6B4EFF", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                  Samaritans
+                </span>
+              </div>
+              <a
+                href="tel:116123"
+                style={{ fontSize: "1.05rem", fontWeight: 700, color: "#3B2E8C", textDecoration: "none", fontFamily: "Georgia, serif" }}
+              >
+                116 123
+              </a>
+              <p style={{ fontSize: "0.72rem", color: "#7B6EA8", marginTop: "3px" }}>
+                Available 24 hours
               </p>
             </div>
           </div>
+
+          {/* Feedback */}
+          <div>
+            <h3
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: 700,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "#9B8EC8",
+                marginBottom: "14px",
+              }}
+            >
+              Say hello
+            </h3>
+            <p style={{ fontSize: "0.88rem", color: "#7B6EA8", lineHeight: 1.65, marginBottom: "16px" }}>
+              Found an error? Want to be a senior ambassador? Have an idea that could help other students?
+            </p>
+            <a
+              href="mailto:wellforward.ucd@gmail.com"
+              className="btn-primary"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "7px",
+                fontSize: "0.85rem",
+                textDecoration: "none",
+                padding: "10px 18px",
+              }}
+            >
+              <Mail size={13} />
+              Send a message
+            </a>
+
+            <p
+              style={{
+                fontSize: "0.75rem",
+                color: "#9B8EC8",
+                marginTop: "12px",
+                fontStyle: "italic",
+              }}
+            >
+              We reply within a couple of days.
+            </p>
+          </div>
         </div>
 
-        {/* Bottom row */}
+        {/* Bottom bar */}
         <div
-          className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-5"
-          style={{ borderTop: "1px solid rgba(200, 184, 255, 0.25)" }}
+          style={{
+            borderTop: "1px solid rgba(200,184,255,0.25)",
+            paddingTop: "20px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "6px",
+          }}
         >
-          <p className="text-xs" style={{ color: "#9B8EC8" }}>
-            © {year} Wellforward — UCD Smurfit Academic Project
-          </p>
-          <p className="text-xs" style={{ color: "#9B8EC8" }}>
-            Last updated: June 2025 · Information is for guidance only — always verify with official sources.
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "8px",
+            }}
+          >
+            <p style={{ fontSize: "0.75rem", color: "#9B8EC8" }}>
+              © {year} Wellforward — UCD Smurfit Academic Project
+            </p>
+            <p style={{ fontSize: "0.75rem", color: "#9B8EC8" }}>
+              Last updated: June 2025
+            </p>
+          </div>
+          <p
+            style={{
+              fontSize: "0.7rem",
+              color: "#C8B8FF",
+              fontStyle: "italic",
+              lineHeight: 1.5,
+            }}
+          >
+            Not officially affiliated with University College Dublin. Information is provided for guidance only — always verify with official sources.
           </p>
         </div>
       </div>
