@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { X, Mail, Link2, GraduationCap, Lock, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { SENIOR_PROFILES, SeniorProfile } from "@/lib/data";
+import { SeniorProfile } from "@/lib/data";
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -239,18 +239,56 @@ function SeniorModal({ senior, onClose }: { senior: SeniorProfile; onClose: () =
   );
 }
 
+// Generate a consistent avatar gradient from a string (name)
+const AVATAR_COLORS = [
+  "from-violet-500 to-purple-700",
+  "from-indigo-500 to-blue-700",
+  "from-fuchsia-500 to-pink-700",
+  "from-sky-500 to-cyan-700",
+  "from-emerald-500 to-teal-700",
+  "from-amber-500 to-orange-700",
+];
+function avatarColorFor(name: string) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_COLORS[h % AVATAR_COLORS.length];
+}
+
 export default function AskSeniorSection() {
   const [selected, setSelected] = useState<SeniorProfile | null>(null);
   const [programme, setProgramme] = useState("All");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profiles, setProfiles] = useState<SeniorProfile[]>([]);
   const headerRef = useReveal();
 
-  // Build programme filter list from actual data
-  const programmes = ["All", ...Array.from(new Set(SENIOR_PROFILES.map(s => s.programme))).sort()];
+  useEffect(() => {
+    // Check session
+    fetch('/api/me')
+      .then(r => r.json())
+      .then(d => { if (d.loggedIn) setIsLoggedIn(true); })
+      .catch(() => {});
+
+    // Load live senior profiles
+    fetch('/api/seniors')
+      .then(r => r.json())
+      .then(d => {
+        if (d.profiles) {
+          // Attach a derived avatarColor since API doesn't store it
+          setProfiles(d.profiles.map((s: SeniorProfile) => ({
+            ...s,
+            avatarColor: avatarColorFor(s.name),
+          })));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Build programme filter list from live data
+  const programmes = ["All", ...Array.from(new Set(profiles.map(s => s.programme))).sort()];
 
   const filtered = useMemo(() =>
-    programme === "All" ? SENIOR_PROFILES : SENIOR_PROFILES.filter(s => s.programme === programme),
-    [programme]
+    programme === "All" ? profiles : profiles.filter(s => s.programme === programme),
+    [profiles, programme]
   );
 
   const handleCardClick = (senior: SeniorProfile) => {
@@ -306,18 +344,6 @@ export default function AskSeniorSection() {
 
           {!isLoggedIn && <LoginGate />}
         </div>
-
-        {/* Dev toggle */}
-        {process.env.NODE_ENV === "development" && (
-          <div style={{ textAlign: "center", marginTop: 16 }}>
-            <button
-              onClick={() => setIsLoggedIn(v => !v)}
-              style={{ fontSize: "0.72rem", color: "#9b8ec8", background: "none", border: "1px dashed #c8b8ff", padding: "4px 12px", borderRadius: 6, cursor: "pointer" }}
-            >
-              [dev] toggle login: {isLoggedIn ? "logged in" : "logged out"}
-            </button>
-          </div>
-        )}
 
         {/* Opt-in for seniors */}
         <div

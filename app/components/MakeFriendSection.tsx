@@ -3,7 +3,8 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { X, Link2, Share2, Filter, Lock, ArrowRight, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { STUDENT_PROFILES, INTEREST_TAGS, StudentProfile } from "@/lib/data";
+import { INTEREST_TAGS, StudentProfile } from "@/lib/data";
+// Note: static STUDENT_PROFILES no longer used — profiles come from /api/students
 
 function getInitials(name: string) {
   return name.split(" ").map(n => n[0]).join("").toUpperCase();
@@ -335,19 +336,34 @@ export default function MakeFriendSection() {
   const [showTagFilter, setShowTagFilter] = useState(false);
   const sectionRef = useReveal();
 
-  // Login gate state — in a real app this would come from auth context
+  // Real auth + profile data from API
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profiles, setProfiles]     = useState<StudentProfile[]>([]);
+
+  useEffect(() => {
+    // Check session
+    fetch('/api/me')
+      .then(r => r.json())
+      .then(d => { if (d.loggedIn) setIsLoggedIn(true); })
+      .catch(() => {});
+
+    // Load live student profiles
+    fetch('/api/students')
+      .then(r => r.json())
+      .then(d => { if (d.profiles) setProfiles(d.profiles); })
+      .catch(() => {});
+  }, []);
 
   const toggleTag = (t: string) =>
     setActiveTags(p => p.includes(t) ? p.filter(x => x !== t) : [...p, t]);
 
-  const filtered = useMemo(() => STUDENT_PROFILES.filter(p => {
+  const filtered = useMemo(() => profiles.filter(p => {
     if (newOnly && !p.isNew) return false;
     if (searchCourse && !p.course.toLowerCase().includes(searchCourse.toLowerCase()) && !p.school.toLowerCase().includes(searchCourse.toLowerCase())) return false;
     if (searchCountry && !p.country.toLowerCase().includes(searchCountry.toLowerCase())) return false;
     if (activeTags.length && !activeTags.every(t => p.tags.includes(t))) return false;
     return true;
-  }), [searchCourse, searchCountry, activeTags, newOnly]);
+  }), [profiles, searchCourse, searchCountry, activeTags, newOnly]);
 
   return (
     <section id="make-a-friend" className="relative z-10 section-padding" aria-labelledby="maf-title">
@@ -436,7 +452,7 @@ export default function MakeFriendSection() {
               style={{ columns: "1", columnGap: "16px" }}
               className="sm:columns-2 lg:columns-3"
             >
-              {(isLoggedIn ? filtered : STUDENT_PROFILES.slice(0, 6)).map((p, i) => (
+              {(isLoggedIn ? filtered : []).map((p, i) => (
                 <div key={p.id} style={{ breakInside: "avoid", marginBottom: 16 }}>
                   <ProfileCard profile={p} onClick={() => isLoggedIn && setSelected(p)} index={i} />
                 </div>
@@ -455,17 +471,6 @@ export default function MakeFriendSection() {
           {!isLoggedIn && <LoginGate />}
         </div>
 
-        {/* Dev helper — remove in production */}
-        {process.env.NODE_ENV === "development" && (
-          <div style={{ textAlign: "center", marginTop: 16 }}>
-            <button
-              onClick={() => setIsLoggedIn(v => !v)}
-              style={{ fontSize: "0.72rem", color: "#9b8ec8", background: "none", border: "1px dashed #c8b8ff", padding: "4px 12px", borderRadius: 6, cursor: "pointer" }}
-            >
-              [dev] toggle login: {isLoggedIn ? "logged in" : "logged out"}
-            </button>
-          </div>
-        )}
       </div>
 
       {selected && <ProfileModal profile={selected} onClose={() => setSelected(null)} />}

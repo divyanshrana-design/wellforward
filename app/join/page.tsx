@@ -204,6 +204,8 @@ export default function JoinPage() {
   const [otpSent, setOtpSent]   = useState(false);
   const [otpError, setOtpError] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
+  const [apiLoading, setApiLoading]   = useState(false);
+  const [apiError, setApiError]       = useState("");
 
   // Cursor glow effect
   useEffect(() => {
@@ -248,22 +250,69 @@ export default function JoinPage() {
   const isUcdEmail = (email: string) =>
     email.toLowerCase().endsWith("@ucdconnect.ie") || email.toLowerCase().endsWith("@ucd.ie");
 
-  const sendOtp = () => {
+  const sendOtp = async () => {
     if (!isUcdEmail(form.email)) return;
-    setOtpSent(true);
-    setResendTimer(60);
+    setApiLoading(true);
     setOtpError("");
-    // In production: POST /api/send-otp with form.email
+    try {
+      const res = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Failed to send code.');
+      setOtpSent(true);
+      setResendTimer(60);
+    } catch (err: unknown) {
+      setOtpError(err instanceof Error ? err.message : 'Failed to send code.');
+    } finally {
+      setApiLoading(false);
+    }
   };
 
-  const verifyOtp = () => {
-    if (otp.replace(/\D/g, "").length < 6) {
-      setOtpError("Please enter the full 6-digit code.");
+  const verifyOtp = async () => {
+    if (otp.replace(/\D/g, '').length < 6) {
+      setOtpError('Please enter the full 6-digit code.');
       return;
     }
-    // In production: POST /api/verify-otp
-    // For now, any 6-digit code passes (demo mode)
-    setStep(4);
+    setApiLoading(true);
+    setOtpError('');
+    try {
+      // Step 1 — verify OTP
+      const verifyRes = await fetch('/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email, code: otp }),
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok) throw new Error(verifyData.error ?? 'Invalid code.');
+
+      // Step 2 — register profile
+      const regRes = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          programme: form.programme,
+          school: form.school,
+          intakeYear: form.intakeYear,
+          hometown: form.hometown,
+          bio: form.bio,
+          interests: form.interests,
+          lookingFor: form.lookingFor,
+          photo: form.photo,
+        }),
+      });
+      const regData = await regRes.json();
+      if (!regRes.ok) throw new Error(regData.error ?? 'Failed to save profile.');
+
+      setStep(4);
+    } catch (err: unknown) {
+      setOtpError(err instanceof Error ? err.message : 'Something went wrong.');
+    } finally {
+      setApiLoading(false);
+    }
   };
 
   // Intake-based routing label
@@ -547,7 +596,7 @@ export default function JoinPage() {
                   type="button" className="btn-primary"
                   style={{ width: "100%", padding: "14px", fontSize: "0.95rem", borderRadius: 12, marginTop: 4 }}
                   onClick={() => setStep(2)}
-                  disabled={!form.name || !isUcdEmail(form.email)}
+                  disabled={!form.name || !isUcdEmail(form.email) || apiLoading}
                 >
                   Continue →
                 </button>
@@ -635,10 +684,11 @@ export default function JoinPage() {
                     Back
                   </button>
                   <button type="button" className="btn-primary"
-                    style={{ flex: 1, padding: "14px", fontSize: "0.95rem", borderRadius: 12 }}
-                    onClick={() => { sendOtp(); setStep(3); }}
+                    style={{ flex: 1, padding: "14px", fontSize: "0.95rem", borderRadius: 12, opacity: apiLoading ? 0.7 : 1 }}
+                    onClick={async () => { await sendOtp(); setStep(3); }}
+                    disabled={apiLoading}
                   >
-                    Send verification code →
+                    {apiLoading ? 'Sending…' : 'Send verification code →'}
                   </button>
                 </div>
 
@@ -676,31 +726,24 @@ export default function JoinPage() {
                   <p style={{ fontSize: "0.78rem", color: "#ef4444", textAlign: "center" }}>{otpError}</p>
                 )}
 
-                {/* Demo notice */}
-                <div style={{
-                  background: "rgba(245,158,11,0.08)",
-                  border: "1px solid rgba(245,158,11,0.2)",
-                  borderRadius: 10, padding: "10px 14px",
-                  fontSize: "0.76rem", color: "#92400e",
-                  textAlign: "center", lineHeight: 1.5,
-                }}>
-                  Demo mode: enter any 6 digits to continue. In production, a real code is emailed via Resend.
-                </div>
+                {apiError && (
+                  <p style={{ fontSize: "0.78rem", color: "#ef4444", textAlign: "center" }}>{apiError}</p>
+                )}
 
                 <button
                   type="button" className="btn-primary"
-                  style={{ width: "100%", padding: "14px", fontSize: "0.95rem", borderRadius: 12 }}
+                  style={{ width: "100%", padding: "14px", fontSize: "0.95rem", borderRadius: 12, opacity: apiLoading ? 0.7 : 1 }}
                   onClick={verifyOtp}
-                  disabled={otp.replace(/\D/g, "").length < 6}
+                  disabled={otp.replace(/\D/g, '').length < 6 || apiLoading}
                 >
-                  Verify and create profile
+                  {apiLoading ? 'Creating your profile…' : 'Verify and create profile'}
                 </button>
 
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                   <button
                     type="button"
-                    onClick={() => { sendOtp(); setResendTimer(60); }}
-                    disabled={resendTimer > 0}
+                    onClick={() => { sendOtp(); }}
+                    disabled={resendTimer > 0 || apiLoading}
                     style={{
                       background: "none", border: "none", cursor: resendTimer > 0 ? "default" : "pointer",
                       fontSize: "0.78rem", color: resendTimer > 0 ? "#b0a0cc" : "#7c5cff",
