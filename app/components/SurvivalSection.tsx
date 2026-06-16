@@ -173,7 +173,7 @@ function Tip({ children }: { children: React.ReactNode }) {
       color: "#38285c",
       lineHeight: 1.6,
     }}>
-      <strong style={{ color: "#7c5cff" }}>Tip — </strong>
+      <strong style={{ color: "#7c5cff" }}>Tip: </strong>
       {children}
     </div>
   );
@@ -189,7 +189,7 @@ export default function SurvivalSection() {
       urgency: "Do before you land",
       urgencyColor: "#5a3ee8",
       summary:
-        "The Irish Residence Permit is the most time-sensitive thing on this list. Book your appointment online before you even arrive — appointments fill up fast, and if you leave it late, you could be waiting months.",
+        "The Irish Residence Permit is the most time-sensitive thing on this list. Book your appointment online before you even arrive. Appointments fill up fast, Leave it too late and you could be waiting months.",
       accentGradient: "linear-gradient(135deg, #7c5cff, #c8b8ff)",
       detail: (
         <div>
@@ -198,20 +198,20 @@ export default function SurvivalSection() {
           </p>
           <Steps steps={[
             { text: "Go to inis.gov.ie and create an account before you travel." },
-            { text: "Book your IRP appointment slot — pick the earliest available date, even if it's weeks away." },
+            { text: "Book your IRP appointment slot. Pick the earliest available date, even if it is weeks away." },
             { text: "Arrive in Ireland. Your countdown (90 days) starts from your entry date." },
             { text: "Bring your passport, acceptance letter, proof of accommodation, and proof of finances to the appointment." },
             { text: "Your IRP card will be posted to your address within a few weeks." },
           ]} />
           <Tip>
-            You can book the appointment before you land. This is the single biggest time-saver — most students don&apos;t know this and end up in a 2–3 month queue.
+            You can book the appointment before you land. This is the single biggest time-saver. Most students don&apos;t know this and end up in a 2 to 3 month queue.
           </Tip>
         </div>
       ),
     },
     {
       num: "02",
-      title: "PPSN — Your Tax Number",
+      title: "PPSN: Your Tax Number",
       urgency: "Week 1–2",
       urgencyColor: "#6b5a8e",
       summary:
@@ -220,49 +220,49 @@ export default function SurvivalSection() {
       detail: (
         <div>
           <p style={{ fontSize: "0.87rem", color: "#38285c", lineHeight: 1.65, marginBottom: 14 }}>
-            Think of PPSN as your identity number for anything government-related in Ireland — work, tax, and certain benefits. Without it, any employer legally can&apos;t pay you.
+            Think of PPSN as your identity number for anything government-related in Ireland: work, tax, and certain benefits. Without it, any employer legally can&apos;t pay you.
           </p>
           <Steps steps={[
             { text: "Go to mywelfare.ie and create a MyWelfare account." },
-            { text: "Apply for a PPSN online — you'll need your passport and proof of address in Ireland." },
+            { text: "Apply for a PPSN online. You will need your passport and proof of address in Ireland." },
             { text: "You may be asked to attend an appointment at your local Intreo / Department of Social Protection office." },
-            { text: "Your PPSN is posted to your address. Keep it safe — you'll use it for everything." },
+            { text: "Your PPSN is posted to your address. Keep it safe. You will use it for everything." },
           ]} />
           <Tip>
-            mywelfare.ie is the official government portal. Don&apos;t pay any third-party service to do this — it is completely free.
+            mywelfare.ie is the official government portal. Don&apos;t pay any third-party service to do this. It is completely free.
           </Tip>
         </div>
       ),
     },
     {
       num: "03",
-      title: "Bank Account — AIB",
+      title: "Bank Account: AIB",
       urgency: "Week 1",
       urgencyColor: "#6b5a8e",
       summary:
-        "You'll need an Irish bank account to receive wages, pay rent, and set up direct debits. AIB is the most student-friendly option — you can open an account entirely on your phone in about 20 minutes.",
+        "You'll need an Irish bank account to receive wages, pay rent, and set up direct debits. AIB is the most student-friendly option. You can open an account entirely on your phone in about 20 minutes.",
       accentGradient: "linear-gradient(135deg, #6040f0, #7ec8ff)",
       detail: (
         <div>
           <p style={{ fontSize: "0.87rem", color: "#38285c", lineHeight: 1.65, marginBottom: 14 }}>
-            AIB (Allied Irish Banks) has a free current account for students and you can verify your identity via a short video call in the app — no branch visit needed.
+            AIB (Allied Irish Banks) has a free current account for students and you can verify your identity via a short video call in the app. No branch visit needed.
           </p>
           <Steps steps={[
             { text: "Download the AIB Mobile app and start the account opening process." },
             { text: "Have your passport ready for identity verification." },
-            { text: "Complete the video verification call in-app — takes about 5 minutes." },
+            { text: "Complete the video verification call in the app. Takes about 5 minutes." },
             { text: "Enter your Irish address. A one-time code will be posted to that address." },
             { text: "Enter the code in the app. Your account details and debit card arrive by post within about a week." },
           ]} />
           <Tip>
-            You need an Irish address to apply. If you&apos;re in student accommodation, use that address. Your card arrives separately — you can use your account details to receive money before the card arrives.
+            You need an Irish address to apply. If you&apos;re in student accommodation, use that address. Your card arrives separately. You can use your account details to receive money before the card arrives.
           </Tip>
         </div>
       ),
     },
     {
       num: "04",
-      title: "Leap Card — Get It Day One",
+      title: "Leap Card: Get It Day One",
       urgency: "Day of arrival",
       urgencyColor: "#7c5cff",
       summary:
@@ -271,27 +271,27 @@ export default function SurvivalSection() {
       detail: (
         <div>
           <p style={{ fontSize: "0.87rem", color: "#38285c", lineHeight: 1.65, marginBottom: 14 }}>
-            A regular Leap card costs €5 to buy. The Student Leap card gives you 50% off all fares — so €2 becomes €1. You need your student ID and UCD email to qualify.
+            A regular Leap card costs €5 to buy. The Student Leap card gives you 50% off all fares: €2 becomes €1. You need your student ID and UCD email to qualify.
           </p>
           <Steps steps={[
             { text: "Pick up a regular Leap card at the airport, any newsagent, or a Leap vendor (€5, includes €0 credit)." },
-            { text: "Top it up immediately — you can do this at the newsagent or at Luas/DART machines." },
+            { text: "Top it up immediately. You can do this at the newsagent or at Luas/DART machines." },
             { text: "Go to leapcard.ie to register and upgrade to a Student Leap card using your UCD student ID." },
             { text: "Your upgraded card is posted to you within a week. In the meantime, use the regular card." },
           ]} />
           <Tip>
-            Always tap on AND tap off when using the Leap card on Dublin Bus — if you forget to tap off, you get charged the maximum fare for that route.
+            Always tap on AND tap off when using the Leap card on Dublin Bus. If you forget to tap off, you you will be charged the maximum fare for that route.
           </Tip>
         </div>
       ),
     },
     {
       num: "05",
-      title: "SIM Card — Go with 48",
+      title: "SIM Card: Go with 48",
       urgency: "Day of arrival",
       urgencyColor: "#6b5a8e",
       summary:
-        "You need a working Irish number as soon as possible — banks, IRP offices, and landlords all ask for it. 48 is one of the cheapest options: around €12–13 a month for unlimited 5G data, calls, and texts.",
+        "You need a working Irish number as soon as possible. Banks, IRP offices, and landlords all ask for it. 48 is one of the cheapest options: around €12 to 13 a month for unlimited 5G data, calls, and texts.",
       accentGradient: "linear-gradient(135deg, #c8b8ff, #7c5cff)",
       detail: (
         <div>
@@ -300,7 +300,7 @@ export default function SurvivalSection() {
           </p>
           <Steps steps={[
             { text: "Pick up a 48 SIM at any newsagent, Tesco, or the 48 website (free SIM, or delivered by post)." },
-            { text: "Insert the SIM and activate it at 48.ie — takes about 3 minutes." },
+            { text: "Insert the SIM and activate it at 48.ie. Takes about 3 minutes." },
             { text: "Top up €12–13 online and select the monthly 5G bundle." },
             { text: "Set up auto-top-up so it renews automatically each month." },
           ]} />
@@ -379,7 +379,7 @@ export default function SurvivalSection() {
           </div>
           <p style={{ fontSize: "0.83rem", color: "#38285c", lineHeight: 1.65, margin: 0 }}>
             <strong style={{ color: "#1a0f2e" }}>Important:</strong> Information here is for guidance only and was accurate at the time of writing. Always verify
-            current requirements at the official government websites — rules can change.
+            current requirements at the official government websites. Rules do change.
             When in doubt, ask your international student office at UCD.
           </p>
         </div>

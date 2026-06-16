@@ -103,7 +103,7 @@ export default function GlossarySection() {
             What is a <em className="grad-text" style={{ fontStyle: "italic" }}>&quot;GP&quot;</em>?
           </h2>
           <p style={{ maxWidth: 460, fontSize: "0.95rem", color: "#3d2f60", lineHeight: 1.65 }}>
-            Ireland has its own language — official acronyms, transport jargon, and slang nobody explains. Tap any card.
+            Ireland has its own language. Official acronyms, transport jargon, and slang nobody explains. Tap any card.
           </p>
         </div>
 
@@ -142,7 +142,7 @@ export default function GlossarySection() {
         ) : (
           <div style={{ textAlign: "center", padding: "48px 0" }}>
             <p style={{ fontSize: "2rem", marginBottom: 8 }}>🤔</p>
-            <p style={{ fontSize: "0.85rem", color: "#9b8ec8" }}>Nothing for &quot;{search}&quot; — try something shorter.</p>
+            <p style={{ fontSize: "0.85rem", color: "#9b8ec8" }}>Nothing for &quot;{search}&quot;. Try something shorter.</p>
           </div>
         )}
       </div>

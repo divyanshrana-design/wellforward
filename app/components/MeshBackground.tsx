@@ -1,6 +1,6 @@
 "use client";
 
-// Five soft, slow-drifting orbs — cream/lavender palette
+// Six soft, slow-drifting morphing orbs — cream/lavender palette
 // Background stays quiet — it supports the content, doesn't compete
 export default function MeshBackground() {
   return (
@@ -10,6 +10,7 @@ export default function MeshBackground() {
       <div className="orb orb-3" />
       <div className="orb orb-4" />
       <div className="orb orb-5" />
+      <div className="orb orb-6" />
     </div>
   );
 }

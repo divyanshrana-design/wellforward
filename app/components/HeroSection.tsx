@@ -148,7 +148,7 @@ function ChecklistPreview() {
         }} />
       </div>
       <div style={{ marginTop: 4, fontSize: "0.58rem", color: "#9b8ec8" }}>
-        2 of 5 done — keep going ✦
+        2 of 5 done, keep going ✦
       </div>
     </div>
   );
@@ -241,18 +241,26 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
               data-enter
               style={{
                 fontSize: "clamp(2.6rem, 6.5vw, 5.2rem)",
-                lineHeight: 1.02,
+                lineHeight: 1.08,
                 color: "#1a0f2e",
                 letterSpacing: "-0.035em",
                 fontWeight: 900,
                 marginBottom: 20,
                 maxWidth: 640,
+                overflow: "visible",
+                paddingRight: "0.12em",
               }}
             >
               Made it to Dublin.{" "}
               <em
                 className="grad-text"
-                style={{ fontStyle: "italic", fontWeight: 900 }}
+                style={{
+                  fontStyle: "italic",
+                  fontWeight: 900,
+                  display: "inline-block",
+                  paddingRight: "0.15em",
+                  overflow: "visible",
+                }}
               >
                 Now what?
               </em>
@@ -273,8 +281,8 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
                 marginTop: 4,
               }}
             >
-              A guide built by a UCD student who figured it out the hard way —
-              IRP appointments, PPSN, bank accounts, Leap cards, and finding
+              Built by a UCD student who figured it out the hard way.
+              IRP appointments, PPSN, bank accounts, Leap cards, finding
               people who actually get it.{" "}
               <span style={{ color: "#7c5cff", fontWeight: 600 }}>
                 So you don&apos;t have to.
@@ -304,7 +312,7 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
 
             {/* Tiny footnote */}
             <p data-enter style={{ fontSize: "0.75rem", color: "#9b8ec8", marginTop: 4 }}>
-              @ucdconnect.ie · completely free · no sign-up spam
+              @ucdconnect.ie   completely free   no sign-up spam
             </p>
           </div>
 

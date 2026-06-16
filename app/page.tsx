@@ -5,6 +5,7 @@ import MeshBackground from "./components/MeshBackground";
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
 import SurvivalSection from "./components/SurvivalSection";
+import DublinGame from "./components/DublinGame";
 import Footer from "./components/Footer";
 
 export default function Home() {
@@ -103,6 +104,73 @@ export default function Home() {
         onMakeFriend={() => scrollTo("#survival")}
         onBrowseGuide={() => scrollTo("#survival")}
       />
+
+      {/* Dublin Quiz — interactive game between hero and survival guide */}
+      <section
+        style={{
+          padding: "72px 0",
+          background: "linear-gradient(180deg, transparent 0%, rgba(200,184,255,0.08) 50%, transparent 100%)",
+        }}
+      >
+        <div className="max-w-6xl mx-auto px-5 sm:px-10">
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "clamp(32px,5vw,64px)",
+              alignItems: "center",
+            }}
+            className="gap-12"
+          >
+            {/* Left copy */}
+            <div>
+              <span className="eyebrow">Know before you go</span>
+              <h2
+                style={{
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontSize: "clamp(1.8rem,4vw,2.8rem)",
+                  fontWeight: 700,
+                  color: "#1a0f2e",
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1.1,
+                  marginBottom: 14,
+                  marginTop: 10,
+                }}
+              >
+                How well do you{" "}
+                <em className="grad-text" style={{ fontStyle: "italic" }}>
+                  know Dublin?
+                </em>
+              </h2>
+              <p style={{ fontSize: "0.95rem", color: "#38285c", lineHeight: 1.7, maxWidth: 400 }}>
+                Six questions on the things that actually matter when you arrive. IRP, transport, Irish slang, and more. Finish the quiz and we will tell you exactly what to do next.
+              </p>
+              <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+                {[
+                  "Takes 90 seconds",
+                  "Each answer comes with a real tip",
+                  "No sign-in required",
+                ].map(item => (
+                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: "0.85rem", color: "#6b5a8e" }}>
+                    <div style={{
+                      width: 6, height: 6, borderRadius: "50%",
+                      background: "linear-gradient(135deg, #7c5cff, #c8b8ff)",
+                      flexShrink: 0,
+                    }} />
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — game card */}
+            <div className="flex justify-center lg:justify-end">
+              <DublinGame />
+            </div>
+          </div>
+        </div>
+      </section>
+
       <SurvivalSection />
       <Footer />
     </main>

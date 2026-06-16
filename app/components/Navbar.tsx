@@ -39,28 +39,14 @@ export default function Navbar() {
         borderBottom: scrolled ? "1px solid rgba(200,184,255,0.3)" : "1px solid transparent",
       }}
     >
-      {/* Scroll progress bar */}
-      {scrolled && (
-        <div
-          id="scroll-progress-bar"
-          style={{
-            position: "absolute",
-            bottom: 0, left: 0,
-            height: 2,
-            background: "linear-gradient(90deg, #7c5cff, #c8b8ff)",
-            width: "0%",
-            transition: "width 0.1s linear",
-            borderRadius: "0 2px 2px 0",
-          }}
-        />
-      )}
+      {/* scroll progress bar removed */}
 
       <nav className="max-w-6xl mx-auto px-5 sm:px-8 h-[64px] flex items-center justify-between">
 
         {/* Wordmark — links back to home */}
         <Link
           href="/"
-          aria-label="Wellforward — home"
+          aria-label="Wellforward home"
           style={{ textDecoration: "none" }}
         >
           <span

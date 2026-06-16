@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
-import { X, Mail, Link2, GraduationCap } from "lucide-react";
+import { X, Mail, Link2, GraduationCap, Lock, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { SENIOR_PROFILES, SeniorProfile } from "@/lib/data";
 
 function useReveal() {
@@ -23,7 +24,94 @@ function getInitials(name: string) {
   return name.split(" ").map(n => n[0]).join("").toUpperCase();
 }
 
-function SeniorCard({ senior, onClick, index }: { senior: SeniorProfile; onClick: () => void; index: number }) {
+/* ─── Login Gate Overlay ────────────────────────────────────── */
+function LoginGate() {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 30,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        backdropFilter: "blur(18px)",
+        WebkitBackdropFilter: "blur(18px)",
+        background: "linear-gradient(180deg, rgba(253,252,255,0.4) 0%, rgba(233,226,255,0.7) 100%)",
+        borderRadius: 16,
+        padding: "40px 24px",
+        textAlign: "center",
+      }}
+    >
+      <div
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          background: "linear-gradient(135deg, #7c5cff, #c8b8ff)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 18,
+          boxShadow: "0 8px 24px -8px rgba(124,92,255,0.5)",
+        }}
+      >
+        <Lock size={22} color="white" />
+      </div>
+      <h3
+        style={{
+          fontFamily: "'Fraunces', Georgia, serif",
+          fontSize: "1.4rem",
+          fontWeight: 700,
+          color: "#1a0f2e",
+          letterSpacing: "-0.025em",
+          marginBottom: 10,
+        }}
+      >
+        Sign in to contact seniors
+      </h3>
+      <p
+        style={{
+          fontSize: "0.88rem",
+          color: "#3d2f60",
+          lineHeight: 1.65,
+          maxWidth: 360,
+          marginBottom: 24,
+        }}
+      >
+        Seniors have shared their contact details with the Wellforward community. Create a free account with your @ucdconnect.ie address to reach out.
+      </p>
+      <Link
+        href="/join"
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          background: "linear-gradient(135deg, #7c5cff, #5a3ee8)",
+          color: "white",
+          fontFamily: "'Inter', sans-serif",
+          fontSize: "0.9rem",
+          fontWeight: 600,
+          padding: "12px 28px",
+          borderRadius: 12,
+          textDecoration: "none",
+          boxShadow: "0 8px 24px -8px rgba(92,60,220,0.45)",
+        }}
+      >
+        Create a free account <ArrowRight size={15} />
+      </Link>
+      <p style={{ fontSize: "0.72rem", color: "#9b8ec8", marginTop: 14 }}>
+        Already have an account?{" "}
+        <Link href="/join" style={{ color: "#7c5cff", textDecoration: "underline" }}>
+          Sign in
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+function SeniorCard({ senior, onClick, index, gated }: { senior: SeniorProfile; onClick: () => void; index: number; gated: boolean }) {
   const ref = useReveal();
   return (
     <div ref={ref} className="reveal" style={{ transitionDelay: `${(index % 3) * 70}ms` }}>
@@ -31,7 +119,7 @@ function SeniorCard({ senior, onClick, index }: { senior: SeniorProfile; onClick
         onClick={onClick}
         className="card glow-on-hover text-left w-full group cursor-pointer relative overflow-hidden"
         style={{ padding: "18px 20px" }}
-        aria-label={`Contact senior ${senior.name}`}
+        aria-label={gated ? "Sign in to contact senior" : `Contact senior ${senior.name}`}
       >
         <div
           className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-400"
@@ -50,40 +138,23 @@ function SeniorCard({ senior, onClick, index }: { senior: SeniorProfile; onClick
             <div className="serif font-bold leading-tight truncate" style={{ fontSize: "0.98rem", color: "#1c1430" }}>
               {senior.name} {senior.countryFlag}
             </div>
-            <div style={{ fontSize: "0.72rem", color: "#9b8ec8", marginTop: 1 }}>
-              {senior.programme}
-            </div>
-            <div style={{ fontSize: "0.68rem", color: "#b0a0cc" }}>
-              Class of {senior.graduationYear}
-            </div>
+            <div style={{ fontSize: "0.72rem", color: "#9b8ec8", marginTop: 1 }}>{senior.programme}</div>
+            <div style={{ fontSize: "0.68rem", color: "#b0a0cc" }}>Class of {senior.graduationYear}</div>
           </div>
         </div>
 
-        {/* Ask me about — the main value prop, should be prominent */}
-        <div
-          style={{
-            background: "rgba(200,184,255,0.22)",
-            borderRadius: 9,
-            padding: "10px 12px",
-            marginBottom: 12,
-          }}
-        >
+        <div style={{ background: "rgba(200,184,255,0.22)", borderRadius: 9, padding: "10px 12px", marginBottom: 12 }}>
           <p style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.06em", color: "#9b8ec8", textTransform: "uppercase", marginBottom: 3 }}>
             Ask me about
           </p>
-          <p style={{ fontSize: "0.8rem", color: "#2a1d50", lineHeight: 1.5 }}>
-            {senior.askMeAbout}
-          </p>
+          <p style={{ fontSize: "0.8rem", color: "#2a1d50", lineHeight: 1.5 }}>{senior.askMeAbout}</p>
         </div>
 
-        <div
-          className="flex items-center gap-2 pt-2"
-          style={{ borderTop: "1px solid rgba(200,184,255,0.22)" }}
-        >
+        <div className="flex items-center gap-2 pt-2" style={{ borderTop: "1px solid rgba(200,184,255,0.22)" }}>
           {senior.email    && <Mail  size={13} style={{ color: "#9b8ec8" }} />}
           {senior.linkedin && <Link2 size={13} style={{ color: "#9b8ec8" }} />}
-          <span className="ml-auto text-xs font-medium" style={{ color: "#7c5cff", opacity: 0.85 }}>
-            reach out →
+          <span className="ml-auto text-xs font-medium" style={{ color: gated ? "#c8b8ff" : "#7c5cff", opacity: gated ? 0.6 : 0.85 }}>
+            {gated ? "sign in to reach out" : "reach out →"}
           </span>
         </div>
       </button>
@@ -155,8 +226,7 @@ function SeniorModal({ senior, onClose }: { senior: SeniorProfile; onClose: () =
           )}
           {senior.linkedin && (
             <a
-              href={senior.linkedin}
-              target="_blank" rel="noopener noreferrer"
+              href={senior.linkedin} target="_blank" rel="noopener noreferrer"
               className="btn-secondary flex items-center justify-center gap-2 py-3 text-sm"
               style={{ textDecoration: "none", borderRadius: 10 }}
             >
@@ -171,23 +241,29 @@ function SeniorModal({ senior, onClose }: { senior: SeniorProfile; onClose: () =
 
 export default function AskSeniorSection() {
   const [selected, setSelected] = useState<SeniorProfile | null>(null);
-  const [school, setSchool]     = useState("All");
+  const [programme, setProgramme] = useState("All");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const headerRef = useReveal();
 
-  const schools   = ["All", ...Array.from(new Set(SENIOR_PROFILES.map(s => s.school)))];
-  const filtered  = useMemo(() =>
-    school === "All" ? SENIOR_PROFILES : SENIOR_PROFILES.filter(s => s.school === school),
-    [school]
+  // Build programme filter list from actual data
+  const programmes = ["All", ...Array.from(new Set(SENIOR_PROFILES.map(s => s.programme))).sort()];
+
+  const filtered = useMemo(() =>
+    programme === "All" ? SENIOR_PROFILES : SENIOR_PROFILES.filter(s => s.programme === programme),
+    [programme]
   );
+
+  const handleCardClick = (senior: SeniorProfile) => {
+    if (!isLoggedIn) return; // gate handled by overlay
+    setSelected(senior);
+  };
 
   return (
     <section
       id="ask-a-senior"
       className="relative z-10 section-padding"
       aria-labelledby="seniors-title"
-      style={{
-        background: "linear-gradient(180deg,transparent,rgba(200,184,255,0.1) 40%,rgba(200,184,255,0.1) 60%,transparent)",
-      }}
+      style={{ background: "linear-gradient(180deg,transparent,rgba(200,184,255,0.1) 40%,rgba(200,184,255,0.1) 60%,transparent)" }}
     >
       <div className="max-w-6xl mx-auto px-5 sm:px-10">
 
@@ -195,40 +271,55 @@ export default function AskSeniorSection() {
           <span className="section-label">
             <GraduationCap size={12} /> seniors who remember
           </span>
-          <h2
-            id="seniors-title"
-            className="serif mb-4"
-            style={{ fontSize: "clamp(1.9rem,5vw,3.2rem)", color: "#1c1430" }}
-          >
+          <h2 id="seniors-title" className="serif mb-4" style={{ fontSize: "clamp(1.9rem,5vw,3.2rem)", color: "#1c1430" }}>
             Ask a <em className="grad-text" style={{ fontStyle: "italic" }}>Senior</em>
           </h2>
           <p style={{ maxWidth: 480, fontSize: "0.95rem", color: "#3d2f60", lineHeight: 1.65 }}>
-            Real seniors. Real answers. They signed up specifically to help — reach out. They all remember what week one felt like.
+            Real seniors. Real answers. They signed up specifically to help. All of them remember what week one felt like.
           </p>
         </div>
 
-        {/* School filter tabs */}
+        {/* Programme filter tabs */}
         <div className="flex flex-wrap gap-2 mb-8">
-          {schools.map(s => (
+          {programmes.map(p => (
             <button
-              key={s}
-              onClick={() => setSchool(s)}
-              className={`chip ${school === s ? "active" : ""}`}
+              key={p}
+              onClick={() => setProgramme(p)}
+              className={`chip ${programme === p ? "active" : ""}`}
               style={{ fontSize: "0.78rem", padding: "6px 14px" }}
-              aria-pressed={school === s}
+              aria-pressed={programme === p}
             >
-              {s === "Smurfit Business School" ? "Smurfit" : s}
+              {p === "All" ? "All programmes" : p.replace("MSc ", "").replace("Management ", "")}
             </button>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((s, i) => (
-            <SeniorCard key={s.id} senior={s} onClick={() => setSelected(s)} index={i} />
-          ))}
+        {/* Senior grid — gated */}
+        <div style={{ position: "relative", minHeight: 380 }}>
+          <div style={{ filter: isLoggedIn ? "none" : "blur(5px)", pointerEvents: isLoggedIn ? "auto" : "none", userSelect: "none", transition: "filter 0.4s ease" }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filtered.map((s, i) => (
+                <SeniorCard key={s.id} senior={s} onClick={() => handleCardClick(s)} index={i} gated={!isLoggedIn} />
+              ))}
+            </div>
+          </div>
+
+          {!isLoggedIn && <LoginGate />}
         </div>
 
-        {/* Opt-in */}
+        {/* Dev toggle */}
+        {process.env.NODE_ENV === "development" && (
+          <div style={{ textAlign: "center", marginTop: 16 }}>
+            <button
+              onClick={() => setIsLoggedIn(v => !v)}
+              style={{ fontSize: "0.72rem", color: "#9b8ec8", background: "none", border: "1px dashed #c8b8ff", padding: "4px 12px", borderRadius: 6, cursor: "pointer" }}
+            >
+              [dev] toggle login: {isLoggedIn ? "logged in" : "logged out"}
+            </button>
+          </div>
+        )}
+
+        {/* Opt-in for seniors */}
         <div
           style={{
             border: "1.5px dashed rgba(124,92,255,0.25)",
@@ -244,10 +335,10 @@ export default function AskSeniorSection() {
             Were you here last year?
           </p>
           <p style={{ fontSize: "0.82rem", color: "#6b5a8e", lineHeight: 1.6, marginBottom: 14 }}>
-            If you&apos;re a returning or graduated UCD student and want to help incoming internationals — we&apos;d love to add you.
+            If you are a returning or graduated Smurfit student and want to help incoming internationals, we would love to add you.
           </p>
           <a
-            href="mailto:wellforward.ucd@gmail.com?subject=I want to be a senior on Wellforward"
+            href="mailto:divyansh.rana@ucdconnect.ie?subject=I want to be a senior on Wellforward"
             className="btn-primary px-6 py-2.5 text-sm inline-flex items-center gap-2"
             style={{ textDecoration: "none", borderRadius: 9 }}
           >

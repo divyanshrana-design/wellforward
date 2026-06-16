@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Wellforward — For UCD International Students",
+  title: "Wellforward: For UCD International Students",
   description:
     "Find friends, ask seniors, and survive your first month in Dublin. A platform built by UCD international students, for UCD international students.",
   keywords: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "UCD student guide",
   ],
   openGraph: {
-    title: "Wellforward — For UCD International Students",
+    title: "Wellforward: For UCD International Students",
     description:
       "You're not the only one figuring it out. Find friends, ask seniors, and survive your first month in Dublin.",
     type: "website",

@@ -5,12 +5,12 @@ import { ExternalLink, Mail, Heart, Phone } from "lucide-react";
 import Link from "next/link";
 
 const USEFUL_LINKS = [
-  { label: "ISD — IRP Registration", href: "https://www.irishimmigration.ie" },
-  { label: "MyWelfare.ie — PPS Number", href: "https://www.mywelfare.ie" },
+  { label: "ISD: IRP Registration", href: "https://www.irishimmigration.ie" },
+  { label: "MyWelfare.ie: PPS Number", href: "https://www.mywelfare.ie" },
   { label: "Student Leap Card", href: "https://www.studentleapcard.ie" },
   { label: "UCD Student Health", href: "https://www.ucd.ie/studenthealth/" },
   { label: "UCD Counselling", href: "https://www.ucd.ie/studentcounselling/" },
-  { label: "RTB — Tenants Rights", href: "https://www.rtb.ie" },
+  { label: "RTB: Tenants Rights", href: "https://www.rtb.ie" },
 ];
 
 const NAV_LINKS = [
@@ -93,7 +93,7 @@ export default function Footer() {
                   lineHeight: 1.6,
                 }}
               >
-                A peer-built platform for UCD international students — finding people, asking questions, and making Dublin feel like home.
+                A peer-built guide for UCD Smurfit FIT students finding their feet in Dublin.
               </p>
             </div>
 
@@ -212,7 +212,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Support numbers */}
+          {/* Mental health helplines */}
           <div>
             <h3
               style={{
@@ -221,11 +221,14 @@ export default function Footer() {
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
                 color: "#9B8EC8",
-                marginBottom: "14px",
+                marginBottom: "6px",
               }}
             >
-              Support lines
+              If you need to talk
             </h3>
+            <p style={{ fontSize: "0.76rem", color: "#9B8EC8", lineHeight: 1.55, marginBottom: "12px" }}>
+              Two free, confidential phone lines open to everyone in Ireland. No referral needed. Completely anonymous.
+            </p>
 
             {/* Niteline card */}
             <div
@@ -250,8 +253,8 @@ export default function Footer() {
               >
                 1800 793 793
               </a>
-              <p style={{ fontSize: "0.72rem", color: "#7B6EA8", marginTop: "3px" }}>
-                Night-time listening service
+              <p style={{ fontSize: "0.72rem", color: "#7B6EA8", marginTop: "3px", lineHeight: 1.4 }}>
+                Student-run listening service. Run by college students, for college students. Open nightly 9pm to 2:30am during term time. Free to call.
               </p>
             </div>
 
@@ -277,8 +280,8 @@ export default function Footer() {
               >
                 116 123
               </a>
-              <p style={{ fontSize: "0.72rem", color: "#7B6EA8", marginTop: "3px" }}>
-                Available 24 hours
+              <p style={{ fontSize: "0.72rem", color: "#7B6EA8", marginTop: "3px", lineHeight: 1.4 }}>
+                Available 24 hours, 365 days a year. Completely confidential. You do not have to be suicidal to call. If something is weighing on you, this is for you.
               </p>
             </div>
           </div>
@@ -301,7 +304,7 @@ export default function Footer() {
               Found an error? Want to be a senior ambassador? Have an idea that could help other students?
             </p>
             <a
-              href="mailto:wellforward.ucd@gmail.com"
+              href="mailto:divyansh.rana@ucdconnect.ie"
               className="btn-primary"
               style={{
                 display: "inline-flex",
@@ -349,7 +352,7 @@ export default function Footer() {
             }}
           >
             <p style={{ fontSize: "0.75rem", color: "#9B8EC8" }}>
-              © {year} Wellforward — UCD Smurfit Academic Project
+              © {year} Wellforward. UCD Smurfit Academic Project
             </p>
             <p style={{ fontSize: "0.75rem", color: "#9B8EC8" }}>
               Last updated: June 2025
@@ -363,7 +366,7 @@ export default function Footer() {
               lineHeight: 1.5,
             }}
           >
-            Not officially affiliated with University College Dublin. Information is provided for guidance only — always verify with official sources.
+            Not officially affiliated with University College Dublin. Information is provided for guidance only. Always verify with official sources.
           </p>
         </div>
       </div>
