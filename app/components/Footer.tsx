@@ -93,7 +93,7 @@ export default function Footer() {
                   lineHeight: 1.6,
                 }}
               >
-                A peer-built guide for UCD Smurfit FIT students finding their feet in Dublin.
+                A peer-built guide for UCD Smurfit students finding their feet in Dublin.
               </p>
             </div>
 

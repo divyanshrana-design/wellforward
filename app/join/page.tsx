@@ -8,7 +8,7 @@ import { Camera, Mail, ArrowRight, Check, RefreshCw } from "lucide-react";
 import { PROGRAMMES, SCHOOLS } from "@/lib/data";
 
 const INTAKE_YEARS = ["2026/27", "2025/26", "2024/25", "2023/24", "2022/23"];
-const isMeetPeople = (y: string) => y === "2026/27" || y === "2025/26";
+const isMeetPeople = (y: string) => y === "2026/27";
 
 const INTERESTS = [
   "Sport", "Music", "Film", "Tech", "Politics", "Art",

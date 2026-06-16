@@ -85,11 +85,24 @@ export default function DublinGame() {
   const [answers, setAnswers]     = useState<(number | null)[]>([]);
   const [showExplain, setShowExplain] = useState(false);
   const [timeLeft, setTimeLeft]   = useState(15);
+  const [hoveredOpt, setHoveredOpt] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const cardRef  = useRef<HTMLDivElement>(null);
 
-  // Shuffle questions on start, pick 6
   const [questions, setQuestions] = useState(QUESTIONS.slice(0, 6));
+
+  // Scroll-reveal for the start card
+  const startCardRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = startCardRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { el.style.opacity = "1"; el.style.transform = "translateY(0)"; obs.disconnect(); } },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   const startGame = () => {
     const shuffled = [...QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 6);
@@ -111,13 +124,14 @@ export default function DublinGame() {
       setTimeLeft(t => {
         if (t <= 1) {
           clearInterval(timerRef.current!);
-          handleAnswer(-1); // timeout
+          handleAnswer(-1);
           return 0;
         }
         return t - 1;
       });
     }, 1000);
     return () => clearInterval(timerRef.current!);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started, current, selected, finished]);
 
   const handleAnswer = (idx: number) => {
@@ -143,9 +157,8 @@ export default function DublinGame() {
   };
 
   const q = questions[current];
-  const level = getLevel(score);
 
-  // Card entrance animation
+  // Card entrance per question
   const [animate, setAnimate] = useState(false);
   useEffect(() => {
     if (started && !finished) {
@@ -155,25 +168,34 @@ export default function DublinGame() {
     }
   }, [current, started, finished]);
 
+  /* ── START SCREEN ── */
   if (!started) {
     return (
       <div
+        ref={startCardRef}
         style={{
           background: "white",
           border: "1px solid #ede8ff",
           borderRadius: 20,
           padding: "clamp(24px,4vw,40px)",
           maxWidth: 500,
+          width: "100%",
           boxShadow: "0 12px 40px -12px rgba(124,92,255,0.18)",
           textAlign: "center",
+          opacity: 0,
+          transform: "translateY(32px)",
+          transition: "opacity 0.6s cubic-bezier(.22,.68,0,1), transform 0.6s cubic-bezier(.22,.68,0,1)",
         }}
       >
+        {/* Animated icon */}
         <div style={{
-          width: 56, height: 56, borderRadius: "50%",
+          width: 60, height: 60, borderRadius: "50%",
           background: "linear-gradient(135deg, #7c5cff, #c8b8ff)",
           display: "flex", alignItems: "center", justifyContent: "center",
           margin: "0 auto 18px",
-          fontSize: "1.5rem",
+          fontSize: "1.6rem",
+          animation: "breathe 3s ease-in-out infinite",
+          boxShadow: "0 8px 24px -8px rgba(124,92,255,0.45)",
         }}>
           🎯
         </div>
@@ -191,21 +213,33 @@ export default function DublinGame() {
           6 quick questions about life in Dublin and UCD. Takes about 90 seconds. Actually useful.
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginBottom: 22 }}>
-          {["IRP", "PPSN", "Transport", "Irish slang", "Banking", "Campus"].map(tag => (
-            <span key={tag} className="chip" style={{ cursor: "default", fontSize: "0.72rem" }}>{tag}</span>
+          {["IRP", "PPSN", "Transport", "Irish slang", "Banking", "Campus"].map((tag, i) => (
+            <span
+              key={tag}
+              className="chip"
+              style={{
+                cursor: "default", fontSize: "0.72rem",
+                opacity: 0,
+                animation: "scaleIn 0.4s ease forwards",
+                animationDelay: `${0.1 + i * 0.07}s`,
+              }}
+            >
+              {tag}
+            </span>
           ))}
         </div>
         <button
           onClick={startGame}
           className="btn-primary"
-          style={{ padding: "12px 32px", fontSize: "0.95rem", borderRadius: 12 }}
+          style={{ padding: "13px 36px", fontSize: "0.95rem", borderRadius: 12 }}
         >
-          Start the quiz
+          Start the quiz ✦
         </button>
       </div>
     );
   }
 
+  /* ── RESULTS SCREEN ── */
   if (finished) {
     const lvl = getLevel(score);
     return (
@@ -216,19 +250,23 @@ export default function DublinGame() {
           borderRadius: 20,
           padding: "clamp(24px,4vw,40px)",
           maxWidth: 500,
+          width: "100%",
           boxShadow: "0 12px 40px -12px rgba(124,92,255,0.18)",
           textAlign: "center",
-          animation: "scaleIn 0.3s ease",
+          animation: "scaleIn 0.35s cubic-bezier(.22,.68,0,1)",
         }}
       >
+        {/* Animated score */}
         <div style={{
           fontFamily: "'Fraunces', Georgia, serif",
-          fontSize: "3.5rem",
+          fontSize: "4rem",
           fontWeight: 900,
           color: lvl.color,
           lineHeight: 1,
           letterSpacing: "-0.04em",
           marginBottom: 6,
+          animation: "scaleIn 0.4s ease",
+          textShadow: `0 4px 20px ${lvl.color}44`,
         }}>
           {score}/{questions.length}
         </div>
@@ -245,23 +283,29 @@ export default function DublinGame() {
           {lvl.advice}
         </p>
 
-        {/* Per-question result dots */}
+        {/* Per-question result dots with stagger */}
         <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 22 }}>
-          {questions.map((q, i) => (
+          {questions.map((qq, i) => (
             <div
               key={i}
-              title={`Q${i+1}: ${answers[i] === q.correct ? "Correct" : "Wrong"}`}
+              title={`Q${i+1}: ${answers[i] === qq.correct ? "Correct" : "Wrong"}`}
               style={{
-                width: 30, height: 30,
+                width: 32, height: 32,
                 borderRadius: "50%",
-                background: answers[i] === q.correct
+                background: answers[i] === qq.correct
                   ? "linear-gradient(135deg, #10b981, #34d399)"
                   : "linear-gradient(135deg, #ef4444, #fb7185)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 color: "white", fontSize: "0.72rem", fontWeight: 700,
+                opacity: 0,
+                animation: "scaleIn 0.35s ease forwards",
+                animationDelay: `${i * 0.08}s`,
+                boxShadow: answers[i] === qq.correct
+                  ? "0 4px 12px -4px rgba(16,185,129,0.5)"
+                  : "0 4px 12px -4px rgba(239,68,68,0.4)",
               }}
             >
-              {answers[i] === q.correct ? "✓" : "✗"}
+              {answers[i] === qq.correct ? "✓" : "✗"}
             </div>
           ))}
         </div>
@@ -282,7 +326,8 @@ export default function DublinGame() {
     );
   }
 
-  const timerPct = (timeLeft / 15) * 100;
+  /* ── QUESTION SCREEN ── */
+  const timerPct   = (timeLeft / 15) * 100;
   const timerColor = timeLeft > 8 ? "#10b981" : timeLeft > 4 ? "#f59e0b" : "#ef4444";
 
   return (
@@ -294,13 +339,14 @@ export default function DublinGame() {
         borderRadius: 20,
         padding: "clamp(20px,4vw,36px)",
         maxWidth: 500,
+        width: "100%",
         boxShadow: "0 12px 40px -12px rgba(124,92,255,0.18)",
         opacity: animate ? 1 : 0,
-        transform: animate ? "translateY(0)" : "translateY(12px)",
-        transition: "opacity 0.35s ease, transform 0.35s ease",
+        transform: animate ? "translateY(0) scale(1)" : "translateY(14px) scale(0.98)",
+        transition: "opacity 0.3s ease, transform 0.3s cubic-bezier(.22,.68,0,1)",
       }}
     >
-      {/* Progress row */}
+      {/* Progress + timer row */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
         <div style={{ display: "flex", gap: 5 }}>
           {questions.map((_, i) => (
@@ -323,21 +369,23 @@ export default function DublinGame() {
           <span style={{ fontSize: "0.72rem", color: "#9b8ec8" }}>
             {current + 1}/{questions.length}
           </span>
+          {/* Conic timer ring */}
           <div style={{
-            width: 32, height: 32,
+            width: 34, height: 34,
             borderRadius: "50%",
             background: `conic-gradient(${timerColor} ${timerPct}%, #ede8ff 0%)`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            position: "relative",
+            transition: "background 0.5s ease",
           }}>
             <div style={{
-              width: 24, height: 24,
+              width: 26, height: 26,
               borderRadius: "50%",
               background: "white",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "0.62rem",
+              fontSize: "0.65rem",
               fontWeight: 700,
               color: timerColor,
+              transition: "color 0.5s ease",
             }}>
               {timeLeft}
             </div>
@@ -345,7 +393,7 @@ export default function DublinGame() {
         </div>
       </div>
 
-      {/* Question */}
+      {/* Question text */}
       <p style={{
         fontFamily: "'Fraunces', Georgia, serif",
         fontSize: "1.05rem",
@@ -364,15 +412,18 @@ export default function DublinGame() {
           const isSelected = selected === i;
           const isCorrect  = i === q.correct;
           const revealed   = selected !== null;
+          const isHovered  = hoveredOpt === i && !revealed;
 
-          let bg = "rgba(245,241,255,0.7)";
-          let border = "1.5px solid #ede8ff";
-          let color = "#2a1d50";
+          let bg     = isHovered ? "rgba(124,92,255,0.06)" : "rgba(245,241,255,0.7)";
+          let border = isHovered ? "1.5px solid rgba(124,92,255,0.4)" : "1.5px solid #ede8ff";
+          let color  = "#2a1d50";
+          let scale  = isHovered ? "scale(1.01)" : "scale(1)";
 
           if (revealed) {
-            if (isCorrect)        { bg = "rgba(16,185,129,0.12)"; border = "1.5px solid rgba(16,185,129,0.4)"; color = "#065f46"; }
-            else if (isSelected)  { bg = "rgba(239,68,68,0.1)";  border = "1.5px solid rgba(239,68,68,0.35)"; color = "#7f1d1d"; }
-            else                  { bg = "rgba(245,241,255,0.4)"; border = "1.5px solid #ede8ff"; color = "#9b8ec8"; }
+            scale = "scale(1)";
+            if (isCorrect)       { bg = "rgba(16,185,129,0.12)";  border = "1.5px solid rgba(16,185,129,0.4)";  color = "#065f46"; }
+            else if (isSelected) { bg = "rgba(239,68,68,0.10)";   border = "1.5px solid rgba(239,68,68,0.35)";  color = "#7f1d1d"; }
+            else                 { bg = "rgba(245,241,255,0.4)";   border = "1.5px solid #ede8ff";              color = "#9b8ec8"; }
           }
 
           return (
@@ -380,6 +431,8 @@ export default function DublinGame() {
               key={i}
               onClick={() => handleAnswer(i)}
               disabled={selected !== null}
+              onMouseEnter={() => setHoveredOpt(i)}
+              onMouseLeave={() => setHoveredOpt(null)}
               style={{
                 background: bg,
                 border,
@@ -390,22 +443,25 @@ export default function DublinGame() {
                 fontSize: "0.85rem",
                 fontFamily: "'Inter', sans-serif",
                 cursor: selected !== null ? "default" : "pointer",
-                transition: "all 0.22s ease",
+                transition: "all 0.18s ease",
                 fontWeight: isCorrect && revealed ? 600 : 500,
                 display: "flex",
                 alignItems: "center",
                 gap: 10,
+                transform: scale,
+                opacity: revealed && !isCorrect && !isSelected ? 0.6 : 1,
               }}
             >
               <span style={{
                 width: 22, height: 22,
                 borderRadius: "50%",
-                background: revealed && isCorrect ? "#10b981" : revealed && isSelected ? "#ef4444" : "#ede8ff",
+                background: revealed && isCorrect ? "#10b981" : revealed && isSelected ? "#ef4444" : isHovered ? "rgba(124,92,255,0.15)" : "#ede8ff",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 flexShrink: 0,
                 fontSize: "0.62rem",
                 fontWeight: 700,
                 color: revealed && (isCorrect || isSelected) ? "white" : "#7c5cff",
+                transition: "all 0.18s ease",
               }}>
                 {revealed
                   ? isCorrect ? "✓" : isSelected ? "✗" : String.fromCharCode(65 + i)
@@ -418,7 +474,7 @@ export default function DublinGame() {
         })}
       </div>
 
-      {/* Explain + next */}
+      {/* Explanation + next */}
       {showExplain && (
         <div style={{ marginTop: 14, animation: "slideUp 0.3s ease" }}>
           <div style={{
@@ -438,7 +494,7 @@ export default function DublinGame() {
             className="btn-primary"
             style={{ width: "100%", padding: "11px", fontSize: "0.88rem", borderRadius: 10 }}
           >
-            {current + 1 >= questions.length ? "See results" : "Next question →"}
+            {current + 1 >= questions.length ? "See results ✦" : "Next question →"}
           </button>
         </div>
       )}

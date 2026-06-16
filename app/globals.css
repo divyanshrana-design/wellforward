@@ -115,112 +115,10 @@ p { line-height: 1.7; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ═══════════════════════════════════════════════
-   ANIMATED BACKGROUND — 5 soft drifting orbs
-   Much less intense than before. Background stays
-   in the background. Cream-tinted, NOT lavender.
+   ANIMATED BACKGROUND — Canvas-based bubble system
+   (MeshBackground.tsx handles the animation;
+   no CSS needed here)
 ═══════════════════════════════════════════════ */
-.orb-field {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.orb {
-  position: absolute;
-  filter: blur(70px);
-  will-change: transform;
-  border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
-}
-
-/* Top-left — warm lilac */
-.orb-1 {
-  width: 48vw; height: 48vw;
-  top: -6vh; left: -10vw;
-  background: radial-gradient(ellipse at 45% 50%, #ddd5ff 0%, #ede8ff 50%, transparent 75%);
-  animation: orbDrift1 22s ease-in-out infinite;
-  opacity: 0.55;
-}
-/* Top-right — blush pink */
-.orb-2 {
-  width: 38vw; height: 42vw;
-  top: 2vh; right: -8vw;
-  background: radial-gradient(ellipse at 55% 40%, #ffd6ee 0%, #fff0f8 55%, transparent 80%);
-  animation: orbDrift2 28s ease-in-out infinite;
-  opacity: 0.45;
-}
-/* Mid — periwinkle blue */
-.orb-3 {
-  width: 50vw; height: 35vw;
-  top: 45vh; left: 20vw;
-  background: radial-gradient(ellipse at 50% 55%, #ccd6ff 0%, #e0e8ff 55%, transparent 80%);
-  animation: orbDrift3 34s ease-in-out infinite;
-  opacity: 0.35;
-}
-/* Bottom-right — soft violet */
-.orb-4 {
-  width: 32vw; height: 38vw;
-  bottom: -5vh; right: -4vw;
-  background: radial-gradient(ellipse at 45% 55%, #c8b8ff 0%, #e5dfff 55%, transparent 80%);
-  animation: orbDrift4 25s ease-in-out infinite;
-  opacity: 0.4;
-}
-/* Bottom-left — sky */
-.orb-5 {
-  width: 24vw; height: 30vw;
-  bottom: 15vh; left: -3vw;
-  background: radial-gradient(ellipse at 55% 45%, #c4e0ff 0%, #ddf0ff 55%, transparent 80%);
-  animation: orbDrift5 30s ease-in-out infinite;
-  opacity: 0.3;
-}
-/* Centre floating — soft violet, slow morph */
-.orb-6 {
-  width: 35vw; height: 35vw;
-  top: 30vh; left: 35vw;
-  background: radial-gradient(ellipse at 50% 50%, rgba(200,184,255,0.6) 0%, rgba(233,226,255,0.3) 45%, transparent 75%);
-  animation: orbDrift3 38s ease-in-out infinite reverse;
-  opacity: 0.22;
-  filter: blur(90px);
-}
-
-/* Drifting + morphing — translate + border-radius for organic flowing feel */
-@keyframes orbDrift1 {
-  0%    { transform: translate(0, 0) scale(1);       border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%; }
-  25%   { transform: translate(4vw, -5vh) scale(1.06); border-radius: 45% 55% 40% 60% / 60% 40% 55% 45%; }
-  55%   { transform: translate(-2vw, 7vh) scale(0.95); border-radius: 55% 45% 60% 40% / 40% 55% 45% 60%; }
-  80%   { transform: translate(2vw, -3vh) scale(1.03); border-radius: 40% 60% 50% 50% / 55% 45% 60% 40%; }
-  100%  { transform: translate(0, 0) scale(1);       border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%; }
-}
-@keyframes orbDrift2 {
-  0%    { transform: translate(0, 0) scale(1);       border-radius: 45% 55% 60% 40% / 55% 45% 50% 50%; }
-  30%   { transform: translate(-6vw, 5vh) scale(1.08); border-radius: 60% 40% 45% 55% / 40% 60% 55% 45%; }
-  60%   { transform: translate(3vw, -8vh) scale(0.92); border-radius: 50% 50% 40% 60% / 60% 40% 50% 50%; }
-  85%   { transform: translate(-3vw, 3vh) scale(1.04); border-radius: 40% 60% 55% 45% / 50% 50% 40% 60%; }
-  100%  { transform: translate(0, 0) scale(1);       border-radius: 45% 55% 60% 40% / 55% 45% 50% 50%; }
-}
-@keyframes orbDrift3 {
-  0%    { transform: translate(0, 0) scale(1);       border-radius: 50% 50% 45% 55% / 60% 40% 50% 50%; }
-  35%   { transform: translate(8vw, -4vh) scale(1.1);  border-radius: 40% 60% 55% 45% / 45% 55% 60% 40%; }
-  65%   { transform: translate(-4vw, 6vh) scale(0.9);  border-radius: 60% 40% 40% 60% / 55% 45% 45% 55%; }
-  100%  { transform: translate(0, 0) scale(1);       border-radius: 50% 50% 45% 55% / 60% 40% 50% 50%; }
-}
-@keyframes orbDrift4 {
-  0%    { transform: translate(0, 0) scale(1);       border-radius: 55% 45% 50% 50% / 45% 55% 50% 50%; }
-  40%   { transform: translate(-6vw, -6vh) scale(1.07); border-radius: 40% 60% 60% 40% / 55% 45% 45% 55%; }
-  70%   { transform: translate(4vw, -3vh) scale(0.96); border-radius: 60% 40% 45% 55% / 40% 60% 55% 45%; }
-  100%  { transform: translate(0, 0) scale(1);       border-radius: 55% 45% 50% 50% / 45% 55% 50% 50%; }
-}
-@keyframes orbDrift5 {
-  0%    { transform: translate(0, 0) scale(1);       border-radius: 50% 50% 60% 40% / 40% 60% 50% 50%; }
-  40%   { transform: translate(6vw, -4vh) scale(1.12); border-radius: 60% 40% 45% 55% / 55% 45% 60% 40%; }
-  75%   { transform: translate(2vw, 8vh) scale(0.88);  border-radius: 45% 55% 55% 45% / 60% 40% 40% 60%; }
-  100%  { transform: translate(0, 0) scale(1);       border-radius: 50% 50% 60% 40% / 40% 60% 50% 50%; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .orb { animation: none !important; }
-}
 
 /* ═══════════════════════════════════════════════
    SPARKLE PARTICLES — CSS only, like PM Éire
@@ -485,6 +383,10 @@ p { line-height: 1.7; }
 /* ═══════════════════════════════════════════════
    ANIMATIONS (keyframes)
 ═══════════════════════════════════════════════ */
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
 @keyframes float {
   0%,100% { transform: translateY(0) rotate(0deg); }
   33%     { transform: translateY(-7px) rotate(1deg); }

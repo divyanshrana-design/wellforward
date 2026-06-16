@@ -1,12 +1,78 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import MeshBackground from "./components/MeshBackground";
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
 import SurvivalSection from "./components/SurvivalSection";
 import DublinGame from "./components/DublinGame";
 import Footer from "./components/Footer";
+
+/* Scroll-reveal hook — reusable */
+function useReveal(threshold = 0.12) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { el.classList.add("visible"); obs.disconnect(); } },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return ref;
+}
+
+/* Quiz left-copy with staggered reveal */
+function QuizCopy() {
+  const ref = useReveal(0.1);
+  const items = ["Takes 90 seconds", "Each answer comes with a real tip", "No sign-in required"];
+  return (
+    <div ref={ref} className="reveal">
+      <span className="eyebrow" style={{ animationDelay: "0ms" }}>Know before you go</span>
+      <h2
+        style={{
+          fontFamily: "'Fraunces', Georgia, serif",
+          fontSize: "clamp(1.8rem,4vw,2.8rem)",
+          fontWeight: 700,
+          color: "#1a0f2e",
+          letterSpacing: "-0.03em",
+          lineHeight: 1.1,
+          marginBottom: 14,
+          marginTop: 10,
+        }}
+      >
+        How well do you{" "}
+        <em className="grad-text" style={{ fontStyle: "italic" }}>know Dublin?</em>
+      </h2>
+      <p style={{ fontSize: "0.95rem", color: "#38285c", lineHeight: 1.7, maxWidth: 400 }}>
+        Six questions on the things that actually matter when you arrive. IRP, transport, Irish slang, and more. Finish the quiz and we will tell you exactly what to do next.
+      </p>
+      <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+        {items.map((item, i) => (
+          <div
+            key={item}
+            style={{
+              display: "flex", alignItems: "center", gap: 10,
+              fontSize: "0.85rem", color: "#6b5a8e",
+              opacity: 0, transform: "translateX(-16px)",
+              animation: "slideInLeft 0.5s cubic-bezier(.22,.68,0,1) forwards",
+              animationDelay: `${0.2 + i * 0.12}s`,
+            }}
+          >
+            <div style={{
+              width: 6, height: 6, borderRadius: "50%",
+              background: "linear-gradient(135deg, #7c5cff, #c8b8ff)",
+              flexShrink: 0,
+            }} />
+            {item}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   useEffect(() => {
@@ -107,6 +173,7 @@ export default function Home() {
 
       {/* Dublin Quiz — interactive game between hero and survival guide */}
       <section
+        id="quiz"
         style={{
           padding: "72px 0",
           background: "linear-gradient(180deg, transparent 0%, rgba(200,184,255,0.08) 50%, transparent 100%)",
@@ -122,46 +189,8 @@ export default function Home() {
             }}
             className="gap-12"
           >
-            {/* Left copy */}
-            <div>
-              <span className="eyebrow">Know before you go</span>
-              <h2
-                style={{
-                  fontFamily: "'Fraunces', Georgia, serif",
-                  fontSize: "clamp(1.8rem,4vw,2.8rem)",
-                  fontWeight: 700,
-                  color: "#1a0f2e",
-                  letterSpacing: "-0.03em",
-                  lineHeight: 1.1,
-                  marginBottom: 14,
-                  marginTop: 10,
-                }}
-              >
-                How well do you{" "}
-                <em className="grad-text" style={{ fontStyle: "italic" }}>
-                  know Dublin?
-                </em>
-              </h2>
-              <p style={{ fontSize: "0.95rem", color: "#38285c", lineHeight: 1.7, maxWidth: 400 }}>
-                Six questions on the things that actually matter when you arrive. IRP, transport, Irish slang, and more. Finish the quiz and we will tell you exactly what to do next.
-              </p>
-              <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 10 }}>
-                {[
-                  "Takes 90 seconds",
-                  "Each answer comes with a real tip",
-                  "No sign-in required",
-                ].map(item => (
-                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: "0.85rem", color: "#6b5a8e" }}>
-                    <div style={{
-                      width: 6, height: 6, borderRadius: "50%",
-                      background: "linear-gradient(135deg, #7c5cff, #c8b8ff)",
-                      flexShrink: 0,
-                    }} />
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Left copy — staggered reveal */}
+            <QuizCopy />
 
             {/* Right — game card */}
             <div className="flex justify-center lg:justify-end">
