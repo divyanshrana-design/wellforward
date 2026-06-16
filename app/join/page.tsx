@@ -7,7 +7,8 @@ import Footer from "../components/Footer";
 import { Camera, Mail, ArrowRight, Check, RefreshCw } from "lucide-react";
 import { PROGRAMMES, SCHOOLS } from "@/lib/data";
 
-const INTAKE_YEARS = ["2025/26", "2024/25", "2023/24", "2022/23"];
+const INTAKE_YEARS = ["2026/27", "2025/26", "2024/25", "2023/24", "2022/23"];
+const isMeetPeople = (y: string) => y === "2026/27" || y === "2025/26";
 
 const INTERESTS = [
   "Sport", "Music", "Film", "Tech", "Politics", "Art",
@@ -266,12 +267,11 @@ export default function JoinPage() {
   };
 
   // Intake-based routing label
-  const intakeLabel =
-    form.intakeYear === "2025/26"
-      ? "You will appear on the Meet People page."
-      : form.intakeYear && form.intakeYear !== ""
-      ? "You will appear on the Ask a Senior page."
-      : null;
+  const intakeLabel = isMeetPeople(form.intakeYear)
+    ? "You will appear on the Meet People page."
+    : form.intakeYear !== ""
+    ? "You will appear on the Ask a Senior page."
+    : null;
 
   const inputStyle: React.CSSProperties = {
     width: "100%", padding: "12px 14px",
@@ -292,7 +292,7 @@ export default function JoinPage() {
 
   /* ── Success screen ── */
   if (step === 4) {
-    const isFresh = form.intakeYear === "2025/26";
+    const isFresh = isMeetPeople(form.intakeYear);
     return (
       <main className="relative min-h-screen">
         <MeshBackground />
@@ -338,7 +338,7 @@ export default function JoinPage() {
               borderRadius: 12, padding: "14px 18px", marginBottom: 24, textAlign: "left",
             }}>
               <p style={{ fontSize: "0.8rem", fontWeight: 700, color: isFresh ? "#5a3ee8" : "#065f46", marginBottom: 4 }}>
-                {isFresh ? "2025/26 intake" : "Alumni / Senior"}
+                {isFresh ? `${form.intakeYear} intake` : "Alumni / Senior"}
               </p>
               <p style={{ fontSize: "0.85rem", color: "#38285c", lineHeight: 1.6 }}>
                 {isFresh
@@ -523,11 +523,12 @@ export default function JoinPage() {
                 {/* Intake routing hint */}
                 {intakeLabel && (
                   <div style={{
-                    background: form.intakeYear === "2025/26" ? "rgba(124,92,255,0.07)" : "rgba(16,185,129,0.07)",
-                    border: `1px solid ${form.intakeYear === "2025/26" ? "rgba(124,92,255,0.2)" : "rgba(16,185,129,0.2)"}`,
+                    background: isMeetPeople(form.intakeYear) ? "rgba(124,92,255,0.07)" : "rgba(16,185,129,0.07)",
+                    border: `1px solid ${isMeetPeople(form.intakeYear) ? "rgba(124,92,255,0.2)" : "rgba(16,185,129,0.2)"}`,
+
                     borderRadius: 10, padding: "10px 14px",
                     fontSize: "0.78rem",
-                    color: form.intakeYear === "2025/26" ? "#5a3ee8" : "#065f46",
+                    color: isMeetPeople(form.intakeYear) ? "#5a3ee8" : "#065f46",
                     display: "flex", alignItems: "center", gap: 7,
                   }}>
                     <ArrowRight size={13} />
