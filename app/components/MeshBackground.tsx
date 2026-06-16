@@ -1,7 +1,7 @@
 "use client";
 
-// Seven morphing orbs — different sizes, speeds, paths, colors
-// They breathe and drift like real ambient light, not computer-generated circles
+// Five soft, slow-drifting orbs — cream/lavender palette
+// Background stays quiet — it supports the content, doesn't compete
 export default function MeshBackground() {
   return (
     <div className="orb-field" aria-hidden="true">
@@ -10,8 +10,6 @@ export default function MeshBackground() {
       <div className="orb orb-3" />
       <div className="orb orb-4" />
       <div className="orb orb-5" />
-      <div className="orb orb-6" />
-      <div className="orb orb-7" />
     </div>
   );
 }

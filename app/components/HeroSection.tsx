@@ -10,41 +10,18 @@ interface Props {
   onBrowseGuide: () => void;
 }
 
-// Small floating label that appears at different positions — hand-placed feel
-function FloatingNote({
-  text, style, delay = 0,
-}: { text: string; style: React.CSSProperties; delay?: number }) {
-  const [vis, setVis] = useState(false);
-  useEffect(() => { const t = setTimeout(() => setVis(true), delay); return () => clearTimeout(t); }, [delay]);
+// Sparkle particle — CSS-animated dot
+function Sparkle({ style }: { style: React.CSSProperties }) {
   return (
     <div
       aria-hidden="true"
-      style={{
-        position: "absolute",
-        ...style,
-        opacity:   vis ? 1 : 0,
-        transform: vis ? "translateY(0) rotate(-1.5deg)" : "translateY(12px) rotate(-1.5deg)",
-        transition: "opacity 0.7s ease, transform 0.7s ease",
-        background: "rgba(255,255,255,0.72)",
-        backdropFilter: "blur(12px)",
-        border: "1px solid rgba(255,255,255,0.6)",
-        borderRadius: 10,
-        padding: "6px 12px",
-        fontSize: "0.72rem",
-        fontWeight: 500,
-        color: "#5a3ee8",
-        whiteSpace: "nowrap",
-        boxShadow: "0 4px 16px -4px rgba(124,92,255,0.18)",
-        pointerEvents: "none",
-        zIndex: 5,
-      }}
-    >
-      {text}
-    </div>
+      className="sparkle"
+      style={style}
+    />
   );
 }
 
-// Animated number counter
+// Animated number counter triggered by IntersectionObserver
 function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const [val, setVal] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
@@ -52,8 +29,8 @@ function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
     const obs = new IntersectionObserver(([e]) => {
       if (!e.isIntersecting) return;
       obs.disconnect();
-      let start = 0;
       const duration = 1400;
+      const start = performance.now();
       const step = (ts: number, startTs?: number) => {
         if (!startTs) startTs = ts;
         const p = Math.min((ts - startTs) / duration, 1);
@@ -70,204 +47,317 @@ function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
   return <span ref={ref}>{val.toLocaleString()}{suffix}</span>;
 }
 
-export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
-  const h1Ref   = useRef<HTMLHeadingElement>(null);
-  const subRef  = useRef<HTMLParagraphElement>(null);
-  const ctaRef  = useRef<HTMLDivElement>(null);
-  const badgeRef = useRef<HTMLDivElement>(null);
+// Mini checklist card — "show don't tell"
+function ChecklistPreview() {
+  const items = [
+    { done: true,  text: "Book IRP appointment",   note: "do this before you land" },
+    { done: true,  text: "Get a Leap card",          note: "airport or newsagent" },
+    { done: false, text: "Apply for PPSN",           note: "needed for work & tax" },
+    { done: false, text: "Open AIB account",         note: "fully online, ~1 week" },
+    { done: false, text: "Get a SIM (try 48)",       note: "€12/mo unlimited 5G" },
+  ];
 
+  return (
+    <div
+      style={{
+        background: "white",
+        border: "1px solid #ede8ff",
+        borderRadius: 20,
+        padding: "22px 24px",
+        boxShadow: "0 20px 60px -20px rgba(92,60,220,0.18), 0 4px 12px -4px rgba(92,60,220,0.08)",
+        width: "100%",
+        maxWidth: 320,
+        transform: "rotate(1.5deg)",
+        position: "relative",
+      }}
+    >
+      {/* Card header */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+        <span style={{ fontSize: "1rem" }}>📋</span>
+        <span style={{
+          fontFamily: "'Fraunces', Georgia, serif",
+          fontWeight: 700,
+          fontSize: "0.95rem",
+          color: "#1a0f2e",
+          letterSpacing: "-0.01em",
+        }}>
+          Your first week
+        </span>
+        <span style={{
+          marginLeft: "auto",
+          fontSize: "0.65rem",
+          fontWeight: 600,
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: "#7c5cff",
+          background: "rgba(124,92,255,0.1)",
+          padding: "2px 8px",
+          borderRadius: 999,
+        }}>
+          Dublin
+        </span>
+      </div>
+
+      {/* Checklist items */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {items.map((item, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            {/* Checkbox */}
+            <div style={{
+              width: 18, height: 18,
+              borderRadius: 5,
+              border: item.done ? "none" : "1.5px solid rgba(124,92,255,0.35)",
+              background: item.done ? "#7c5cff" : "white",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+              marginTop: 1,
+              transition: "all 0.2s ease",
+            }}>
+              {item.done && (
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                  <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+            </div>
+            {/* Text */}
+            <div>
+              <div style={{
+                fontSize: "0.82rem",
+                fontWeight: 600,
+                color: item.done ? "#9b8ec8" : "#1a0f2e",
+                textDecoration: item.done ? "line-through" : "none",
+                lineHeight: 1.3,
+              }}>
+                {item.text}
+              </div>
+              <div style={{ fontSize: "0.68rem", color: "#9b8ec8", marginTop: 1 }}>
+                {item.note}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ marginTop: 16, height: 3, background: "#ede8ff", borderRadius: 2 }}>
+        <div style={{
+          height: "100%",
+          width: "40%",
+          background: "linear-gradient(90deg, #7c5cff, #c8b8ff)",
+          borderRadius: 2,
+        }} />
+      </div>
+      <div style={{ marginTop: 5, fontSize: "0.65rem", color: "#9b8ec8" }}>
+        2 of 5 done — keep going ✦
+      </div>
+    </div>
+  );
+}
+
+export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
+  const copyRef  = useRef<HTMLDivElement>(null);
+  const cardRef  = useRef<HTMLDivElement>(null);
+
+  // Entrance animation — stagger the left copy
   useEffect(() => {
-    const pairs: [React.RefObject<HTMLElement>, number][] = [
-      [badgeRef, 100],
-      [h1Ref,   280],
-      [subRef,  480],
-      [ctaRef,  640],
-    ];
-    pairs.forEach(([ref, delay]) => {
-      const el = ref.current;
-      if (!el) return;
+    const els = copyRef.current?.querySelectorAll<HTMLElement>("[data-enter]");
+    els?.forEach((el, i) => {
       el.style.opacity = "0";
-      el.style.transform = "translateY(32px)";
+      el.style.transform = "translateY(28px)";
       setTimeout(() => {
-        el.style.transition = "opacity 0.85s cubic-bezier(.22,.68,0,1), transform 0.85s cubic-bezier(.22,.68,0,1)";
+        el.style.transition = "opacity 0.8s cubic-bezier(.22,.68,0,1), transform 0.8s cubic-bezier(.22,.68,0,1)";
         el.style.opacity = "1";
         el.style.transform = "translateY(0)";
-      }, delay);
+      }, 120 + i * 160);
     });
+
+    // Card comes in from right
+    const card = cardRef.current;
+    if (card) {
+      card.style.opacity = "0";
+      card.style.transform = "translateX(30px) rotate(1.5deg)";
+      setTimeout(() => {
+        card.style.transition = "opacity 0.9s cubic-bezier(.22,.68,0,1), transform 0.9s cubic-bezier(.22,.68,0,1)";
+        card.style.opacity = "1";
+        card.style.transform = "translateX(0) rotate(1.5deg)";
+      }, 600);
+    }
   }, []);
+
+  // Sparkle positions — deliberately irregular, hand-placed feel
+  const sparkles: React.CSSProperties[] = [
+    { top: "12%",  left: "8%",   width: 4, height: 4, "--dur": "3.2s", "--delay": "0s",    "--max-opacity": "0.4" } as React.CSSProperties,
+    { top: "8%",   left: "42%",  width: 3, height: 3, "--dur": "4.5s", "--delay": "0.8s",  "--max-opacity": "0.3" } as React.CSSProperties,
+    { top: "22%",  right: "12%", width: 5, height: 5, "--dur": "3.8s", "--delay": "1.2s",  "--max-opacity": "0.25" } as React.CSSProperties,
+    { top: "35%",  left: "3%",   width: 3, height: 3, "--dur": "5s",   "--delay": "0.4s",  "--max-opacity": "0.35" } as React.CSSProperties,
+    { top: "55%",  right: "6%",  width: 4, height: 4, "--dur": "4s",   "--delay": "2s",    "--max-opacity": "0.3" } as React.CSSProperties,
+    { top: "65%",  left: "18%",  width: 3, height: 3, "--dur": "6s",   "--delay": "0.6s",  "--max-opacity": "0.28" } as React.CSSProperties,
+    { top: "78%",  right: "22%", width: 4, height: 4, "--dur": "3.5s", "--delay": "1.8s",  "--max-opacity": "0.32" } as React.CSSProperties,
+    { top: "18%",  left: "58%",  width: 3, height: 3, "--dur": "4.8s", "--delay": "2.4s",  "--max-opacity": "0.22" } as React.CSSProperties,
+    { top: "42%",  right: "30%", width: 5, height: 5, "--dur": "5.5s", "--delay": "1s",    "--max-opacity": "0.2"  } as React.CSSProperties,
+    { top: "88%",  left: "6%",   width: 3, height: 3, "--dur": "4.2s", "--delay": "3s",    "--max-opacity": "0.3"  } as React.CSSProperties,
+  ];
 
   return (
     <section
-      className="relative flex flex-col overflow-hidden"
-      style={{ minHeight: "100svh", paddingTop: 62 }}
+      className="relative overflow-hidden"
+      style={{ minHeight: "100svh", paddingTop: 62, display: "flex", flexDirection: "column" }}
     >
-      {/* Interactive burst canvas */}
+      {/* Canvas cursor-burst layer */}
       <div className="absolute inset-0 z-10 pointer-events-none">
         <HeroCanvas />
       </div>
 
-      {/* Main content — intentionally off-centre vertically */}
+      {/* Sparkle particles — scattered over full hero */}
+      <div className="sparkles absolute inset-0 z-10 pointer-events-none">
+        {sparkles.map((s, i) => <Sparkle key={i} style={s} />)}
+      </div>
+
+      {/* Main grid — left copy + right card */}
       <div
-        className="relative z-20 flex flex-col justify-center flex-1 max-w-5xl mx-auto w-full px-5 sm:px-10"
-        style={{ paddingBottom: "7vh" }}
+        className="relative z-20 flex-1 flex items-center"
+        style={{ padding: "6vh 0 4vh" }}
       >
-        {/* Floating sticky-note labels — gives "student made" feel */}
-        <FloatingNote
-          text="🇮🇪 dublin-based"
-          style={{ top: "6vh", right: "8vw" }}
-          delay={900}
-        />
-        <FloatingNote
-          text="✦ free forever"
-          style={{ top: "18vh", right: "3vw" }}
-          delay={1100}
-        />
-        <FloatingNote
-          text="🎓 ucdconnect.ie only"
-          style={{ bottom: "18vh", right: "10vw" }}
-          delay={1300}
-        />
+        <div
+          className="max-w-6xl mx-auto w-full px-5 sm:px-10"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "clamp(1fr, 55%, 1.15fr) 1fr",
+            gap: "clamp(32px, 5vw, 72px)",
+            alignItems: "center",
+          }}
+        >
+          {/* ─── LEFT: Copy ─── */}
+          <div ref={copyRef}>
+            {/* Eyebrow */}
+            <div data-enter style={{ marginBottom: 16 }}>
+              <span className="eyebrow">
+                For UCD international students
+              </span>
+            </div>
 
-        {/* Label */}
-        <div ref={badgeRef as React.RefObject<HTMLDivElement>} className="mb-5">
-          <span className="section-label">
-            <span
+            {/* Headline — Fraunces, heavy weight, italic accent */}
+            <h1
+              data-enter
               style={{
-                width: 6, height: 6, borderRadius: "50%",
-                background: "#7c5cff",
-                display: "inline-block",
-                animation: "pulse 2.2s ease-in-out infinite",
+                fontSize: "clamp(2.6rem, 6.5vw, 5.2rem)",
+                lineHeight: 1.02,
+                color: "#1a0f2e",
+                letterSpacing: "-0.035em",
+                fontWeight: 900,
+                marginBottom: 20,
+                maxWidth: 640,
               }}
-            />
-            Built by UCD Smurfit students, for everyone at UCD
-          </span>
-        </div>
+            >
+              Made it to Dublin.{" "}
+              <em
+                className="grad-text"
+                style={{ fontStyle: "italic", fontWeight: 900 }}
+              >
+                Now what?
+              </em>
+            </h1>
 
-        {/* Headline — big, editorial, broken into two lines deliberately */}
-        <h1
-          ref={h1Ref}
-          className="serif mb-6"
-          style={{
-            fontSize: "clamp(2.8rem, 7.5vw, 6rem)",
-            lineHeight: 1.03,
-            color: "#1c1430",
-            letterSpacing: "-0.03em",
-            maxWidth: 720,
-          }}
-        >
-          You&apos;re not the only{" "}
-          <br className="hidden sm:block" />
-          one{" "}
-          <em
-            className="grad-text"
-            style={{ fontStyle: "italic", letterSpacing: "-0.02em" }}
-          >
-            figuring it out.
-          </em>
-        </h1>
+            {/* Squiggle */}
+            <div className="squiggle-divider" aria-hidden="true" />
 
-        {/* Squiggle — human touch */}
-        <div className="squiggle-divider mb-5" aria-hidden="true" />
+            {/* Sub — conversational, specific */}
+            <p
+              data-enter
+              style={{
+                maxWidth: 480,
+                fontSize: "1.05rem",
+                lineHeight: 1.7,
+                color: "#38285c",
+                marginBottom: "2rem",
+                marginTop: 4,
+              }}
+            >
+              A guide built by a UCD student who figured it out the hard way —
+              IRP appointments, PPSN, bank accounts, Leap cards, and finding
+              people who actually get it.{" "}
+              <span style={{ color: "#7c5cff", fontWeight: 600 }}>
+                So you don&apos;t have to.
+              </span>
+            </p>
 
-        {/* Sub — conversational, not marketing copy */}
-        <p
-          ref={subRef}
-          style={{
-            maxWidth: 520,
-            fontSize: "1.05rem",
-            lineHeight: 1.68,
-            color: "#3d2f60",
-            marginBottom: "2rem",
-          }}
-        >
-          A home for UCD&apos;s international students. Find friends, ask seniors
-          who&apos;ve done it, and survive your first month in Dublin.{" "}
-          <span style={{ color: "#7c5cff", fontWeight: 500 }}>Built by students who&apos;ve been there.</span>
-        </p>
+            {/* CTAs */}
+            <div
+              data-enter
+              style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center", marginBottom: 12 }}
+            >
+              <button
+                onClick={onMakeFriend}
+                className="btn-primary"
+                style={{ padding: "13px 26px", fontSize: "0.95rem", borderRadius: 12 }}
+              >
+                Find your people ✦
+              </button>
+              <button
+                onClick={onBrowseGuide}
+                className="btn-ghost"
+                style={{ padding: "12px 22px", fontSize: "0.95rem", borderRadius: 12 }}
+              >
+                Survival guide →
+              </button>
+            </div>
 
-        {/* CTAs — different shapes, not a matched pair */}
-        <div ref={ctaRef} className="flex flex-wrap gap-3 items-center">
-          <button
-            onClick={onMakeFriend}
-            className="btn-primary px-7 py-3.5 text-base"
-            style={{ borderRadius: 12 }}
+            {/* Tiny footnote */}
+            <p data-enter style={{ fontSize: "0.75rem", color: "#9b8ec8", marginTop: 4 }}>
+              @ucdconnect.ie · completely free · no sign-up spam
+            </p>
+          </div>
+
+          {/* ─── RIGHT: Checklist preview card ─── */}
+          <div
+            ref={cardRef}
+            className="hidden md:flex justify-center items-center"
           >
-            Make a Friend ✦
-          </button>
-          <button
-            onClick={onBrowseGuide}
-            className="btn-secondary px-6 py-3.5 text-base"
-            style={{ borderRadius: 12 }}
-          >
-            Browse the guide
-          </button>
-          {/* Footnote inline with CTAs — not below */}
-          <span
-            style={{
-              fontSize: "0.78rem",
-              color: "#9b8ec8",
-              marginLeft: 4,
-            }}
-          >
-            @ucdconnect.ie · free
-          </span>
+            <ChecklistPreview />
+          </div>
         </div>
       </div>
 
-      {/* Stat strip — sits at the bottom of the viewport */}
+      {/* ─── Stat strip — bottom of viewport ─── */}
       <div
         className="relative z-20 w-full"
         style={{
-          background: "rgba(255,255,255,0.45)",
-          backdropFilter: "blur(16px)",
+          background: "rgba(255,255,255,0.78)",
           borderTop: "1px solid rgba(200,184,255,0.3)",
         }}
       >
-        <div className="max-w-5xl mx-auto px-5 sm:px-10 py-5 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div
+          className="max-w-6xl mx-auto px-5 sm:px-10 py-5"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 16,
+          }}
+        >
           {[
-            { n: 8000, suffix: "+", label: "international students at UCD" },
-            { n: 120,  suffix: "+", label: "countries represented" },
-            { n: 30,   suffix: " days", label: "covered in our guide" },
-            { n: 0,    suffix: "€",  label: "it costs you" },
+            { n: 8000,  suffix: "+",  label: "international students at UCD" },
+            { n: 120,   suffix: "+",  label: "countries represented on campus" },
+            { n: 4,     suffix: " things", label: "nobody tells you when you arrive" },
           ].map(s => (
-            <div key={s.label} className="text-center">
+            <div key={s.label} style={{ textAlign: "center" }}>
               <div
-                className="serif grad-text"
-                style={{ fontSize: "1.9rem", lineHeight: 1.05 }}
+                className="grad-text"
+                style={{
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontSize: "clamp(1.6rem, 3.5vw, 2.1rem)",
+                  fontWeight: 900,
+                  lineHeight: 1.05,
+                  letterSpacing: "-0.03em",
+                }}
               >
                 <Counter target={s.n} suffix={s.suffix} />
               </div>
-              <div style={{ fontSize: "0.72rem", color: "#6b5a8e", marginTop: 3, lineHeight: 1.4 }}>
+              <div style={{ fontSize: "0.72rem", color: "#6b5a8e", marginTop: 4, lineHeight: 1.4 }}>
                 {s.label}
               </div>
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Scroll nudge */}
-      <div
-        className="absolute bottom-[72px] left-1/2 z-20"
-        style={{
-          transform: "translateX(-50%)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 4,
-          color: "#9b8ec8",
-          opacity: 0.55,
-          animation: "floatSlow 2.5s ease-in-out infinite",
-        }}
-        aria-hidden="true"
-      >
-        <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
-          <rect x="1" y="1" width="14" height="22" rx="7" stroke="currentColor" strokeWidth="1.5"/>
-          <rect
-            x="6.5" y="4" width="3" height="6" rx="1.5"
-            fill="currentColor"
-            style={{ animation: "floatSlow 1.8s ease-in-out infinite" }}
-          />
-        </svg>
       </div>
     </section>
   );
