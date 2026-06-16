@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import MeshBackground from "./components/MeshBackground";
-import Navbar from "./components/Navbar";
-import HeroSection from "./components/HeroSection";
-import SurvivalSection from "./components/SurvivalSection";
-import Footer from "./components/Footer";
+import MeshBackground from "../components/MeshBackground";
+import Navbar from "../components/Navbar";
+import ChecklistSection from "../components/ChecklistSection";
+import GlossarySection from "../components/GlossarySection";
+import CampusSection from "../components/CampusSection";
+import Footer from "../components/Footer";
 
-export default function Home() {
+export default function First30DaysPage() {
   useEffect(() => {
-    // Cursor glow
     const glow = document.createElement("div");
     glow.className = "cursor-glow";
     document.body.appendChild(glow);
@@ -33,22 +33,9 @@ export default function Home() {
       glow.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
       if (Math.abs(tx - cx) > 0.5 || Math.abs(ty - cy) > 0.5) {
         requestAnimationFrame(animGlow);
-      } else {
-        raf = false;
-      }
+      } else { raf = false; }
     }
 
-    // Scroll progress bar
-    function updateProgress() {
-      const bar = document.getElementById("scroll-progress-bar");
-      if (!bar) return;
-      const h = document.documentElement.scrollHeight - window.innerHeight;
-      const pct = h > 0 ? (window.scrollY / h) * 100 : 0;
-      bar.style.width = pct + "%";
-    }
-    window.addEventListener("scroll", updateProgress, { passive: true });
-
-    // Button ripple
     function addRipple(e: PointerEvent) {
       const btn = (e.target as HTMLElement).closest(".btn-primary, .btn-ghost, .btn-secondary") as HTMLElement | null;
       if (!btn) return;
@@ -64,10 +51,8 @@ export default function Home() {
     }
     document.addEventListener("pointerdown", addRipple);
 
-    // 3D card tilt
-    const tiltTargets = ".survival-card, .card";
-    function bindTilt() {
-      document.querySelectorAll<HTMLElement>(tiltTargets).forEach(card => {
+    setTimeout(() => {
+      document.querySelectorAll<HTMLElement>(".survival-card, .card").forEach(card => {
         card.addEventListener("pointermove", e => {
           const rect = card.getBoundingClientRect();
           const x = (e.clientX - rect.left) / rect.width;
@@ -80,30 +65,23 @@ export default function Home() {
           card.style.transform = "";
         });
       });
-    }
-    setTimeout(bindTilt, 800);
+    }, 800);
 
     return () => {
       document.body.removeChild(glow);
-      window.removeEventListener("scroll", updateProgress);
       document.removeEventListener("pointerdown", addRipple);
     };
   }, []);
-
-  const scrollTo = (id: string) => {
-    const el = document.querySelector(id);
-    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
-  };
 
   return (
     <main className="relative min-h-screen">
       <MeshBackground />
       <Navbar />
-      <HeroSection
-        onMakeFriend={() => scrollTo("#survival")}
-        onBrowseGuide={() => scrollTo("#survival")}
-      />
-      <SurvivalSection />
+      <div style={{ paddingTop: 64 }}>
+        <ChecklistSection />
+        <GlossarySection />
+        <CampusSection />
+      </div>
       <Footer />
     </main>
   );

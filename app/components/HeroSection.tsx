@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 const HeroCanvas = dynamic(() => import("./HeroCanvas"), { ssr: false });
@@ -62,22 +63,21 @@ function ChecklistPreview() {
       style={{
         background: "white",
         border: "1px solid #ede8ff",
-        borderRadius: 20,
-        padding: "22px 24px",
+        borderRadius: 16,
+        padding: "16px 18px",
         boxShadow: "0 20px 60px -20px rgba(92,60,220,0.18), 0 4px 12px -4px rgba(92,60,220,0.08)",
         width: "100%",
-        maxWidth: 320,
+        maxWidth: 224,
         transform: "rotate(1.5deg)",
         position: "relative",
       }}
     >
       {/* Card header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-        <span style={{ fontSize: "1rem" }}>📋</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <span style={{
           fontFamily: "'Fraunces', Georgia, serif",
           fontWeight: 700,
-          fontSize: "0.95rem",
+          fontSize: "0.82rem",
           color: "#1a0f2e",
           letterSpacing: "-0.01em",
         }}>
@@ -85,13 +85,13 @@ function ChecklistPreview() {
         </span>
         <span style={{
           marginLeft: "auto",
-          fontSize: "0.65rem",
+          fontSize: "0.6rem",
           fontWeight: 600,
           letterSpacing: "0.08em",
           textTransform: "uppercase",
           color: "#7c5cff",
           background: "rgba(124,92,255,0.1)",
-          padding: "2px 8px",
+          padding: "2px 7px",
           borderRadius: 999,
         }}>
           Dublin
@@ -99,13 +99,13 @@ function ChecklistPreview() {
       </div>
 
       {/* Checklist items */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
         {items.map((item, i) => (
           <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
             {/* Checkbox */}
             <div style={{
-              width: 18, height: 18,
-              borderRadius: 5,
+              width: 15, height: 15,
+              borderRadius: 4,
               border: item.done ? "none" : "1.5px solid rgba(124,92,255,0.35)",
               background: item.done ? "#7c5cff" : "white",
               display: "flex", alignItems: "center", justifyContent: "center",
@@ -114,7 +114,7 @@ function ChecklistPreview() {
               transition: "all 0.2s ease",
             }}>
               {item.done && (
-                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                <svg width="8" height="7" viewBox="0 0 10 8" fill="none">
                   <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               )}
@@ -122,7 +122,7 @@ function ChecklistPreview() {
             {/* Text */}
             <div>
               <div style={{
-                fontSize: "0.82rem",
+                fontSize: "0.71rem",
                 fontWeight: 600,
                 color: item.done ? "#9b8ec8" : "#1a0f2e",
                 textDecoration: item.done ? "line-through" : "none",
@@ -130,7 +130,7 @@ function ChecklistPreview() {
               }}>
                 {item.text}
               </div>
-              <div style={{ fontSize: "0.68rem", color: "#9b8ec8", marginTop: 1 }}>
+              <div style={{ fontSize: "0.6rem", color: "#9b8ec8", marginTop: 1 }}>
                 {item.note}
               </div>
             </div>
@@ -139,7 +139,7 @@ function ChecklistPreview() {
       </div>
 
       {/* Progress bar */}
-      <div style={{ marginTop: 16, height: 3, background: "#ede8ff", borderRadius: 2 }}>
+      <div style={{ marginTop: 12, height: 3, background: "#ede8ff", borderRadius: 2 }}>
         <div style={{
           height: "100%",
           width: "40%",
@@ -147,7 +147,7 @@ function ChecklistPreview() {
           borderRadius: 2,
         }} />
       </div>
-      <div style={{ marginTop: 5, fontSize: "0.65rem", color: "#9b8ec8" }}>
+      <div style={{ marginTop: 4, fontSize: "0.58rem", color: "#9b8ec8" }}>
         2 of 5 done — keep going ✦
       </div>
     </div>
@@ -222,8 +222,8 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
           className="max-w-6xl mx-auto w-full px-5 sm:px-10"
           style={{
             display: "grid",
-            gridTemplateColumns: "clamp(1fr, 55%, 1.15fr) 1fr",
-            gap: "clamp(32px, 5vw, 72px)",
+            gridTemplateColumns: "1fr auto",
+            gap: "clamp(32px, 5vw, 64px)",
             alignItems: "center",
           }}
         >
@@ -286,13 +286,13 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
               data-enter
               style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center", marginBottom: 12 }}
             >
-              <button
-                onClick={onMakeFriend}
+              <Link
+                href="/meet-people"
                 className="btn-primary"
-                style={{ padding: "13px 26px", fontSize: "0.95rem", borderRadius: 12 }}
+                style={{ padding: "13px 26px", fontSize: "0.95rem", borderRadius: 12, textDecoration: "none", display: "inline-block" }}
               >
                 Find your people ✦
-              </button>
+              </Link>
               <button
                 onClick={onBrowseGuide}
                 className="btn-ghost"
@@ -311,7 +311,8 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
           {/* ─── RIGHT: Checklist preview card ─── */}
           <div
             ref={cardRef}
-            className="hidden md:flex justify-center items-center"
+            className="hidden md:flex justify-end items-center"
+            style={{ alignSelf: "center" }}
           >
             <ChecklistPreview />
           </div>

@@ -1,18 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
-  { label: "Meet people",   href: "#make-a-friend" },
-  { label: "Ask a senior",  href: "#ask-a-senior"  },
-  { label: "First 30 days", href: "#checklist"     },
-  { label: "Voices",        href: "#voices"        },
+  { label: "Meet people",   href: "/meet-people"   },
+  { label: "Ask a senior",  href: "/ask-a-senior"  },
+  { label: "First 30 days", href: "/first-30-days" },
+  { label: "Voices",        href: "/voices"        },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen]         = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 24);
@@ -20,15 +23,10 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  const go = (href: string) => {
-    setOpen(false);
-    const el = document.querySelector(href);
-    if (!el) return;
-    window.scrollTo({
-      top: el.getBoundingClientRect().top + window.scrollY - 72,
-      behavior: "smooth",
-    });
-  };
+  // Close mobile menu on route change
+  useEffect(() => { setOpen(false); }, [pathname]);
+
+  const isActive = (href: string) => pathname === href;
 
   return (
     <header
@@ -59,11 +57,11 @@ export default function Navbar() {
 
       <nav className="max-w-6xl mx-auto px-5 sm:px-8 h-[64px] flex items-center justify-between">
 
-        {/* Wordmark — Fraunces italic serif + normal, like PM Éire */}
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          aria-label="Wellforward — scroll to top"
-          style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+        {/* Wordmark — links back to home */}
+        <Link
+          href="/"
+          aria-label="Wellforward — home"
+          style={{ textDecoration: "none" }}
         >
           <span
             style={{
@@ -80,42 +78,54 @@ export default function Navbar() {
             <em style={{ fontStyle: "italic", color: "#1a0f2e" }}>Well</em>
             <span style={{ color: "#7c5cff", fontStyle: "normal" }}>forward</span>
           </span>
-        </button>
+        </Link>
 
         {/* Desktop nav links */}
         <div className="hidden md:flex items-center gap-1">
           {NAV_LINKS.map(l => (
-            <button
+            <Link
               key={l.href}
-              onClick={() => go(l.href)}
+              href={l.href}
               className="nav-link"
               style={{
-                border: "none",
-                background: "none",
-                cursor: "pointer",
+                textDecoration: "none",
                 padding: "8px 14px",
                 borderRadius: 8,
                 fontFamily: "'Inter', sans-serif",
                 fontSize: "0.875rem",
-                fontWeight: 500,
-                color: "#38285c",
+                fontWeight: isActive(l.href) ? 600 : 500,
+                color: isActive(l.href) ? "#7c5cff" : "#38285c",
+                background: isActive(l.href) ? "rgba(124,92,255,0.08)" : "none",
                 transition: "background 0.15s, color 0.15s",
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(124,92,255,0.06)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "none"; }}
+              onMouseEnter={e => {
+                if (!isActive(l.href))
+                  (e.currentTarget as HTMLAnchorElement).style.background = "rgba(124,92,255,0.06)";
+              }}
+              onMouseLeave={e => {
+                if (!isActive(l.href))
+                  (e.currentTarget as HTMLAnchorElement).style.background = "none";
+              }}
             >
               {l.label}
-            </button>
+            </Link>
           ))}
 
           {/* CTA — Join */}
-          <button
-            onClick={() => go("#make-a-friend")}
+          <Link
+            href="/join"
             className="btn-primary"
-            style={{ marginLeft: 12, padding: "9px 20px", fontSize: "0.875rem", borderRadius: 10 }}
+            style={{
+              marginLeft: 12,
+              padding: "9px 20px",
+              fontSize: "0.875rem",
+              borderRadius: 10,
+              textDecoration: "none",
+              display: "inline-block",
+            }}
           >
             Join free
-          </button>
+          </Link>
         </div>
 
         {/* Mobile burger */}
@@ -149,32 +159,39 @@ export default function Navbar() {
         >
           <div className="max-w-6xl mx-auto px-5 py-4 flex flex-col gap-1">
             {NAV_LINKS.map(l => (
-              <button
+              <Link
                 key={l.href}
-                onClick={() => go(l.href)}
+                href={l.href}
                 style={{
                   textAlign: "left",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
+                  display: "block",
+                  textDecoration: "none",
                   padding: "12px 16px",
                   borderRadius: 10,
                   fontFamily: "'Inter', sans-serif",
                   fontSize: "0.95rem",
-                  fontWeight: 500,
-                  color: "#38285c",
+                  fontWeight: isActive(l.href) ? 600 : 500,
+                  color: isActive(l.href) ? "#7c5cff" : "#38285c",
+                  background: isActive(l.href) ? "rgba(124,92,255,0.08)" : "none",
                 }}
               >
                 {l.label}
-              </button>
+              </Link>
             ))}
-            <button
-              onClick={() => go("#make-a-friend")}
+            <Link
+              href="/join"
               className="btn-primary"
-              style={{ marginTop: 8, padding: "12px 16px", fontSize: "0.9rem", textAlign: "center" }}
+              style={{
+                marginTop: 8,
+                padding: "12px 16px",
+                fontSize: "0.9rem",
+                textAlign: "center",
+                textDecoration: "none",
+                display: "block",
+              }}
             >
-              Join the community
-            </button>
+              Join free ✦
+            </Link>
           </div>
         </div>
       )}

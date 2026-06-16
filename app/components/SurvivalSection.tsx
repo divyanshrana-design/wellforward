@@ -25,7 +25,6 @@ function useReveal() {
 // Each card can expand to show more detail
 function SurvivalCard({
   num,
-  emoji,
   title,
   urgency,
   summary,
@@ -34,7 +33,6 @@ function SurvivalCard({
   detail,
 }: {
   num: string;
-  emoji: string;
   title: string;
   urgency: string;
   urgencyColor: string;
@@ -76,7 +74,7 @@ function SurvivalCard({
           letterSpacing: "-0.02em",
           lineHeight: 1.2,
         }}>
-          {emoji} {title}
+          {title}
         </h3>
         <span style={{
           fontSize: "0.65rem",
@@ -136,7 +134,7 @@ function SurvivalCard({
 }
 
 // Reusable step list inside detail panels
-function Steps({ steps }: { steps: { icon: string; text: string }[] }) {
+function Steps({ steps }: { steps: { text: string }[] }) {
   return (
     <ol style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
       {steps.map((s, i) => (
@@ -154,7 +152,6 @@ function Steps({ steps }: { steps: { icon: string; text: string }[] }) {
             {i + 1}
           </span>
           <p style={{ fontSize: "0.87rem", color: "#38285c", lineHeight: 1.6, margin: 0 }}>
-            <span style={{ marginRight: 4 }}>{s.icon}</span>
             {s.text}
           </p>
         </li>
@@ -176,7 +173,7 @@ function Tip({ children }: { children: React.ReactNode }) {
       color: "#38285c",
       lineHeight: 1.6,
     }}>
-      <strong style={{ color: "#7c5cff" }}>💡 Tip — </strong>
+      <strong style={{ color: "#7c5cff" }}>Tip — </strong>
       {children}
     </div>
   );
@@ -188,7 +185,6 @@ export default function SurvivalSection() {
   const cards = [
     {
       num: "01",
-      emoji: "📋",
       title: "IRP Registration",
       urgency: "Do before you land",
       urgencyColor: "#5a3ee8",
@@ -201,11 +197,11 @@ export default function SurvivalSection() {
             IRP proves your legal right to be in Ireland. You need it to work part-time, open certain accounts, and apply for some services. The appointment system is through the Irish Immigration Service.
           </p>
           <Steps steps={[
-            { icon: "🌐", text: "Go to inis.gov.ie and create an account before you travel." },
-            { icon: "📅", text: "Book your IRP appointment slot — pick the earliest available date, even if it's weeks away." },
-            { icon: "✈️", text: "Arrive in Ireland. Your countdown (90 days) starts from your entry date." },
-            { icon: "📂", text: "Bring your passport, acceptance letter, proof of accommodation, and proof of finances to the appointment." },
-            { icon: "📬", text: "Your IRP card will be posted to your address within a few weeks." },
+            { text: "Go to inis.gov.ie and create an account before you travel." },
+            { text: "Book your IRP appointment slot — pick the earliest available date, even if it's weeks away." },
+            { text: "Arrive in Ireland. Your countdown (90 days) starts from your entry date." },
+            { text: "Bring your passport, acceptance letter, proof of accommodation, and proof of finances to the appointment." },
+            { text: "Your IRP card will be posted to your address within a few weeks." },
           ]} />
           <Tip>
             You can book the appointment before you land. This is the single biggest time-saver — most students don&apos;t know this and end up in a 2–3 month queue.
@@ -215,7 +211,6 @@ export default function SurvivalSection() {
     },
     {
       num: "02",
-      emoji: "🪪",
       title: "PPSN — Your Tax Number",
       urgency: "Week 1–2",
       urgencyColor: "#6b5a8e",
@@ -225,23 +220,22 @@ export default function SurvivalSection() {
       detail: (
         <div>
           <p style={{ fontSize: "0.87rem", color: "#38285c", lineHeight: 1.65, marginBottom: 14 }}>
-            Think of PPSN as your identity number for anything government-related in Ireland — work, tax, and certain benefits. Without it, any employer legally can't pay you.
+            Think of PPSN as your identity number for anything government-related in Ireland — work, tax, and certain benefits. Without it, any employer legally can&apos;t pay you.
           </p>
           <Steps steps={[
-            { icon: "🌐", text: "Go to mywelfare.ie and create a MyWelfare account." },
-            { icon: "📋", text: "Apply for a PPSN online — you'll need your passport and proof of address in Ireland." },
-            { icon: "📞", text: "You may be asked to attend an appointment at your local Intreo / Department of Social Protection office." },
-            { icon: "📬", text: "Your PPSN is posted to your address. Keep it safe — you'll use it for everything." },
+            { text: "Go to mywelfare.ie and create a MyWelfare account." },
+            { text: "Apply for a PPSN online — you'll need your passport and proof of address in Ireland." },
+            { text: "You may be asked to attend an appointment at your local Intreo / Department of Social Protection office." },
+            { text: "Your PPSN is posted to your address. Keep it safe — you'll use it for everything." },
           ]} />
           <Tip>
-            mywelfare.ie is the official government portal. Don't pay any third-party service to do this — it is completely free.
+            mywelfare.ie is the official government portal. Don&apos;t pay any third-party service to do this — it is completely free.
           </Tip>
         </div>
       ),
     },
     {
       num: "03",
-      emoji: "🏦",
       title: "Bank Account — AIB",
       urgency: "Week 1",
       urgencyColor: "#6b5a8e",
@@ -254,11 +248,11 @@ export default function SurvivalSection() {
             AIB (Allied Irish Banks) has a free current account for students and you can verify your identity via a short video call in the app — no branch visit needed.
           </p>
           <Steps steps={[
-            { icon: "📱", text: "Download the AIB Mobile app and start the account opening process." },
-            { icon: "🪪", text: "Have your passport ready for identity verification." },
-            { icon: "📹", text: "Complete the video verification call in-app — takes about 5 minutes." },
-            { icon: "🏠", text: "Enter your Irish address. A one-time code will be posted to that address." },
-            { icon: "✅", text: "Enter the code in the app. Your account details and debit card arrive by post within about a week." },
+            { text: "Download the AIB Mobile app and start the account opening process." },
+            { text: "Have your passport ready for identity verification." },
+            { text: "Complete the video verification call in-app — takes about 5 minutes." },
+            { text: "Enter your Irish address. A one-time code will be posted to that address." },
+            { text: "Enter the code in the app. Your account details and debit card arrive by post within about a week." },
           ]} />
           <Tip>
             You need an Irish address to apply. If you&apos;re in student accommodation, use that address. Your card arrives separately — you can use your account details to receive money before the card arrives.
@@ -268,7 +262,6 @@ export default function SurvivalSection() {
     },
     {
       num: "04",
-      emoji: "🚌",
       title: "Leap Card — Get It Day One",
       urgency: "Day of arrival",
       urgencyColor: "#7c5cff",
@@ -281,10 +274,10 @@ export default function SurvivalSection() {
             A regular Leap card costs €5 to buy. The Student Leap card gives you 50% off all fares — so €2 becomes €1. You need your student ID and UCD email to qualify.
           </p>
           <Steps steps={[
-            { icon: "🛒", text: "Pick up a regular Leap card at the airport, any newsagent, or a Leap vendor (€5, includes €0 credit)." },
-            { icon: "💳", text: "Top it up immediately — you can do this at the newsagent or at Luas/DART machines." },
-            { icon: "🎓", text: "Go to leapcard.ie to register and upgrade to a Student Leap card using your UCD student ID." },
-            { icon: "📬", text: "Your upgraded card is posted to you within a week. In the meantime, use the regular card." },
+            { text: "Pick up a regular Leap card at the airport, any newsagent, or a Leap vendor (€5, includes €0 credit)." },
+            { text: "Top it up immediately — you can do this at the newsagent or at Luas/DART machines." },
+            { text: "Go to leapcard.ie to register and upgrade to a Student Leap card using your UCD student ID." },
+            { text: "Your upgraded card is posted to you within a week. In the meantime, use the regular card." },
           ]} />
           <Tip>
             Always tap on AND tap off when using the Leap card on Dublin Bus — if you forget to tap off, you get charged the maximum fare for that route.
@@ -294,7 +287,6 @@ export default function SurvivalSection() {
     },
     {
       num: "05",
-      emoji: "📱",
       title: "SIM Card — Go with 48",
       urgency: "Day of arrival",
       urgencyColor: "#6b5a8e",
@@ -307,10 +299,10 @@ export default function SurvivalSection() {
             48 is a prepay provider that runs on the Three network, which has strong 5G coverage across Dublin including the UCD campus.
           </p>
           <Steps steps={[
-            { icon: "🏪", text: "Pick up a 48 SIM at any newsagent, Tesco, or the 48 website (free SIM, or delivered by post)." },
-            { icon: "📱", text: "Insert the SIM and activate it at 48.ie — takes about 3 minutes." },
-            { icon: "💳", text: "Top up €12–13 online and select the monthly 5G bundle." },
-            { icon: "🔁", text: "Set up auto-top-up so it renews automatically each month." },
+            { text: "Pick up a 48 SIM at any newsagent, Tesco, or the 48 website (free SIM, or delivered by post)." },
+            { text: "Insert the SIM and activate it at 48.ie — takes about 3 minutes." },
+            { text: "Top up €12–13 online and select the monthly 5G bundle." },
+            { text: "Set up auto-top-up so it renews automatically each month." },
           ]} />
           <Tip>
             Other decent options: GoMo (€9.99/month, unlimited everything), Vodafone PAYG, or Three prepay. 48 and GoMo are consistently the cheapest for students.
@@ -377,7 +369,14 @@ export default function SurvivalSection() {
             maxWidth: 620,
           }}
         >
-          <span style={{ fontSize: "1.2rem", flexShrink: 0 }}>⚠️</span>
+          <div style={{
+            width: 20, height: 20, borderRadius: "50%",
+            background: "rgba(124,92,255,0.12)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0, marginTop: 1,
+          }}>
+            <span style={{ fontSize: "0.65rem", fontWeight: 700, color: "#7c5cff" }}>!</span>
+          </div>
           <p style={{ fontSize: "0.83rem", color: "#38285c", lineHeight: 1.65, margin: 0 }}>
             <strong style={{ color: "#1a0f2e" }}>Important:</strong> Information here is for guidance only and was accurate at the time of writing. Always verify
             current requirements at the official government websites — rules can change.

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ExternalLink, Mail, Heart, Phone } from "lucide-react";
+import Link from "next/link";
 
 const USEFUL_LINKS = [
   { label: "ISD — IRP Registration", href: "https://www.irishimmigration.ie" },
@@ -13,12 +14,11 @@ const USEFUL_LINKS = [
 ];
 
 const NAV_LINKS = [
-  { label: "Meet people", href: "#make-a-friend" },
-  { label: "Ask a senior", href: "#ask-a-senior" },
-  { label: "First 30 days", href: "#checklist" },
-  { label: "Glossary", href: "#glossary" },
-  { label: "Campus life", href: "#campus" },
-  { label: "Student voices", href: "#voices" },
+  { label: "Meet people",   href: "/meet-people"   },
+  { label: "Ask a senior",  href: "/ask-a-senior"  },
+  { label: "First 30 days", href: "/first-30-days" },
+  { label: "Student voices",href: "/voices"        },
+  { label: "Join free",     href: "/join"          },
 ];
 
 function useReveal() {
@@ -133,7 +133,7 @@ export default function Footer() {
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "9px" }}>
               {NAV_LINKS.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     style={{
                       fontSize: "0.88rem",
@@ -158,7 +158,7 @@ export default function Footer() {
                       }}
                     />
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
