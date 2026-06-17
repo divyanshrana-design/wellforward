@@ -327,6 +327,31 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
         </div>
       </div>
 
+      {/* ─── UCD Smurfit trust strip ─── */}
+      <div
+        className="relative z-20 w-full"
+        style={{
+          background: "rgba(255,255,255,0.60)",
+          borderTop: "1px solid rgba(200,184,255,0.2)",
+          borderBottom: "1px solid rgba(200,184,255,0.2)",
+        }}
+      >
+        <div className="max-w-6xl mx-auto px-5 sm:px-10 py-4 flex items-center gap-4 justify-center flex-wrap">
+          <span style={{ fontSize: "0.72rem", color: "#b0a0cc", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            Built for students of
+          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://www.genspark.ai/api/files/s/JQOKBp9b"
+            alt="UCD Dublin"
+            style={{ height: 40, width: "auto", objectFit: "contain", opacity: 0.88 }}
+          />
+          <span style={{ fontSize: "0.82rem", color: "#38285c", fontWeight: 600 }}>
+            UCD Michael Smurfit Graduate Business School
+          </span>
+        </div>
+      </div>
+
       {/* ─── Stat strip — bottom of viewport ─── */}
       <div
         className="relative z-20 w-full"

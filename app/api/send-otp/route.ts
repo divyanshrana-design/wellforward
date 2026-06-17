@@ -67,6 +67,14 @@ export async function POST(req: NextRequest) {
         from: `Wellforward <${fromName}>`,
         to: email,
         subject: 'Your Wellforward verification code',
+        // Anti-spam headers
+        headers: {
+          'X-Mailer': 'Wellforward/1.0',
+          'X-Priority': '3',
+          'Precedence': 'transactional',
+          'Auto-Submitted': 'auto-generated',
+        },
+        text: `Your Wellforward verification code is: ${code}\n\nThis code expires in 10 minutes. If you did not request this, ignore this email.`,
         html: `
           <div style="font-family: 'Inter', Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 24px; background: #fdfcff;">
             <div style="text-align: center; margin-bottom: 32px;">

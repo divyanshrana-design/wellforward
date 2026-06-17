@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
 import SurvivalSection from "./components/SurvivalSection";
 import DublinGame from "./components/DublinGame";
+import StatsSection from "./components/StatsSection";
 import Footer from "./components/Footer";
 
 /* Scroll-reveal hook — reusable */
@@ -201,6 +202,7 @@ export default function Home() {
       </section>
 
       <SurvivalSection />
+      <StatsSection />
       <Footer />
     </main>
   );

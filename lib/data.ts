@@ -112,7 +112,7 @@ export const CHECKLIST_TASKS: ChecklistTask[] = [
       "2 passport photos",
     ],
     pitfall: "The #1 mistake: waiting too long to book. Slots on inisonline.ie go live at random hours and get snapped up fast. Set a reminder to check the site at midnight and early morning. If you can't get an appointment in time, email the ISD directly. They have a process for this, but it is stressful.",
-    link: "https://www.irishimmigration.ie/registering-your-immigration-permission/how-to-register-your-immigration-permission/",
+    link: "https://www.irishimmigration.ie/registering-your-immigration-permission/how-to-register-your-immigration-permission/how-to-register-your-immigration-permission-for-the-first-time/",
     linkLabel: "ISD Registration Guide →",
   },
   {
@@ -193,9 +193,9 @@ export const CHECKLIST_TASKS: ChecklistTask[] = [
     why: "You need mobile data to navigate Dublin, find your way to campus, and contact your accommodation. Don't rely on Wi-Fi for your first few days.",
     howLong: "Buy a SIM and top up in any convenience store, supermarket, or the network's own shop. Takes 10 minutes.",
     whatToBring: ["Your phone (make sure it's unlocked before travelling)", "Cash or card"],
-    pitfall: "GoMo (€9.99/month, unlimited data on Three's network) is widely considered the best value SIM for students. Buy it in a Tesco. Three is the main network it runs on. Coverage is good in Dublin but patchy in rural areas.",
-    link: "https://gomo.ie/",
-    linkLabel: "GoMo: Best Value SIM →",
+    pitfall: "48 (runs on Three's network) is the best value SIM for students — unlimited calls, texts and data from €12.99/month. Use the referral link below and you get a €20 voucher on your first top-up. Buy the SIM in any Centra, Spar, or Tesco.",
+    link: "https://refer.48.ie/divyanshr-26",
+    linkLabel: "Get 48 SIM + €20 voucher →",
   },
   {
     id: "accommodation",
@@ -246,8 +246,8 @@ export const CHECKLIST_TASKS: ChecklistTask[] = [
     howLong: "One exploratory trip, then routine.",
     whatToBring: ["Reusable bags (mandatory at checkouts, costs 25c otherwise)", "A list of staples you need"],
     pitfall: "Lidl and Aldi are dramatically cheaper than Tesco and Dunnes for basics. For home-country ingredients: Asian Market (Drury St, city centre) has huge variety; there are Indian and Polish grocers scattered across Dublin. Google 'Indian grocery [your area]'.",
-    link: "https://www.asian-market.ie/",
-    linkLabel: "Asian Market, Drury St →",
+    link: "https://maps.app.goo.gl/7sP2Y3x8K9mQ4vZe8",
+    linkLabel: "Asian Market on Google Maps →",
   },
 ];
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Meet people",   href: "/meet-people"   },
@@ -15,12 +15,21 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen]         = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 24);
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
+  }, []);
+
+  // Check session on mount
+  useEffect(() => {
+    fetch('/api/me')
+      .then(r => r.json())
+      .then(d => { if (d.loggedIn) setIsLoggedIn(true); })
+      .catch(() => {});
   }, []);
 
   // Close mobile menu on route change
@@ -97,21 +106,44 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* CTA — Join */}
-          <Link
-            href="/join"
-            className="btn-primary"
-            style={{
-              marginLeft: 12,
-              padding: "9px 20px",
-              fontSize: "0.875rem",
-              borderRadius: 10,
-              textDecoration: "none",
-              display: "inline-block",
-            }}
-          >
-            Join free
-          </Link>
+          {/* CTA — Join / My Profile */}
+          {isLoggedIn ? (
+            <Link
+              href="/profile"
+              style={{
+                marginLeft: 12,
+                padding: "8px 18px",
+                fontSize: "0.875rem",
+                borderRadius: 10,
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                background: "rgba(124,92,255,0.1)",
+                color: "#7c5cff",
+                fontWeight: 600,
+                border: "1.5px solid rgba(124,92,255,0.25)",
+                transition: "background 0.15s",
+              }}
+            >
+              <User size={14} /> My profile
+            </Link>
+          ) : (
+            <Link
+              href="/join"
+              className="btn-primary"
+              style={{
+                marginLeft: 12,
+                padding: "9px 20px",
+                fontSize: "0.875rem",
+                borderRadius: 10,
+                textDecoration: "none",
+                display: "inline-block",
+              }}
+            >
+              Join free
+            </Link>
+          )}
         </div>
 
         {/* Mobile burger */}
@@ -164,20 +196,44 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
-            <Link
-              href="/join"
-              className="btn-primary"
-              style={{
-                marginTop: 8,
-                padding: "12px 16px",
-                fontSize: "0.9rem",
-                textAlign: "center",
-                textDecoration: "none",
-                display: "block",
-              }}
-            >
-              Join free ✦
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                href="/profile"
+                style={{
+                  marginTop: 8,
+                  padding: "12px 16px",
+                  fontSize: "0.9rem",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                  background: "rgba(124,92,255,0.1)",
+                  color: "#7c5cff",
+                  fontWeight: 600,
+                  border: "1.5px solid rgba(124,92,255,0.25)",
+                  borderRadius: 10,
+                }}
+              >
+                <User size={15} /> My profile
+              </Link>
+            ) : (
+              <Link
+                href="/join"
+                className="btn-primary"
+                style={{
+                  marginTop: 8,
+                  padding: "12px 16px",
+                  fontSize: "0.9rem",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  display: "block",
+                }}
+              >
+                Join free ✦
+              </Link>
+            )}
           </div>
         </div>
       )}
