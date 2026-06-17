@@ -342,8 +342,8 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
           </span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://www.genspark.ai/api/files/s/JQOKBp9b"
-            alt="UCD Dublin"
+            src="/ucd-logo.svg"
+            alt="UCD Michael Smurfit Graduate Business School"
             style={{ height: 40, width: "auto", objectFit: "contain", opacity: 0.88 }}
           />
           <span style={{ fontSize: "0.82rem", color: "#38285c", fontWeight: 600 }}>

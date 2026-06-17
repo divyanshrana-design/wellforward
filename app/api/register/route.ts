@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, programme, school, intakeYear, hometown, bio, interests, lookingFor, photo } = body;
+    const { name, programme, school, intakeYear, hometown, bio, interests, lookingFor, photo, linkedin, instagram, contactEmail } = body;
 
     if (!name || !programme || !intakeYear) {
       return NextResponse.json({ error: 'Name, programme and intake year are required.' }, { status: 400 });
@@ -61,26 +61,32 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Build upsert object — only include photo_url if a new photo was actually uploaded
+    const upsertData: Record<string, unknown> = {
+      email,
+      name,
+      programme,
+      school: school ?? 'Smurfit Business School',
+      intake_year: intakeYear,
+      hometown: hometown ?? null,
+      bio: bio ?? null,
+      interests: interests ?? null,
+      looking_for: lookingFor ?? null,
+      linkedin: linkedin ?? null,
+      instagram: instagram ?? null,
+      contact_email: contactEmail ?? null,
+      role,
+      verified: true,
+    };
+    // Only set photo_url if we got a new upload (photoUrl will be non-null)
+    if (photoUrl !== null) {
+      upsertData.photo_url = photoUrl;
+    }
+
     // Upsert profile (update if already exists for this email)
     const { data: user, error: upsertError } = await supabaseAdmin
       .from('users')
-      .upsert(
-        {
-          email,
-          name,
-          programme,
-          school: school ?? 'Smurfit Business School',
-          intake_year: intakeYear,
-          hometown: hometown ?? null,
-          bio: bio ?? null,
-          interests: interests ?? null,
-          looking_for: lookingFor ?? null,
-          photo_url: photoUrl,
-          role,
-          verified: true,
-        },
-        { onConflict: 'email' }
-      )
+      .upsert(upsertData, { onConflict: 'email' })
       .select()
       .single();
 

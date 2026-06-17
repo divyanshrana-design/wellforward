@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 60" width="180" height="60">
+  <rect width="180" height="60" fill="none"/>
+  <!-- UCD harp emblem simplified -->
+  <g transform="translate(8,8)">
+    <!-- Simple harp shape -->
+    <path d="M10,44 Q10,2 24,2 L24,44 Z" fill="#006A4D" stroke="#006A4D" stroke-width="0.5"/>
+    <path d="M24,8 Q38,4 38,44" fill="none" stroke="#006A4D" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="14" x2="36" y2="12" stroke="#006A4D" stroke-width="1.2"/>
+    <line x1="24" y1="20" x2="37" y2="19" stroke="#006A4D" stroke-width="1.2"/>
+    <line x1="24" y1="26" x2="37" y2="26" stroke="#006A4D" stroke-width="1.2"/>
+    <line x1="24" y1="32" x2="37" y2="33" stroke="#006A4D" stroke-width="1.2"/>
+    <line x1="24" y1="38" x2="36" y2="40" stroke="#006A4D" stroke-width="1.2"/>
+  </g>
+  <!-- UCD text -->
+  <text x="56" y="26" font-family="Georgia, serif" font-size="18" font-weight="700" fill="#1a1a2e" letter-spacing="-0.5">UCD</text>
+  <text x="56" y="42" font-family="Arial, sans-serif" font-size="8" font-weight="500" fill="#4a4a6a" letter-spacing="0.3">MICHAEL SMURFIT</text>
+  <text x="56" y="52" font-family="Arial, sans-serif" font-size="7" font-weight="400" fill="#6a6a8a" letter-spacing="0.2">GRADUATE BUSINESS SCHOOL</text>
+</svg>

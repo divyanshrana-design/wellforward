@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const { data, error } = await supabaseAdmin
       .from('users')
-      .select('id, name, programme, school, intake_year, hometown, bio, interests, photo_url, created_at')
+      .select('id, name, programme, school, intake_year, hometown, bio, interests, photo_url, linkedin, instagram, contact_email, created_at')
       .eq('role', 'senior')
       .eq('verified', true)
       .order('created_at', { ascending: false });
@@ -26,6 +26,10 @@ export async function GET() {
       askMeAbout: u.interests ?? '',
       bio: u.bio ?? '',
       photoUrl: u.photo_url ?? null,
+      linkedin: u.linkedin ?? null,
+      instagram: u.instagram ?? null,
+      // For seniors: contact_email is their public reach-out email
+      email: u.contact_email ? `mailto:${u.contact_email}` : null,
     }));
 
     return NextResponse.json({ profiles });

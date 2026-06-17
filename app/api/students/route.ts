@@ -1,11 +1,26 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
+// Derive consistent avatar colour from name hash
+const AVATAR_COLORS = [
+  'from-violet-400 to-purple-600',
+  'from-indigo-400 to-blue-600',
+  'from-fuchsia-400 to-pink-600',
+  'from-sky-400 to-cyan-600',
+  'from-emerald-400 to-teal-600',
+  'from-amber-400 to-orange-500',
+];
+function avatarColorFor(name: string) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_COLORS[h % AVATAR_COLORS.length];
+}
+
 export async function GET() {
   try {
     const { data, error } = await supabaseAdmin
       .from('users')
-      .select('id, name, programme, school, intake_year, hometown, bio, interests, looking_for, photo_url, created_at')
+      .select('id, name, programme, school, intake_year, hometown, bio, interests, looking_for, photo_url, linkedin, instagram, contact_email, created_at')
       .eq('role', 'student')
       .eq('verified', true)
       .order('created_at', { ascending: false });
@@ -15,7 +30,6 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch students.' }, { status: 500 });
     }
 
-    // Shape into the format the MakeFriendSection expects
     const profiles = (data ?? []).map(u => ({
       id: u.id,
       name: u.name,
@@ -26,8 +40,10 @@ export async function GET() {
       countryFlag: '',
       bio: u.bio ?? '',
       tags: u.interests ? u.interests.split(',').filter(Boolean) : [],
-      avatarColor: 'from-violet-400 to-purple-600',
+      avatarColor: avatarColorFor(u.name),
       photoUrl: u.photo_url ?? null,
+      linkedin: u.linkedin ?? null,
+      instagram: u.instagram ?? null,
       isNew: (Date.now() - new Date(u.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000,
     }));
 

@@ -155,13 +155,24 @@ function ProfileCard({ profile, onClick, index }: { profile: StudentProfile; onC
         )}
 
         <div className="flex items-start gap-3 mb-3">
-          <div
-            className={`flex-shrink-0 w-11 h-11 rounded-[10px] bg-gradient-to-br ${profile.avatarColor} flex items-center justify-center text-white font-bold text-sm`}
-            style={{ boxShadow: "0 4px 12px -4px rgba(0,0,0,0.18)", letterSpacing: "0.03em" }}
-            aria-hidden="true"
-          >
-            {getInitials(profile.name)}
-          </div>
+          {profile.photoUrl ? (
+            <div
+              className="flex-shrink-0 w-11 h-11 rounded-[10px] overflow-hidden"
+              style={{ boxShadow: "0 4px 12px -4px rgba(0,0,0,0.18)", letterSpacing: "0.03em" }}
+              aria-hidden="true"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={profile.photoUrl} alt={profile.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+          ) : (
+            <div
+              className={`flex-shrink-0 w-11 h-11 rounded-[10px] bg-gradient-to-br ${profile.avatarColor} flex items-center justify-center text-white font-bold text-sm`}
+              style={{ boxShadow: "0 4px 12px -4px rgba(0,0,0,0.18)", letterSpacing: "0.03em" }}
+              aria-hidden="true"
+            >
+              {getInitials(profile.name)}
+            </div>
+          )}
 
           <div className="flex-1 min-w-0 pt-0.5">
             <div className="serif font-bold leading-tight truncate" style={{ fontSize: "1rem", color: "#1c1430" }}>
@@ -243,12 +254,21 @@ function ProfileModal({ profile, onClose }: { profile: StudentProfile; onClose: 
         </button>
 
         <div className="flex items-center gap-4 mb-5">
-          <div
-            className={`w-14 h-14 rounded-[12px] bg-gradient-to-br ${profile.avatarColor} flex items-center justify-center text-white font-bold text-lg`}
-            style={{ flexShrink: 0, boxShadow: "0 6px 18px -6px rgba(0,0,0,0.22)" }}
-          >
-            {getInitials(profile.name)}
-          </div>
+          {profile.photoUrl ? (
+            <div
+              style={{ width: 56, height: 56, borderRadius: 12, overflow: "hidden", flexShrink: 0, boxShadow: "0 6px 18px -6px rgba(0,0,0,0.22)" }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={profile.photoUrl} alt={profile.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+          ) : (
+            <div
+              className={`w-14 h-14 rounded-[12px] bg-gradient-to-br ${profile.avatarColor} flex items-center justify-center text-white font-bold text-lg`}
+              style={{ flexShrink: 0, boxShadow: "0 6px 18px -6px rgba(0,0,0,0.22)" }}
+            >
+              {getInitials(profile.name)}
+            </div>
+          )}
           <div>
             <h2 id="modal-name" className="serif" style={{ fontSize: "1.3rem", color: "#1c1430" }}>
               {profile.name} {profile.countryFlag}

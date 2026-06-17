@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     // Look up the user in DB
     const { data: user, error } = await supabaseAdmin
       .from('users')
-      .select('id, name, email, role, photo_url, intake_year, programme, school, hometown, bio, interests, looking_for')
+      .select('id, name, email, role, photo_url, intake_year, programme, school, hometown, bio, interests, looking_for, linkedin, instagram, contact_email')
       .eq('email', email)
       .eq('verified', true)
       .single();

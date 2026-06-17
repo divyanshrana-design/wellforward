@@ -16,14 +16,22 @@ CREATE TABLE IF NOT EXISTS users (
   interests       TEXT,          -- comma-separated tags
   looking_for     TEXT,          -- comma-separated values
   photo_url       TEXT,          -- Supabase Storage public URL
+  linkedin        TEXT,          -- LinkedIn profile URL
+  instagram       TEXT,          -- Instagram handle or URL
+  contact_email   TEXT,          -- public contact email (optional, separate from login email)
   role            TEXT NOT NULL DEFAULT 'student',
                                  -- 'student' (meet-people) | 'senior' (ask-a-senior)
   verified        BOOLEAN NOT NULL DEFAULT FALSE,
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Add new columns if table already exists (safe to re-run)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS linkedin      TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS instagram     TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS contact_email TEXT;
+
 -- Index for fast lookups by role (powers /api/students and /api/seniors)
-CREATE INDEX IF NOT EXISTS users_role_idx ON users (role);
+CREATE INDEX IF NOT EXISTS users_role_idx  ON users (role);
 CREATE INDEX IF NOT EXISTS users_email_idx ON users (email);
 
 -- ── 2. OTP codes ─────────────────────────────────────────────
@@ -38,16 +46,10 @@ CREATE TABLE IF NOT EXISTS otps (
 
 CREATE INDEX IF NOT EXISTS otps_email_idx ON otps (email);
 
--- Auto-delete expired OTPs after 1 hour (keeps table clean)
--- Supabase cron is on paid plans; for free tier we just filter in queries.
-
 -- ── 3. Storage bucket ────────────────────────────────────────
 -- Create this manually in Supabase Dashboard:
---   Storage → New bucket → Name: "avatars" → Public: YES
--- Or run via Supabase CLI. We reference it in API routes as 'avatars'.
+--   Storage → New bucket → Name: "Avatars" → Public: YES
 
 -- ── 4. Row Level Security ────────────────────────────────────
--- Keep it simple: service_role key (server-side only) bypasses RLS.
--- We use that exclusively in API routes, so RLS can stay OFF for now.
 ALTER TABLE users DISABLE ROW LEVEL SECURITY;
 ALTER TABLE otps  DISABLE ROW LEVEL SECURITY;

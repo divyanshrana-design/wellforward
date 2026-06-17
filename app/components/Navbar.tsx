@@ -15,7 +15,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen]         = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -106,8 +106,10 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* CTA — Join / My Profile */}
-          {isLoggedIn ? (
+          {/* CTA — Join / My Profile — renders nothing until auth resolved to prevent flash */}
+          {isLoggedIn === null ? (
+            <div style={{ marginLeft: 12, width: 96, height: 36 }} aria-hidden="true" />
+          ) : isLoggedIn ? (
             <Link
               href="/profile"
               style={{
@@ -196,7 +198,7 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
-            {isLoggedIn ? (
+            {isLoggedIn === null ? null : isLoggedIn ? (
               <Link
                 href="/profile"
                 style={{

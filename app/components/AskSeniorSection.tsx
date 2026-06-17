@@ -2,6 +2,16 @@
 
 import { useState, useMemo, useRef, useEffect } from "react";
 import { X, Mail, Link2, GraduationCap, Lock, ArrowRight } from "lucide-react";
+
+function InstagramIcon({ size = 15 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <circle cx="12" cy="12" r="4"/>
+      <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+    </svg>
+  );
+}
 import Link from "next/link";
 import { SeniorProfile } from "@/lib/data";
 
@@ -127,13 +137,24 @@ function SeniorCard({ senior, onClick, index, gated }: { senior: SeniorProfile; 
         />
 
         <div className="flex items-start gap-3 mb-3">
-          <div
-            className={`flex-shrink-0 w-11 h-11 rounded-[10px] bg-gradient-to-br ${senior.avatarColor} flex items-center justify-center text-white font-bold text-sm`}
-            style={{ boxShadow: "0 4px 12px -4px rgba(0,0,0,0.18)" }}
-            aria-hidden="true"
-          >
-            {getInitials(senior.name)}
-          </div>
+          {senior.photoUrl ? (
+            <div
+              className="flex-shrink-0 w-11 h-11 rounded-[10px] overflow-hidden"
+              style={{ boxShadow: "0 4px 12px -4px rgba(0,0,0,0.18)" }}
+              aria-hidden="true"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={senior.photoUrl} alt={senior.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+          ) : (
+            <div
+              className={`flex-shrink-0 w-11 h-11 rounded-[10px] bg-gradient-to-br ${senior.avatarColor} flex items-center justify-center text-white font-bold text-sm`}
+              style={{ boxShadow: "0 4px 12px -4px rgba(0,0,0,0.18)" }}
+              aria-hidden="true"
+            >
+              {getInitials(senior.name)}
+            </div>
+          )}
           <div className="flex-1 min-w-0 pt-0.5">
             <div className="serif font-bold leading-tight truncate" style={{ fontSize: "0.98rem", color: "#1c1430" }}>
               {senior.name} {senior.countryFlag}
@@ -144,10 +165,19 @@ function SeniorCard({ senior, onClick, index, gated }: { senior: SeniorProfile; 
         </div>
 
         <div style={{ background: "rgba(200,184,255,0.22)", borderRadius: 9, padding: "10px 12px", marginBottom: 12 }}>
-          <p style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.06em", color: "#9b8ec8", textTransform: "uppercase", marginBottom: 3 }}>
+          <p style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.06em", color: "#9b8ec8", textTransform: "uppercase", marginBottom: 5 }}>
             Ask me about
           </p>
-          <p style={{ fontSize: "0.8rem", color: "#2a1d50", lineHeight: 1.5 }}>{senior.askMeAbout}</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+            {senior.askMeAbout.split(",").map(item => item.trim()).filter(Boolean).map(item => (
+              <span key={item} style={{
+                display: "inline-block", padding: "2px 8px", borderRadius: 999,
+                fontSize: "0.72rem", fontWeight: 500,
+                background: "rgba(124,92,255,0.1)", border: "1px solid rgba(124,92,255,0.18)",
+                color: "#4a2fa0",
+              }}>{item}</span>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-2 pt-2" style={{ borderTop: "1px solid rgba(200,184,255,0.22)" }}>
@@ -188,12 +218,21 @@ function SeniorModal({ senior, onClose }: { senior: SeniorProfile; onClose: () =
         </button>
 
         <div className="flex items-center gap-4 mb-5">
-          <div
-            className={`w-14 h-14 rounded-[12px] bg-gradient-to-br ${senior.avatarColor} flex items-center justify-center text-white font-bold text-lg`}
-            style={{ flexShrink: 0, boxShadow: "0 6px 18px -6px rgba(0,0,0,0.2)" }}
-          >
-            {getInitials(senior.name)}
-          </div>
+          {senior.photoUrl ? (
+            <div
+              style={{ width: 56, height: 56, borderRadius: 12, overflow: "hidden", flexShrink: 0, boxShadow: "0 6px 18px -6px rgba(0,0,0,0.2)" }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={senior.photoUrl} alt={senior.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+          ) : (
+            <div
+              className={`w-14 h-14 rounded-[12px] bg-gradient-to-br ${senior.avatarColor} flex items-center justify-center text-white font-bold text-lg`}
+              style={{ flexShrink: 0, boxShadow: "0 6px 18px -6px rgba(0,0,0,0.2)" }}
+            >
+              {getInitials(senior.name)}
+            </div>
+          )}
           <div>
             <h2 id="senior-name" className="serif" style={{ fontSize: "1.3rem", color: "#1c1430" }}>
               {senior.name} {senior.countryFlag}
@@ -204,10 +243,23 @@ function SeniorModal({ senior, onClose }: { senior: SeniorProfile; onClose: () =
         </div>
 
         <div style={{ background: "rgba(200,184,255,0.2)", borderRadius: 10, padding: "12px 14px", marginBottom: 14 }}>
-          <p style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.07em", color: "#9b8ec8", textTransform: "uppercase", marginBottom: 4 }}>
+          <p style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.07em", color: "#9b8ec8", textTransform: "uppercase", marginBottom: 8 }}>
             Ask me about
           </p>
-          <p style={{ fontSize: "0.85rem", color: "#2a1d50" }}>{senior.askMeAbout}</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+            {senior.askMeAbout.split(",").map(item => item.trim()).filter(Boolean).map(item => (
+              <span key={item} style={{
+                display: "inline-block",
+                padding: "4px 10px",
+                borderRadius: 999,
+                fontSize: "0.78rem",
+                fontWeight: 500,
+                background: "rgba(124,92,255,0.1)",
+                border: "1px solid rgba(124,92,255,0.2)",
+                color: "#4a2fa0",
+              }}>{item}</span>
+            ))}
+          </div>
         </div>
 
         <div style={{ background: "rgba(233,226,255,0.4)", borderRadius: 10, padding: "14px 16px", marginBottom: 18 }}>
@@ -231,6 +283,20 @@ function SeniorModal({ senior, onClose }: { senior: SeniorProfile; onClose: () =
               style={{ textDecoration: "none", borderRadius: 10 }}
             >
               <Link2 size={15} />LinkedIn profile
+            </a>
+          )}
+          {senior.instagram && (
+            <a
+              href={`https://instagram.com/${senior.instagram.replace(/^@/, '')}`} target="_blank" rel="noopener noreferrer"
+              style={{
+                textDecoration: "none", borderRadius: 10,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                padding: "12px", fontSize: "0.875rem", fontWeight: 600,
+                background: "linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)",
+                color: "white",
+              }}
+            >
+              <InstagramIcon size={15} />Instagram
             </a>
           )}
         </div>

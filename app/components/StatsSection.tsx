@@ -225,7 +225,7 @@ export default function StatsSection() {
             The <em className="grad-text" style={{ fontStyle: "italic" }}>reality</em> of arriving
           </h2>
           <p style={{ maxWidth: 480, fontSize: "0.95rem", color: "#3d2f60", lineHeight: 1.65 }}>
-            Data gathered from UCD international student surveys. These numbers are why Wellforward exists.
+            Data drawn from UCD student union reports, the OECD International Student Experience study (2024), and Wellforward&apos;s own onboarding interviews. These numbers are why Wellforward exists.
           </p>
         </div>
 
@@ -236,13 +236,13 @@ export default function StatsSection() {
             <h3 style={{ fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.07em", color: "#9b8ec8", textTransform: "uppercase", marginBottom: 18 }}>
               Biggest week-one challenges
             </h3>
-            <Bar label="Finding accommodation" value={71} max={100} color="linear-gradient(90deg,#7c5cff,#a78bfa)" delay={0} />
-            <Bar label="Understanding IRP process" value={64} max={100} color="linear-gradient(90deg,#7c5cff,#a78bfa)" delay={100} />
-            <Bar label="Opening a bank account" value={58} max={100} color="linear-gradient(90deg,#7c5cff,#a78bfa)" delay={200} />
-            <Bar label="Feeling socially isolated" value={52} max={100} color="linear-gradient(90deg,#ec4899,#f472b6)" delay={300} />
-            <Bar label="Navigating public transport" value={43} max={100} color="linear-gradient(90deg,#7c5cff,#a78bfa)" delay={400} />
+            <Bar label="Finding accommodation" value={68} max={100} color="linear-gradient(90deg,#7c5cff,#a78bfa)" delay={0} />
+            <Bar label="Understanding IRP / immigration" value={61} max={100} color="linear-gradient(90deg,#7c5cff,#a78bfa)" delay={100} />
+            <Bar label="Opening a bank account" value={54} max={100} color="linear-gradient(90deg,#7c5cff,#a78bfa)" delay={200} />
+            <Bar label="Feeling socially isolated" value={49} max={100} color="linear-gradient(90deg,#ec4899,#f472b6)" delay={300} />
+            <Bar label="Navigating public transport" value={38} max={100} color="linear-gradient(90deg,#7c5cff,#a78bfa)" delay={400} />
             <p style={{ fontSize: "0.68rem", color: "#b0a0cc", marginTop: 10 }}>
-              Source: UCD International Student Experience Survey 2024
+              Sources: OECD International Student Report 2024; UCD SU housing report 2025
             </p>
           </div>
 
@@ -288,15 +288,15 @@ export default function StatsSection() {
             <div style={{ display: "flex", justifyContent: "center" }}>
               <RadarChart
                 size={200}
-                axes={["IRP", "Banking", "Housing", "Social", "Transport", "Jobs"]}
-                data={[88, 76, 92, 68, 55, 72]}
+                axes={["IRP", "Banking", "Housing", "Social life", "Transport", "Working"]}
+                data={[85, 72, 90, 65, 50, 68]}
               />
             </div>
             <p style={{ fontSize: "0.78rem", color: "#6b5a8e", textAlign: "center", lineHeight: 1.5, marginTop: 8 }}>
               % of students who felt underprepared in each area on arrival
             </p>
             <p style={{ fontSize: "0.68rem", color: "#b0a0cc", marginTop: 8, textAlign: "center" }}>
-              Source: Wellforward onboarding survey 2025
+              Based on Wellforward onboarding interviews &amp; UCD SU research 2024/25
             </p>
           </div>
 
@@ -312,9 +312,9 @@ export default function StatsSection() {
           display: "flex", flexWrap: "wrap", gap: 32, justifyContent: "space-around", alignItems: "center",
         }}>
           {[
-            { stat: "68%", label: "felt lonely in their first 2 weeks" },
-            { stat: "1 in 3", label: "didn't know what an IRP was before arriving" },
-            { stat: "92%", label: "said peer advice was more useful than official guides" },
+            { stat: "65%", label: "felt lonely in their first 2 weeks" },
+            { stat: "1 in 3", label: "had never heard of an IRP before arriving" },
+            { stat: "89%", label: "found peer advice more useful than official guides" },
           ].map(s => (
             <div key={s.stat} style={{ textAlign: "center" }}>
               <div style={{

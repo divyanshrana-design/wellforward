@@ -199,6 +199,7 @@ export default function JoinPage() {
     photo: "",
     interests: "",
     bio: "", lookingFor: "",
+    linkedin: "", instagram: "", contactEmail: "",
   });
   const [otp, setOtp]           = useState("");
   const [otpSent, setOtpSent]   = useState(false);
@@ -302,6 +303,9 @@ export default function JoinPage() {
           interests: form.interests,
           lookingFor: form.lookingFor,
           photo: form.photo,
+          linkedin: form.linkedin || null,
+          instagram: form.instagram || null,
+          contactEmail: form.contactEmail || null,
         }),
       });
       const regData = await regRes.json();
@@ -675,6 +679,34 @@ export default function JoinPage() {
                     ))}
                   </div>
                 </div>
+
+                <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+                  {/* Social links — collapsible optional section */}
+                </div>
+
+                {/* Optional: Social / contact links */}
+                <details style={{ marginTop: -4 }}>
+                  <summary style={{ fontSize: "0.8rem", color: "#7c5cff", cursor: "pointer", fontWeight: 600, listStyle: "none", display: "flex", alignItems: "center", gap: 6 }}>
+                    ＋ Add LinkedIn / Instagram / email (optional)
+                  </summary>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 14, paddingTop: 14, borderTop: "1px solid #f0ecff" }}>
+                    <div>
+                      <label style={labelStyle}>LinkedIn URL</label>
+                      <input style={inputStyle} type="url" placeholder="https://linkedin.com/in/yourname"
+                        value={form.linkedin} onChange={e => update("linkedin", e.target.value)} onFocus={focus} onBlur={blur} />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Instagram handle</label>
+                      <input style={inputStyle} type="text" placeholder="@yourhandle"
+                        value={form.instagram} onChange={e => update("instagram", e.target.value)} onFocus={focus} onBlur={blur} />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Public email <span style={{ color: "#b0a0cc", fontWeight: 400 }}>(seniors only — shown to logged-in users)</span></label>
+                      <input style={inputStyle} type="email" placeholder="your@email.com"
+                        value={form.contactEmail} onChange={e => update("contactEmail", e.target.value)} onFocus={focus} onBlur={blur} />
+                    </div>
+                  </div>
+                </details>
 
                 <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
                   <button type="button" className="btn-ghost"

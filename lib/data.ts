@@ -10,10 +10,11 @@ export interface StudentProfile {
   countryFlag: string;
   bio: string;
   tags: string[];
-  instagram?: string;
-  linkedin?: string;
+  instagram?: string | null;
+  linkedin?: string | null;
   avatarColor: string;
   isNew?: boolean;
+  photoUrl?: string | null;
 }
 
 export interface SeniorProfile {
@@ -26,9 +27,11 @@ export interface SeniorProfile {
   countryFlag: string;
   askMeAbout: string;
   bio: string;
-  email?: string;
-  linkedin?: string;
+  email?: string | null;
+  linkedin?: string | null;
+  instagram?: string | null;
   avatarColor: string;
+  photoUrl?: string | null;
 }
 
 export interface ChecklistTask {

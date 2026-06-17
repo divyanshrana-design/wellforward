@@ -98,12 +98,15 @@ function TaskCard({ task, done, onToggle, index }: {
   const xp = TASK_XP[task.id] ?? 50;
 
   return (
-    <div ref={ref} className="reveal" style={{ marginLeft: 52, transitionDelay: `${index * 40}ms` }}>
-      {/* Timeline dot */}
+    <div ref={ref} className="reveal" style={{ marginLeft: 52, transitionDelay: `${index * 40}ms`, position: "relative" }}>
+      {/* Timeline dot — anchored to this reveal wrapper via position:relative above */}
       <button
         onClick={onToggle}
-        className="tl-dot absolute -left-[52px] top-5"
+        className="tl-dot"
         style={{
+          position: "absolute",
+          left: -52,
+          top: 20,
           ...(done
             ? { background: "linear-gradient(135deg,#7c5cff,#5a3ee8)", color: "#fff", boxShadow: "0 0 0 4px rgba(124,92,255,0.18)" }
             : {}),
