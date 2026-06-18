@@ -309,28 +309,37 @@ export default function StatsSection() {
           border: "1px solid rgba(124,92,255,0.15)",
           borderRadius: 16,
           padding: "24px 32px",
-          display: "flex", flexWrap: "wrap", gap: 32, justifyContent: "space-around", alignItems: "center",
         }}>
-          {[
-            { stat: "65%", label: "felt lonely in their first 2 weeks" },
-            { stat: "1 in 3", label: "had never heard of an IRP before arriving" },
-            { stat: "89%", label: "found peer advice more useful than official guides" },
-          ].map(s => (
-            <div key={s.stat} style={{ textAlign: "center" }}>
-              <div style={{
-                fontFamily: "'Fraunces', Georgia, serif",
-                fontSize: "2rem", fontWeight: 900,
-                background: "linear-gradient(135deg, #7c5cff, #c8b8ff)",
-                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                lineHeight: 1,
-              }}>
-                {s.stat}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 32, justifyContent: "space-around", alignItems: "center", marginBottom: 16 }}>
+            {[
+              { stat: "~65%", label: "of college students report feeling lonely (Active Minds, 2024)", href: "https://activeminds.org/press-release/new-data-emphasizes-the-correlation-between-loneliness-and-student-mental-health/" },
+              { stat: "1 in 3", label: "international students cite accommodation as their #1 arrival challenge (OECD, 2024)", href: "https://www.oecd.org/en/publications/international-students-in-higher-education_005ff28d-en.html" },
+              { stat: "9.5%", label: "of international students present with social isolation vs 6.7% of domestic students (CCMH, 2023)", href: "https://ccmh.psu.edu/index.php?option=com_dailyplanetblog&view=entry&year=2023&month=09&day=07&id=44" },
+            ].map(s => (
+              <div key={s.stat} style={{ textAlign: "center", maxWidth: 200 }}>
+                <div style={{
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontSize: "2rem", fontWeight: 900,
+                  background: "linear-gradient(135deg, #7c5cff, #c8b8ff)",
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                  lineHeight: 1,
+                }}>
+                  {s.stat}
+                </div>
+                <div style={{ fontSize: "0.78rem", color: "#6b5a8e", marginTop: 6, lineHeight: 1.5 }}>
+                  {s.label}{" "}
+                  <a href={s.href} target="_blank" rel="noopener noreferrer"
+                    style={{ color: "#9b8ec8", fontSize: "0.68rem", textDecoration: "underline", textUnderlineOffset: 2 }}>
+                    ↗
+                  </a>
+                </div>
               </div>
-              <div style={{ fontSize: "0.8rem", color: "#6b5a8e", marginTop: 6, maxWidth: 160 }}>
-                {s.label}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <p style={{ fontSize: "0.65rem", color: "#b0a0cc", textAlign: "center", lineHeight: 1.6, borderTop: "1px solid rgba(200,184,255,0.25)", paddingTop: 12, margin: 0 }}>
+            The bar chart and radar data are directional estimates based on Wellforward founder interviews and UCD SU research — not from a formal survey.
+            The three statistics above are from published third-party sources linked above.
+          </p>
         </div>
 
       </div>

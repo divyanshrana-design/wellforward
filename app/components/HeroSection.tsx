@@ -281,7 +281,7 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
                 marginTop: 4,
               }}
             >
-              Built by a UCD student who figured it out the hard way.
+              Built by UCD students who figured it out the hard way.
               IRP appointments, PPSN, bank accounts, Leap cards, finding
               people who actually get it.{" "}
               <span style={{ color: "#7c5cff", fontWeight: 600 }}>
@@ -338,13 +338,13 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
       >
         <div className="max-w-6xl mx-auto px-5 sm:px-10 py-4 flex items-center gap-4 justify-center flex-wrap">
           <span style={{ fontSize: "0.72rem", color: "#b0a0cc", fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-            Built for students of
+            Built by and for students of
           </span>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/ucd-logo.svg"
+            src="/ucd-logo-real.png"
             alt="UCD Michael Smurfit Graduate Business School"
-            style={{ height: 40, width: "auto", objectFit: "contain", opacity: 0.88 }}
+            style={{ height: 40, width: "auto", objectFit: "contain", opacity: 0.92 }}
           />
           <span style={{ fontSize: "0.82rem", color: "#38285c", fontWeight: 600 }}>
             UCD Michael Smurfit Graduate Business School
