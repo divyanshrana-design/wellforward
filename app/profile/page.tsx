@@ -359,6 +359,7 @@ export default function ProfilePage() {
                   overflow: "hidden",
                   boxShadow: "0 4px 16px -4px rgba(124,92,255,0.3)",
                   marginBottom: 14,
+                  cursor: editMode ? "pointer" : "default",
                 }}>
                   {displayPhoto ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -371,6 +372,18 @@ export default function ProfilePage() {
                     </div>
                   )}
                 </div>
+                {!displayPhoto && !editMode && (
+                  <button
+                    onClick={() => setEditMode(true)}
+                    style={{
+                      marginBottom: 8, background: "none", border: "none",
+                      fontSize: "0.7rem", color: "#9b8ec8", cursor: "pointer",
+                      display: "flex", alignItems: "center", gap: 4,
+                    }}
+                  >
+                    <Camera size={11} /> Add a photo — it helps others recognise you
+                  </button>
+                )}
 
                 {/* Name + role badge */}
                 <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
@@ -463,7 +476,7 @@ export default function ProfilePage() {
                 )}
 
                 {/* Contact links */}
-                {(form.linkedin || form.instagram || form.contactEmail) && (
+                {(form.linkedin || form.instagram || form.contactEmail) ? (
                   <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 8 }}>
                     {form.linkedin && (
                       <a href={form.linkedin} target="_blank" rel="noopener noreferrer"
@@ -486,6 +499,22 @@ export default function ProfilePage() {
                         <span style={{ borderBottom: "1px solid rgba(124,92,255,0.3)" }}>{form.contactEmail}</span>
                       </a>
                     )}
+                  </div>
+                ) : !editMode && (
+                  <div style={{
+                    marginTop: 18, padding: "12px 14px", borderRadius: 10,
+                    background: "rgba(124,92,255,0.05)", border: "1px dashed rgba(124,92,255,0.2)",
+                    display: "flex", alignItems: "center", gap: 10,
+                  }}>
+                    <span style={{ fontSize: "1rem" }}>👁</span>
+                    <div>
+                      <p style={{ fontSize: "0.78rem", color: "#6b5a8e", margin: "0 0 4px", fontWeight: 600 }}>
+                        Add your contact details
+                      </p>
+                      <p style={{ fontSize: "0.72rem", color: "#9b8ec8", margin: 0, lineHeight: 1.5 }}>
+                        LinkedIn, Instagram or email — these are shown to other logged-in users so they can reach you.
+                      </p>
+                    </div>
                   </div>
                 )}
 
@@ -593,8 +622,11 @@ export default function ProfilePage() {
 
                   {/* ── Social links ── */}
                   <div style={{ borderTop: "1px solid #f0ecff", paddingTop: 14 }}>
-                    <p style={{ fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.07em", color: "#b0a0cc", textTransform: "uppercase", marginBottom: 12 }}>
+                    <p style={{ fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.07em", color: "#b0a0cc", textTransform: "uppercase", marginBottom: 6 }}>
                       Contact &amp; Social
+                    </p>
+                    <p style={{ fontSize: "0.72rem", color: "#9b8ec8", marginBottom: 12, display: "flex", alignItems: "center", gap: 5 }}>
+                      <span style={{ fontSize: "0.8rem" }}>👁</span> Shown to other logged-in Wellforward users in your profile card
                     </p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       <div>
