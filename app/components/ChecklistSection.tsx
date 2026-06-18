@@ -98,28 +98,7 @@ function TaskCard({ task, done, onToggle, index }: {
   const xp = TASK_XP[task.id] ?? 50;
 
   return (
-    <div ref={ref} className="reveal" style={{ transitionDelay: `${index * 40}ms`, position: "relative" }}>
-      {/* Timeline dot — sits to the LEFT of the vertical line */}
-      <button
-        onClick={onToggle}
-        className="tl-dot"
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 18,
-          zIndex: 2,
-          ...(done
-            ? { background: "linear-gradient(135deg,#7c5cff,#5a3ee8)", color: "#fff", boxShadow: "0 0 0 4px rgba(124,92,255,0.18)" }
-            : { background: "white", border: "2px solid rgba(124,92,255,0.3)", color: "#7c5cff" }),
-        } as React.CSSProperties}
-        aria-label={`${done ? "Uncheck" : "Check"} ${task.title}`}
-      >
-        {done
-          ? <CheckCircle2 size={15} />
-          : <Circle size={15} style={{ color: "#7c5cff" }} />
-        }
-      </button>
-
+    <div ref={ref} className="reveal" style={{ transitionDelay: `${index * 40}ms` }}>
       <div
         className="card overflow-hidden"
         style={{
@@ -478,17 +457,37 @@ export default function ChecklistSection() {
           </div>
 
           {/* Timeline */}
-          <div style={{ position: "relative", paddingLeft: 56 }}>
-            {/* Vertical line — sits 44px from left, to the right of the dots */}
+          <div style={{ position: "relative", paddingLeft: 72 }}>
+            {/* Vertical line — 20px from left edge of this container */}
             <div aria-hidden="true" style={{
               position: "absolute",
-              left: 44, top: 20, bottom: 20,
+              left: 20, top: 0, bottom: 0,
               width: 2,
               background: "linear-gradient(180deg, #7c5cff 0%, rgba(200,184,255,0.3) 100%)",
             }} />
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {tasks.map((t, i) => (
                 <div key={t.id} style={{ position: "relative" }}>
+                  {/* Dot button — absolutely positioned at left edge of container, centered on line */}
+                  <button
+                    onClick={() => toggle(t.id)}
+                    className="tl-dot"
+                    style={{
+                      position: "absolute",
+                      left: -68,
+                      top: 16,
+                      zIndex: 2,
+                      ...(done[t.id]
+                        ? { background: "linear-gradient(135deg,#7c5cff,#5a3ee8)", color: "#fff", boxShadow: "0 0 0 4px rgba(124,92,255,0.18)" }
+                        : { background: "white", border: "2px solid rgba(124,92,255,0.3)", color: "#7c5cff" }),
+                    } as React.CSSProperties}
+                    aria-label={`${done[t.id] ? "Uncheck" : "Check"} ${t.title}`}
+                  >
+                    {done[t.id]
+                      ? <CheckCircle2 size={15} />
+                      : <Circle size={15} style={{ color: "#7c5cff" }} />
+                    }
+                  </button>
                   <TaskCard task={t} done={!!done[t.id]} onToggle={() => toggle(t.id)} index={i} />
                 </div>
               ))}
