@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
-import { X, Link2, Share2, Filter, Lock, ArrowRight, AlertCircle, Mail } from "lucide-react";
+import { X, Link2, Filter, Lock, ArrowRight, AlertCircle, Mail } from "lucide-react";
 import Link from "next/link";
 import { INTEREST_TAGS, StudentProfile } from "@/lib/data";
 // Note: static STUDENT_PROFILES no longer used — profiles come from /api/students
