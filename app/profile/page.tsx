@@ -28,6 +28,13 @@ function getInitials(name: string) {
   return name.split(" ").filter(Boolean).map(n => n[0]).join("").toUpperCase().slice(0, 2);
 }
 
+// Ensure a URL always has a protocol so it doesn't resolve relative to current domain
+function ensureHttps(url: string): string {
+  if (!url) return url;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return "https://" + url;
+}
+
 const AVATAR_COLORS = [
   "from-violet-500 to-purple-700",
   "from-indigo-500 to-blue-700",
@@ -479,7 +486,7 @@ export default function ProfilePage() {
                 {(form.linkedin || form.instagram || form.contactEmail) ? (
                   <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 8 }}>
                     {form.linkedin && (
-                      <a href={form.linkedin} target="_blank" rel="noopener noreferrer"
+                      <a href={ensureHttps(form.linkedin)} target="_blank" rel="noopener noreferrer"
                         style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.82rem", color: "#0077b5", textDecoration: "none" }}>
                         <Link2 size={14} style={{ color: "#0077b5" }} />
                         <span style={{ borderBottom: "1px solid rgba(0,119,181,0.3)" }}>LinkedIn</span>

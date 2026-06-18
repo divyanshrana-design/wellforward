@@ -98,18 +98,19 @@ function TaskCard({ task, done, onToggle, index }: {
   const xp = TASK_XP[task.id] ?? 50;
 
   return (
-    <div ref={ref} className="reveal" style={{ marginLeft: 52, transitionDelay: `${index * 40}ms`, position: "relative" }}>
-      {/* Timeline dot — anchored to this reveal wrapper via position:relative above */}
+    <div ref={ref} className="reveal" style={{ transitionDelay: `${index * 40}ms`, position: "relative" }}>
+      {/* Timeline dot — sits to the LEFT of the vertical line */}
       <button
         onClick={onToggle}
         className="tl-dot"
         style={{
           position: "absolute",
-          left: -52,
-          top: 20,
+          left: 0,
+          top: 18,
+          zIndex: 2,
           ...(done
             ? { background: "linear-gradient(135deg,#7c5cff,#5a3ee8)", color: "#fff", boxShadow: "0 0 0 4px rgba(124,92,255,0.18)" }
-            : {}),
+            : { background: "white", border: "2px solid rgba(124,92,255,0.3)", color: "#7c5cff" }),
         } as React.CSSProperties}
         aria-label={`${done ? "Uncheck" : "Check"} ${task.title}`}
       >
@@ -477,10 +478,11 @@ export default function ChecklistSection() {
           </div>
 
           {/* Timeline */}
-          <div style={{ position: "relative", paddingLeft: 8 }}>
+          <div style={{ position: "relative", paddingLeft: 56 }}>
+            {/* Vertical line — sits 44px from left, to the right of the dots */}
             <div aria-hidden="true" style={{
               position: "absolute",
-              left: 20, top: 20, bottom: 20,
+              left: 44, top: 20, bottom: 20,
               width: 2,
               background: "linear-gradient(180deg, #7c5cff 0%, rgba(200,184,255,0.3) 100%)",
             }} />

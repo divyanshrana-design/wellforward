@@ -44,6 +44,7 @@ export async function GET() {
       photoUrl: u.photo_url ?? null,
       linkedin: u.linkedin ?? null,
       instagram: u.instagram ?? null,
+      contactEmail: u.contact_email ?? null,
       isNew: (Date.now() - new Date(u.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000,
     }));
 

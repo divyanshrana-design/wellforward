@@ -12,6 +12,7 @@ export interface StudentProfile {
   tags: string[];
   instagram?: string | null;
   linkedin?: string | null;
+  contactEmail?: string | null;
   avatarColor: string;
   isNew?: boolean;
   photoUrl?: string | null;

@@ -1,13 +1,30 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
-import { X, Link2, Share2, Filter, Lock, ArrowRight, AlertCircle } from "lucide-react";
+import { X, Link2, Share2, Filter, Lock, ArrowRight, AlertCircle, Mail } from "lucide-react";
 import Link from "next/link";
 import { INTEREST_TAGS, StudentProfile } from "@/lib/data";
 // Note: static STUDENT_PROFILES no longer used — profiles come from /api/students
 
+function InstagramIcon({ size = 15 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <circle cx="12" cy="12" r="4"/>
+      <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/>
+    </svg>
+  );
+}
+
 function getInitials(name: string) {
   return name.split(" ").map(n => n[0]).join("").toUpperCase();
+}
+
+// Ensure URL always has a protocol — prevents relative-path redirects
+function ensureHttps(url: string): string {
+  if (!url) return url;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return "https://" + url;
 }
 
 /* ─── Scroll reveal hook ─────────────────────────────────────── */
@@ -215,8 +232,9 @@ function ProfileCard({ profile, onClick, index }: { profile: StudentProfile; onC
         </div>
 
         <div className="flex items-center gap-2 pt-2" style={{ borderTop: "1px solid rgba(200,184,255,0.25)" }}>
-          {profile.instagram && <Share2 size={13} style={{ color: "#9b8ec8" }} aria-label="Instagram" />}
+          {profile.instagram && <InstagramIcon size={13} aria-label="Instagram" />}
           {profile.linkedin  && <Link2  size={13} style={{ color: "#9b8ec8" }} aria-label="LinkedIn" />}
+          {profile.contactEmail && <Mail size={13} style={{ color: "#9b8ec8" }} aria-label="Email" />}
           <span className="ml-auto text-xs font-medium" style={{ color: "#7c5cff", opacity: 0.85 }}>
             say hi →
           </span>
@@ -294,22 +312,37 @@ function ProfileModal({ profile, onClose }: { profile: StudentProfile; onClose: 
         <div className="flex flex-col gap-2 mb-4">
           {profile.instagram && (
             <a
-              href={profile.instagram} target="_blank" rel="noopener noreferrer"
-              className="btn-primary flex items-center justify-center gap-2 py-3 text-sm"
-              style={{ textDecoration: "none", borderRadius: 10 }}
+              href={`https://instagram.com/${profile.instagram.replace(/^@/, '')}`} target="_blank" rel="noopener noreferrer"
+              style={{
+                textDecoration: "none", borderRadius: 10,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                padding: "12px", fontSize: "0.875rem", fontWeight: 600,
+                background: "linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)",
+                color: "white",
+              }}
             >
-              <Share2 size={15} />
+              <InstagramIcon size={15} />
               Connect on Instagram
             </a>
           )}
           {profile.linkedin && (
             <a
-              href={profile.linkedin} target="_blank" rel="noopener noreferrer"
+              href={ensureHttps(profile.linkedin)} target="_blank" rel="noopener noreferrer"
               className="btn-secondary flex items-center justify-center gap-2 py-3 text-sm"
               style={{ textDecoration: "none", borderRadius: 10 }}
             >
               <Link2 size={15} />
               Connect on LinkedIn
+            </a>
+          )}
+          {profile.contactEmail && (
+            <a
+              href={`mailto:${profile.contactEmail}`}
+              className="btn-secondary flex items-center justify-center gap-2 py-3 text-sm"
+              style={{ textDecoration: "none", borderRadius: 10 }}
+            >
+              <Mail size={15} />
+              Send an email
             </a>
           )}
         </div>

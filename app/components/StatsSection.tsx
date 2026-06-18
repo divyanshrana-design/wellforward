@@ -242,7 +242,7 @@ export default function StatsSection() {
             <Bar label="Feeling socially isolated" value={49} max={100} color="linear-gradient(90deg,#ec4899,#f472b6)" delay={300} />
             <Bar label="Navigating public transport" value={38} max={100} color="linear-gradient(90deg,#7c5cff,#a78bfa)" delay={400} />
             <p style={{ fontSize: "0.68rem", color: "#b0a0cc", marginTop: 10 }}>
-              Sources: OECD International Student Report 2024; UCD SU housing report 2025
+              Directional estimates — Wellforward founder interviews &amp; UCD SU surveys. Not a formal study.
             </p>
           </div>
 
@@ -276,7 +276,7 @@ export default function StatsSection() {
               ))}
             </div>
             <p style={{ fontSize: "0.68rem", color: "#b0a0cc", marginTop: 12, textAlign: "center" }}>
-              UCD Smurfit 2024/25 cohort (approx.)
+              Approximate — based on publicly available UCD international admissions data 2024/25
             </p>
           </div>
 
@@ -296,7 +296,7 @@ export default function StatsSection() {
               % of students who felt underprepared in each area on arrival
             </p>
             <p style={{ fontSize: "0.68rem", color: "#b0a0cc", marginTop: 8, textAlign: "center" }}>
-              Based on Wellforward onboarding interviews &amp; UCD SU research 2024/25
+              Directional estimates — Wellforward founder interviews, not a formal survey
             </p>
           </div>
 

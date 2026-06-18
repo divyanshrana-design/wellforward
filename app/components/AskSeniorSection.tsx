@@ -34,6 +34,13 @@ function getInitials(name: string) {
   return name.split(" ").map(n => n[0]).join("").toUpperCase();
 }
 
+// Ensure URL always has a protocol — prevents relative-path redirects
+function ensureHttps(url: string): string {
+  if (!url) return url;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return "https://" + url;
+}
+
 /* ─── Login Gate Overlay ────────────────────────────────────── */
 function LoginGate() {
   return (
@@ -278,7 +285,7 @@ function SeniorModal({ senior, onClose }: { senior: SeniorProfile; onClose: () =
           )}
           {senior.linkedin && (
             <a
-              href={senior.linkedin} target="_blank" rel="noopener noreferrer"
+              href={ensureHttps(senior.linkedin)} target="_blank" rel="noopener noreferrer"
               className="btn-secondary flex items-center justify-center gap-2 py-3 text-sm"
               style={{ textDecoration: "none", borderRadius: 10 }}
             >
