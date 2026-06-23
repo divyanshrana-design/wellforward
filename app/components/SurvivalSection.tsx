@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import BubbleField from "./BubbleField";
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -30,6 +31,7 @@ function SurvivalCard({
   summary,
   accentGradient,
   delay = 0,
+  offset = 0,
   detail,
 }: {
   num: string;
@@ -39,6 +41,7 @@ function SurvivalCard({
   summary: string;
   accentGradient: string;
   delay?: number;
+  offset?: number;
   detail: React.ReactNode;
 }) {
   const ref = useReveal();
@@ -47,10 +50,11 @@ function SurvivalCard({
   return (
     <div
       ref={ref}
-      className="reveal survival-card"
+      className="reveal survival-card bubble-card"
       style={{
         transitionDelay: `${delay}ms`,
         "--accent-gradient": accentGradient,
+        marginTop: offset,
         cursor: "pointer",
       } as React.CSSProperties}
       onClick={() => setOpen(!open)}
@@ -59,76 +63,87 @@ function SurvivalCard({
       tabIndex={0}
       onKeyDown={e => e.key === "Enter" && setOpen(!open)}
     >
-      {/* Number */}
-      <div className="survival-num" style={{ background: accentGradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-        {num}
-      </div>
+      {/* Frosted bubbles + cursor-following liquid glow (canvas, behind content) */}
+      <BubbleField accentGradient={accentGradient} />
 
-      {/* Top row */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 10 }}>
-        <h3 style={{
-          fontFamily: "'Fraunces', Georgia, serif",
-          fontSize: "1.25rem",
-          fontWeight: 700,
-          color: "#1a0f2e",
-          letterSpacing: "-0.02em",
-          lineHeight: 1.2,
-        }}>
-          {title}
-        </h3>
-        <span style={{
-          fontSize: "0.65rem",
-          fontWeight: 700,
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          padding: "3px 9px",
-          borderRadius: 999,
-          background: urgency === "Do before you land" ? "rgba(124,92,255,0.12)" : "rgba(200,184,255,0.3)",
-          color: urgency === "Do before you land" ? "#5a3ee8" : "#6b5a8e",
-          whiteSpace: "nowrap",
-          flexShrink: 0,
-        }}>
-          {urgency}
-        </span>
-      </div>
-
-      <p style={{ fontSize: "0.9rem", color: "#38285c", lineHeight: 1.65, marginBottom: 14 }}>
-        {summary}
-      </p>
-
-      {/* Expand toggle */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 6,
-        fontSize: "0.8rem",
-        fontWeight: 600,
-        color: "#7c5cff",
-        userSelect: "none",
-      }}>
-        <span>{open ? "Hide details" : "How to do it →"}</span>
-        <span style={{
-          display: "inline-block",
-          transform: open ? "rotate(180deg)" : "rotate(0deg)",
-          transition: "transform 0.25s ease",
-          fontSize: "0.7rem",
-        }}>▼</span>
-      </div>
-
-      {/* Expanded detail */}
-      {open && (
-        <div
-          style={{
-            marginTop: 18,
-            paddingTop: 18,
-            borderTop: "1px dashed rgba(124,92,255,0.15)",
-            animation: "slideUp 0.3s ease",
-          }}
-          onClick={e => e.stopPropagation()}
-        >
-          {detail}
+      {/* Content sits above the bubble canvas */}
+      <div className="bubble-card-content" style={{ position: "relative", zIndex: 1 }}>
+        {/* Number — glassy bubble treatment */}
+        <div className="survival-num-wrap">
+          <span
+            className="survival-num"
+            style={{ background: accentGradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
+          >
+            {num}
+          </span>
         </div>
-      )}
+
+        {/* Top row */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 10 }}>
+          <h3 style={{
+            fontFamily: "'Fraunces', Georgia, serif",
+            fontSize: "1.25rem",
+            fontWeight: 700,
+            color: "#1a0f2e",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.2,
+          }}>
+            {title}
+          </h3>
+          <span style={{
+            fontSize: "0.65rem",
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            padding: "3px 9px",
+            borderRadius: 999,
+            background: urgency === "Do before you land" ? "rgba(124,92,255,0.12)" : "rgba(200,184,255,0.3)",
+            color: urgency === "Do before you land" ? "#5a3ee8" : "#6b5a8e",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+          }}>
+            {urgency}
+          </span>
+        </div>
+
+        <p style={{ fontSize: "0.9rem", color: "#38285c", lineHeight: 1.65, marginBottom: 14 }}>
+          {summary}
+        </p>
+
+        {/* Expand toggle */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          fontSize: "0.8rem",
+          fontWeight: 600,
+          color: "#7c5cff",
+          userSelect: "none",
+        }}>
+          <span>{open ? "Hide details" : "How to do it →"}</span>
+          <span style={{
+            display: "inline-block",
+            transform: open ? "rotate(180deg)" : "rotate(0deg)",
+            transition: "transform 0.25s ease",
+            fontSize: "0.7rem",
+          }}>▼</span>
+        </div>
+
+        {/* Expanded detail */}
+        {open && (
+          <div
+            style={{
+              marginTop: 18,
+              paddingTop: 18,
+              borderTop: "1px dashed rgba(124,92,255,0.15)",
+              animation: "slideUp 0.3s ease",
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {detail}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -342,17 +357,25 @@ export default function SurvivalSection() {
           </p>
         </div>
 
-        {/* Cards grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 340px), 1fr))",
-            gap: 20,
-          }}
-        >
-          {cards.map((card, i) => (
-            <SurvivalCard key={card.num} {...card} delay={i * 80} />
-          ))}
+        {/* Cards grid — staggered editorial arrangement.
+            On wide screens we drop into a 3-column masonry-ish layout where
+            alternating columns are nudged down, giving the section a relaxed,
+            magazine-like rhythm instead of a rigid grid. */}
+        <div className="survival-grid">
+          {cards.map((card, i) => {
+            // Column-based vertical offset for the staggered look.
+            // (CSS clamps this to 0 on narrow screens via .survival-grid rules.)
+            const col = i % 3;
+            const offsets = [0, 38, 18];
+            return (
+              <SurvivalCard
+                key={card.num}
+                {...card}
+                delay={i * 90}
+                offset={offsets[col]}
+              />
+            );
+          })}
         </div>
 
         {/* Bottom note */}
