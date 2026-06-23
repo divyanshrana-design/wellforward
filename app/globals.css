@@ -817,3 +817,90 @@ p { line-height: 1.7; }
 
 /* Flag emoji */
 .flag-emoji { font-size: 1.1rem; line-height: 1; }
+
+/* ── Visas / stamp-journey page ─────────────────────────────── */
+.visa-flow {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.visa-flow-item {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 150px;
+}
+.visa-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  flex: 1;
+  padding: 16px 10px;
+  border-radius: 16px;
+  border: 1.5px solid var(--line);
+  background: rgba(255,255,255,0.9);
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-out), box-shadow 0.25s ease,
+              border-color 0.25s ease, background 0.25s ease;
+}
+.visa-node:hover { transform: translateY(-3px); }
+.visa-node-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
+.visa-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-muted);
+  flex-shrink: 0;
+  padding: 0 2px;
+}
+@media (max-width: 720px) {
+  .visa-flow { flex-direction: column; }
+  .visa-flow-item { width: 100%; flex-direction: column; }
+  .visa-arrow { transform: rotate(90deg); padding: 6px 0; }
+}
+
+/* Comparison table */
+.visa-compare-head,
+.visa-compare-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1.4fr 1.4fr;
+}
+.visa-compare-cell {
+  padding: 14px 16px;
+  font-size: 0.86rem;
+  color: #38285c;
+  line-height: 1.55;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.visa-compare-head .visa-compare-cell {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  justify-content: flex-start;
+}
+.visa-compare-rowlabel {
+  font-weight: 600;
+  color: #1a0f2e;
+  background: rgba(237,232,255,0.45);
+}
+.visa-compare-row { border-top: 1px solid var(--line); }
+@media (max-width: 640px) {
+  .visa-compare-head { display: none; }
+  .visa-compare-row { grid-template-columns: 1fr; }
+  .visa-compare-row .visa-compare-cell:nth-child(2)::before { content: "Stamp 2 — "; font-weight: 700; color: #7c5cff; }
+  .visa-compare-row .visa-compare-cell:nth-child(3)::before { content: "Stamp 1G — "; font-weight: 700; color: #0ea5e9; }
+}

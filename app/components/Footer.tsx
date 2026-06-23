@@ -17,6 +17,7 @@ const NAV_LINKS = [
   { label: "Meet people",   href: "/meet-people"   },
   { label: "Ask a senior",  href: "/ask-a-senior"  },
   { label: "First 30 days", href: "/first-30-days" },
+  { label: "Visa guide",    href: "/visas"         },
   { label: "Student voices",href: "/voices"        },
   { label: "Join free",     href: "/join"          },
 ];
