@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import BubbleField from "./BubbleField";
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -23,15 +22,17 @@ function useReveal() {
   return ref;
 }
 
-// Each card can expand to show more detail
+// A single bento tile. `area` maps it to a CSS grid-area for the bento layout.
 function SurvivalCard({
   num,
   title,
   urgency,
   summary,
   accentGradient,
+  icon,
+  area,
+  featured = false,
   delay = 0,
-  offset = 0,
   detail,
 }: {
   num: string;
@@ -40,111 +41,70 @@ function SurvivalCard({
   urgencyColor: string;
   summary: string;
   accentGradient: string;
+  icon: string;
+  area: string;
+  featured?: boolean;
   delay?: number;
-  offset?: number;
   detail: React.ReactNode;
 }) {
   const ref = useReveal();
   const [open, setOpen] = useState(false);
 
   return (
-    <div
+    <article
       ref={ref}
-      className="reveal survival-card bubble-card"
+      className={`reveal survival-card${featured ? " survival-card--featured" : ""}${open ? " is-open" : ""}`}
       style={{
         transitionDelay: `${delay}ms`,
         "--accent-gradient": accentGradient,
-        marginTop: offset,
-        cursor: "pointer",
+        gridArea: area,
       } as React.CSSProperties}
       onClick={() => setOpen(!open)}
       role="button"
       aria-expanded={open}
       tabIndex={0}
-      onKeyDown={e => e.key === "Enter" && setOpen(!open)}
+      onKeyDown={e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setOpen(!open))}
     >
-      {/* Frosted bubbles + cursor-following liquid glow (canvas, behind content) */}
-      <BubbleField accentGradient={accentGradient} />
+      {/* Eyebrow row: tiny title label + floating icon chip */}
+      <header className="survival-card__head">
+        <span className="survival-card__label">{title}</span>
+        <span className="survival-card__icon" aria-hidden="true">{icon}</span>
+      </header>
 
-      {/* Content sits above the bubble canvas */}
-      <div className="bubble-card-content" style={{ position: "relative", zIndex: 1 }}>
-        {/* Number — glassy bubble treatment */}
-        <div className="survival-num-wrap">
-          <span
-            className="survival-num"
-            style={{ background: accentGradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
-          >
-            {num}
-          </span>
-        </div>
+      {/* Giant gradient number */}
+      <span
+        className="survival-num"
+        style={{ background: accentGradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
+      >
+        {num}
+      </span>
 
-        {/* Top row */}
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, marginBottom: 10 }}>
-          <h3 style={{
-            fontFamily: "'Fraunces', Georgia, serif",
-            fontSize: "1.25rem",
-            fontWeight: 700,
-            color: "#1a0f2e",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.2,
-          }}>
-            {title}
-          </h3>
-          <span style={{
-            fontSize: "0.65rem",
-            fontWeight: 700,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            padding: "3px 9px",
-            borderRadius: 999,
-            background: urgency === "Do before you land" ? "rgba(124,92,255,0.12)" : "rgba(200,184,255,0.3)",
-            color: urgency === "Do before you land" ? "#5a3ee8" : "#6b5a8e",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-          }}>
-            {urgency}
-          </span>
-        </div>
+      {/* Headline */}
+      <h3 className="survival-card__title">{title}</h3>
 
-        <p style={{ fontSize: "0.9rem", color: "#38285c", lineHeight: 1.65, marginBottom: 14 }}>
-          {summary}
-        </p>
+      {/* Summary — trimmed on small tiles, full on the featured tile */}
+      <p className="survival-card__summary">{summary}</p>
 
-        {/* Expand toggle */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          fontSize: "0.8rem",
-          fontWeight: 600,
-          color: "#7c5cff",
-          userSelect: "none",
-        }}>
-          <span>{open ? "Hide details" : "How to do it →"}</span>
-          <span style={{
-            display: "inline-block",
-            transform: open ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "transform 0.25s ease",
-            fontSize: "0.7rem",
-          }}>▼</span>
-        </div>
-
-        {/* Expanded detail */}
-        {open && (
-          <div
-            style={{
-              marginTop: 18,
-              paddingTop: 18,
-              borderTop: "1px dashed rgba(124,92,255,0.15)",
-              animation: "slideUp 0.3s ease",
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            {detail}
-          </div>
-        )}
+      {/* Footer: urgency pill + expand toggle pinned to the bottom */}
+      <div className="survival-card__footer">
+        <span className="survival-card__pill">{urgency}</span>
+        <span className="survival-card__toggle">
+          {open ? "Hide" : "How to →"}
+          <span className="survival-card__chevron" style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
+        </span>
       </div>
-    </div>
+
+      {/* Expanded detail */}
+      {open && (
+        <div
+          className="survival-card__detail"
+          style={{ animation: "slideUp 0.3s ease" }}
+          onClick={e => e.stopPropagation()}
+        >
+          {detail}
+        </div>
+      )}
+    </article>
   );
 }
 
@@ -201,6 +161,7 @@ export default function SurvivalSection() {
     {
       num: "01",
       title: "IRP Registration",
+      icon: "🛂",
       urgency: "Do before you land",
       urgencyColor: "#5a3ee8",
       summary:
@@ -227,6 +188,7 @@ export default function SurvivalSection() {
     {
       num: "02",
       title: "PPSN: Your Tax Number",
+      icon: "🧾",
       urgency: "Week 1–2",
       urgencyColor: "#6b5a8e",
       summary:
@@ -252,6 +214,7 @@ export default function SurvivalSection() {
     {
       num: "03",
       title: "Bank Account: AIB",
+      icon: "🏦",
       urgency: "Week 1",
       urgencyColor: "#6b5a8e",
       summary:
@@ -278,6 +241,7 @@ export default function SurvivalSection() {
     {
       num: "04",
       title: "Leap Card: Get It Day One",
+      icon: "🚇",
       urgency: "Day of arrival",
       urgencyColor: "#7c5cff",
       summary:
@@ -303,6 +267,7 @@ export default function SurvivalSection() {
     {
       num: "05",
       title: "SIM Card: Go with 48",
+      icon: "📱",
       urgency: "Day of arrival",
       urgencyColor: "#6b5a8e",
       summary:
@@ -357,25 +322,20 @@ export default function SurvivalSection() {
           </p>
         </div>
 
-        {/* Cards grid — staggered editorial arrangement.
-            On wide screens we drop into a 3-column masonry-ish layout where
-            alternating columns are nudged down, giving the section a relaxed,
-            magazine-like rhythm instead of a rigid grid. */}
-        <div className="survival-grid">
-          {cards.map((card, i) => {
-            // Column-based vertical offset for the staggered look.
-            // (CSS clamps this to 0 on narrow screens via .survival-grid rules.)
-            const col = i % 3;
-            const offsets = [0, 38, 18];
-            return (
-              <SurvivalCard
-                key={card.num}
-                {...card}
-                delay={i * 90}
-                offset={offsets[col]}
-              />
-            );
-          })}
+        {/* Bento grid — card 01 is the tall feature on the left, 02 wide top-right,
+            03 tall on the right, 04 + 05 across the bottom. Layout is driven by
+            named grid-areas in globals.css (.survival-bento) and collapses to a
+            single column on mobile. */}
+        <div className="survival-bento">
+          {cards.map((card, i) => (
+            <SurvivalCard
+              key={card.num}
+              {...card}
+              area={`card${i + 1}`}
+              featured={i === 0}
+              delay={i * 90}
+            />
+          ))}
         </div>
 
         {/* Bottom note */}

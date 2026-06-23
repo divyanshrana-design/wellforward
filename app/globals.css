@@ -538,135 +538,231 @@ p { line-height: 1.7; }
 }
 
 /* ═══════════════════════════════════════════════
-   SURVIVAL SECTION (new below-hero section)
+   SURVIVAL SECTION — "Your first week in Dublin" bento
 ═══════════════════════════════════════════════ */
 
-/* Staggered editorial grid: single column on mobile, 2 on tablet,
-   3 on desktop. The per-card marginTop offsets (set inline) only apply
-   when there's room for multiple columns — collapsed to 0 below. */
-.survival-grid {
+/* ---- Bento grid -------------------------------------------------
+   Desktop: 3 columns / 3 rows.
+     card1 = tall feature (col 1, rows 1-2)
+     card2 = wide (cols 2-3, row 1)
+     card3 = tall  (col 3, rows 2-3)
+     card4 = (col 1, row 3)  card5 = (col 2, row 3)
+   Mobile collapses to a single column in numeric order.
+------------------------------------------------------------------ */
+.survival-bento {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 22px;
-  align-items: start;
+  gap: 18px;
+  grid-template-areas:
+    "card1"
+    "card2"
+    "card3"
+    "card4"
+    "card5";
 }
-@media (min-width: 720px) {
-  .survival-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+@media (min-width: 700px) {
+  .survival-bento {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    grid-template-areas:
+      "card1 card2"
+      "card1 card3"
+      "card4 card3"
+      "card5 card5";
+  }
 }
-@media (min-width: 1040px) {
-  .survival-grid { grid-template-columns: repeat(3, 1fr); gap: 28px; }
-}
-/* Below the 3-col breakpoint the staggered offsets look broken, so kill them. */
-@media (max-width: 1039px) {
-  .survival-card { margin-top: 0 !important; }
+@media (min-width: 1000px) {
+  .survival-bento {
+    grid-template-columns: 1.15fr 1fr 1fr;
+    grid-auto-rows: 1fr;
+    gap: 22px;
+    grid-template-areas:
+      "card1 card2 card2"
+      "card1 card4 card3"
+      "card5 card4 card3";
+  }
 }
 
+/* ---- Card shell ------------------------------------------------- */
 .survival-card {
-  /* Soft frosted-glass surface */
-  background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.78));
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
-  backdrop-filter: blur(14px) saturate(150%);
-  border: 1px solid rgba(255,255,255,0.65);
-  border-radius: 22px;
-  padding: 34px;
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.7) inset,
-    var(--shadow-sm);
-  transition:
-    transform 0.4s var(--ease-out),
-    box-shadow 0.4s ease,
-    border-color 0.4s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid rgba(124, 92, 255, 0.10);
+  border-radius: 22px;
+  padding: 24px 24px 22px;
+  box-shadow: 0 10px 30px -16px rgba(58, 40, 92, 0.22);
+  cursor: pointer;
   overflow: hidden;
   isolation: isolate;
+  transition:
+    transform 0.5s var(--ease-out),
+    box-shadow 0.5s var(--ease-out),
+    border-color 0.4s ease;
+  will-change: transform;
 }
-/* Accent top bar with a sheen sweep that runs across on hover */
+/* soft accent wash that blooms from the top-right on hover */
 .survival-card::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--accent-gradient, linear-gradient(90deg, #7c5cff, #c8b8ff));
-  border-radius: 22px 22px 0 0;
-  z-index: 2;
-}
-.survival-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -60%;
-  width: 45%; height: 100%;
-  background: linear-gradient(
-    100deg,
-    transparent,
-    rgba(255,255,255,0.55),
-    transparent
-  );
-  transform: skewX(-18deg);
+  top: -40%; right: -30%;
+  width: 70%; height: 80%;
+  background: var(--accent-gradient, linear-gradient(135deg, #7c5cff, #c8b8ff));
+  filter: blur(48px);
   opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.55s ease, transform 0.55s var(--ease-out);
   pointer-events: none;
-  z-index: 3;
+  z-index: 0;
 }
-.survival-card:hover {
-  transform: translateY(-8px) scale(1.012);
-  box-shadow:
-    0 1px 0 rgba(255,255,255,0.8) inset,
-    0 26px 60px -18px rgba(124,92,255,0.38);
-  border-color: rgba(124,92,255,0.28);
+.survival-card > * { position: relative; z-index: 1; }
+
+.survival-card:hover,
+.survival-card:focus-visible {
+  transform: translateY(-6px);
+  box-shadow: 0 26px 60px -22px rgba(124, 92, 255, 0.45);
+  border-color: rgba(124, 92, 255, 0.30);
+  outline: none;
 }
-.survival-card:hover::after {
-  animation: survival-sheen 0.9s var(--ease-out) forwards;
-}
-@keyframes survival-sheen {
-  0%   { left: -60%; opacity: 0; }
-  18%  { opacity: 1; }
-  100% { left: 130%; opacity: 0; }
+.survival-card:hover::before,
+.survival-card:focus-visible::before {
+  opacity: 0.16;
+  transform: scale(1);
 }
 
-.bubble-card-content { position: relative; z-index: 1; }
-
-/* Glassy number "bubble" — frosted pill behind the gradient numeral */
-.survival-num-wrap {
+/* ---- Card header (label + icon chip) ---------------------------- */
+.survival-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+.survival-card__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #1a0f2e;
+}
+.survival-card__icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 14px;
-  padding: 6px 16px;
-  border-radius: 18px;
-  background: linear-gradient(160deg, rgba(255,255,255,0.85), rgba(255,255,255,0.45));
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.7);
-  box-shadow:
-    0 1px 2px rgba(124,92,255,0.12),
-    0 8px 18px -10px rgba(124,92,255,0.35),
-    0 1px 0 rgba(255,255,255,0.9) inset;
-  transition: transform 0.4s var(--ease-out), box-shadow 0.4s ease;
+  width: 40px; height: 40px;
+  border-radius: 13px;
+  font-size: 1.25rem;
+  line-height: 1;
+  background: linear-gradient(160deg, rgba(124,92,255,0.10), rgba(200,184,255,0.18));
+  box-shadow: 0 4px 12px -6px rgba(124,92,255,0.4), 0 1px 0 rgba(255,255,255,0.9) inset;
+  transition: transform 0.5s var(--ease-out);
+  flex-shrink: 0;
 }
-.survival-card:hover .survival-num-wrap {
-  transform: translateY(-2px) scale(1.04);
-  box-shadow:
-    0 2px 4px rgba(124,92,255,0.18),
-    0 14px 26px -10px rgba(124,92,255,0.5),
-    0 1px 0 rgba(255,255,255,1) inset;
+.survival-card:hover .survival-card__icon {
+  transform: translateY(-3px) rotate(-4deg) scale(1.06);
 }
+
+/* ---- Giant gradient number -------------------------------------- */
 .survival-num {
   font-family: var(--font-serif);
-  font-size: 2.6rem;
   font-weight: 900;
-  line-height: 1;
+  line-height: 0.9;
+  font-size: 3.4rem;
+  margin: 6px 0 2px;
   background: var(--accent-gradient, linear-gradient(135deg, #7c5cff, #c8b8ff));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+.survival-card--featured .survival-num { font-size: 5.4rem; }
 
-/* Respect reduced-motion: no sheen, no lift transforms, no scale jitter. */
+/* ---- Title + summary -------------------------------------------- */
+.survival-card__title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 1.12rem;
+  letter-spacing: -0.02em;
+  line-height: 1.22;
+  color: #1a0f2e;
+  margin: 4px 0 8px;
+}
+.survival-card--featured .survival-card__title { font-size: 1.5rem; }
+/* On the featured tile the big title already states the step, so drop the
+   small duplicate label and just keep the icon chip in the header. */
+.survival-card--featured .survival-card__head { justify-content: flex-end; }
+.survival-card--featured .survival-card__label { display: none; }
+
+.survival-card__summary {
+  font-size: 0.88rem;
+  color: #38285c;
+  line-height: 1.62;
+  margin: 0 0 16px;
+  /* clamp on compact tiles so the bento stays tidy */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.survival-card--featured .survival-card__summary {
+  font-size: 0.95rem;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+.survival-card.is-open .survival-card__summary {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+/* ---- Footer (pill + toggle) ------------------------------------- */
+.survival-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+}
+.survival-card__pill {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(124, 92, 255, 0.10);
+  color: #5a3ee8;
+  white-space: nowrap;
+}
+.survival-card__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #7c5cff;
+  white-space: nowrap;
+  user-select: none;
+}
+.survival-card__chevron {
+  display: inline-block;
+  font-size: 0.6rem;
+  transition: transform 0.3s ease;
+}
+
+/* ---- Expanded detail -------------------------------------------- */
+.survival-card__detail {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(124, 92, 255, 0.18);
+}
+
+/* ---- Reduced motion --------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .survival-card,
-  .survival-num-wrap { transition: none; }
-  .survival-card:hover { transform: none; }
-  .survival-card:hover .survival-num-wrap { transform: none; }
-  .survival-card:hover::after { animation: none; }
+  .survival-card__icon { transition: none; }
+  .survival-card:hover,
+  .survival-card:focus-visible { transform: none; }
+  .survival-card:hover .survival-card__icon { transform: none; }
+  .survival-card::before { transition: none; }
 }
 
 /* Flag emoji */
