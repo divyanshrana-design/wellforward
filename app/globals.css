@@ -312,6 +312,15 @@ p { line-height: 1.7; }
 }
 .reveal-child.visible { opacity:1; transform:none; }
 
+/* Checklist task accordion - smooth reveal of the expanded detail panel */
+@keyframes taskDetailIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.task-detail {
+  animation: taskDetailIn 0.28s var(--ease-out);
+}
+
 /* ═══════════════════════════════════════════════
    MODAL
 ═══════════════════════════════════════════════ */

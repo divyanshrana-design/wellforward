@@ -51,25 +51,41 @@ export default function First30DaysPage() {
     }
     document.addEventListener("pointerdown", addRipple);
 
-    setTimeout(() => {
-      document.querySelectorAll<HTMLElement>(".survival-card, .card").forEach(card => {
-        card.addEventListener("pointermove", e => {
-          const rect = card.getBoundingClientRect();
-          const x = (e.clientX - rect.left) / rect.width;
-          const y = (e.clientY - rect.top)  / rect.height;
-          const rx = (0.5 - y) * 6;
-          const ry = (x - 0.5) * 6;
-          card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
-        });
-        card.addEventListener("pointerleave", () => {
-          card.style.transform = "";
-        });
+    // 3D tilt on hover - ONLY for static cards. We deliberately exclude the
+    // checklist `.card` accordions: they expand/collapse, and a `perspective()`
+    // 3D transform on an element whose height changes makes browsers (notably
+    // Safari/iOS) fail to repaint the newly-revealed content, so the card would
+    // appear to "go blank" when opened. Touch devices skip the tilt entirely.
+    let tiltCards: HTMLElement[] = [];
+    const onTiltMove = (e: PointerEvent) => {
+      const card = e.currentTarget as HTMLElement;
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      const rx = (0.5 - y) * 6;
+      const ry = (x - 0.5) * 6;
+      card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+    };
+    const onTiltLeave = (e: PointerEvent) => {
+      (e.currentTarget as HTMLElement).style.transform = "";
+    };
+    const tiltTimer = window.setTimeout(() => {
+      if (isTouchDevice) return;
+      tiltCards = Array.from(document.querySelectorAll<HTMLElement>(".survival-card"));
+      tiltCards.forEach(card => {
+        card.addEventListener("pointermove", onTiltMove);
+        card.addEventListener("pointerleave", onTiltLeave);
       });
     }, 800);
 
     return () => {
       document.body.removeChild(glow);
       document.removeEventListener("pointerdown", addRipple);
+      window.clearTimeout(tiltTimer);
+      tiltCards.forEach(card => {
+        card.removeEventListener("pointermove", onTiltMove);
+        card.removeEventListener("pointerleave", onTiltLeave);
+      });
     };
   }, []);
 

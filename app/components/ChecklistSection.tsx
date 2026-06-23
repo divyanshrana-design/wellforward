@@ -9,12 +9,33 @@ function useReveal() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    // Safety net: if the IntersectionObserver never fires (e.g. the element is
+    // already in view at mount, or observers aren't supported), the card would
+    // be stuck at opacity:0 and clicking it would show nothing ("goes blank").
+    // Reveal anything already on-screen right away, and guarantee a reveal
+    // shortly after mount no matter what.
+    const reveal = () => el.classList.add("visible");
+
+    if (typeof IntersectionObserver === "undefined") {
+      reveal();
+      return;
+    }
+
+    const rect = el.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+    if (inView) reveal();
+
     const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { el.classList.add("visible"); obs.disconnect(); } },
-      { threshold: 0.1 }
+      ([e]) => { if (e.isIntersecting) { reveal(); obs.disconnect(); } },
+      { threshold: 0, rootMargin: "0px 0px -5% 0px" }
     );
     obs.observe(el);
-    return () => obs.disconnect();
+
+    // Absolute fallback: never let a card stay invisible.
+    const t = window.setTimeout(reveal, 600);
+
+    return () => { obs.disconnect(); window.clearTimeout(t); };
   }, []);
   return ref;
 }
@@ -147,7 +168,7 @@ function TaskCard({ task, done, onToggle, index }: {
                 <Zap size={9} /> {xp} XP
               </span>
             </div>
-            <p style={{ fontSize: "0.8rem", color: "#9b8ec8", lineHeight: 1.5, display: open ? "none" : undefined }}
+            <p style={{ fontSize: "0.84rem", color: "#9b8ec8", lineHeight: 1.5, display: open ? "none" : undefined }}
                className="line-clamp-1">
               {task.what}
             </p>
@@ -164,28 +185,28 @@ function TaskCard({ task, done, onToggle, index }: {
 
         {/* Expanded */}
         {open && (
-          <div style={{ borderTop: "1px solid rgba(200,184,255,0.25)", padding: "18px 20px" }}>
-            <div className="grid sm:grid-cols-2 gap-3 mb-4">
+          <div className="task-detail" style={{ borderTop: "1px solid rgba(200,184,255,0.25)", padding: "20px 22px 22px" }}>
+            <div className="grid sm:grid-cols-2 gap-3 mb-5">
               {[
                 { label: "Why it matters", text: task.why },
                 { label: "How long",       text: task.howLong },
               ].map(({ label, text }) => (
-                <div key={label} style={{ background: "rgba(200,184,255,0.15)", borderRadius: 10, padding: "12px 14px" }}>
-                  <p style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "#b0a0cc", marginBottom: 5 }}>{label}</p>
-                  <p style={{ fontSize: "0.82rem", color: "#2a1d50", lineHeight: 1.6 }}>{text}</p>
+                <div key={label} style={{ background: "rgba(200,184,255,0.16)", borderRadius: 12, padding: "14px 16px" }}>
+                  <p style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "#8a78b8", marginBottom: 7 }}>{label}</p>
+                  <p style={{ fontSize: "0.9rem", color: "#2a1d50", lineHeight: 1.65 }}>{text}</p>
                 </div>
               ))}
             </div>
 
-            <div className="mb-4">
-              <p style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "#b0a0cc", marginBottom: 7 }}>
+            <div className="mb-5">
+              <p style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "#8a78b8", marginBottom: 9 }}>
                 What to bring
               </p>
-              <ul style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+              <ul style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {task.whatToBring.map((item, i) => (
-                  <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 7, fontSize: "0.82rem", color: "#2a1d50" }}>
-                    <span style={{ color: "#7c5cff", marginTop: 1, flexShrink: 0 }}>✓</span>
-                    {item}
+                  <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 9, fontSize: "0.9rem", color: "#2a1d50", lineHeight: 1.55 }}>
+                    <span style={{ color: "#7c5cff", marginTop: 2, flexShrink: 0, fontWeight: 700 }}>✓</span>
+                    <span>{item}</span>
                   </li>
                 ))}
               </ul>
@@ -194,28 +215,28 @@ function TaskCard({ task, done, onToggle, index }: {
             <div style={{
               background: "rgba(255,193,7,0.1)",
               border: "1px solid rgba(255,193,7,0.22)",
-              borderRadius: 10,
-              padding: "12px 14px",
-              marginBottom: 14,
+              borderRadius: 12,
+              padding: "14px 16px",
+              marginBottom: 18,
             }}>
-              <p style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "#92400e", marginBottom: 4 }}>
+              <p style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "#92400e", marginBottom: 6 }}>
                 Common pitfall
               </p>
-              <p style={{ fontSize: "0.82rem", color: "#78350f", lineHeight: 1.6 }}>{task.pitfall}</p>
+              <p style={{ fontSize: "0.9rem", color: "#78350f", lineHeight: 1.65 }}>{task.pitfall}</p>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2.5">
               <a
                 href={task.link} target="_blank" rel="noopener noreferrer"
                 className="btn-secondary inline-flex items-center gap-1.5 px-4 py-2 text-sm"
-                style={{ textDecoration: "none", borderRadius: 8 }}
+                style={{ textDecoration: "none", borderRadius: 9 }}
               >
-                {task.linkLabel} <ExternalLink size={12} />
+                {task.linkLabel} <ExternalLink size={13} />
               </a>
               <button
                 onClick={onToggle}
                 className={done ? "btn-secondary" : "btn-primary"}
-                style={{ padding: "8px 16px", fontSize: "0.82rem", borderRadius: 8 }}
+                style={{ padding: "9px 18px", fontSize: "0.85rem", borderRadius: 9 }}
               >
                 {done ? "Mark as undone" : `Mark done  +${xp} XP`}
               </button>
