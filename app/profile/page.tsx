@@ -6,7 +6,7 @@ import MeshBackground from "../components/MeshBackground";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import {
-  Camera, Check, LogOut, Save, ArrowLeft, User,
+  Camera, Check, Save, User,
   Pencil, X, Mail, MapPin,
   GraduationCap, Calendar, Link2,
 } from "lucide-react";
@@ -260,15 +260,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleLogout = async () => {
-    await fetch('/api/me', { method: 'DELETE' });
-    // Clear the navbar's cached auth state so the home page doesn't briefly
-    // show the logged-in buttons after signing out.
-    try { window.sessionStorage.setItem("wf_is_logged_in", "0"); } catch { /* ignore */ }
-    // Full reload so the Navbar (and any cached session state) resets cleanly.
-    window.location.href = '/';
-  };
-
   if (loading) {
     return (
       <main className="relative min-h-screen">
@@ -314,14 +305,8 @@ export default function ProfilePage() {
       <section style={{ padding: "88px 20px 80px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
 
-          {/* Back + header row */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28, flexWrap: "wrap", gap: 12 }}>
-            <button
-              onClick={() => router.back()}
-              style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, color: "#9b8ec8", fontSize: "0.8rem", padding: 0 }}
-            >
-              <ArrowLeft size={13} /> Back
-            </button>
+          {/* Header actions row */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 28, flexWrap: "wrap", gap: 12 }}>
             <div style={{ display: "flex", gap: 10 }}>
               {!editMode ? (
                 <button
@@ -350,20 +335,6 @@ export default function ProfilePage() {
                   <X size={14} /> Cancel
                 </button>
               )}
-              <button
-                onClick={handleLogout}
-                style={{
-                  display: "flex", alignItems: "center", gap: 7,
-                  padding: "9px 18px", borderRadius: 10, cursor: "pointer",
-                  background: "transparent", border: "1.5px solid #ede8ff",
-                  color: "#9b8ec8", fontFamily: "'Inter',sans-serif", fontSize: "0.875rem", fontWeight: 500,
-                  transition: "border-color 0.2s, color 0.2s",
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#ef4444"; (e.currentTarget as HTMLButtonElement).style.color = "#ef4444"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#ede8ff"; (e.currentTarget as HTMLButtonElement).style.color = "#9b8ec8"; }}
-              >
-                <LogOut size={14} /> Sign out
-              </button>
             </div>
           </div>
 
