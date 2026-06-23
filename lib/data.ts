@@ -78,20 +78,49 @@ export const SCHOOLS = [
   "Smurfit Business School",
 ];
 
+// Full list of UCD Michael Smurfit Graduate Business School programmes,
+// grouped by subject area and ordered to mirror the official Smurfit
+// masters listing (smurfitschool.ie/programmes/masters/).
 export const PROGRAMMES: Record<string, string[]> = {
   "Smurfit Business School": [
-    "MBA",
-    "MSc Business Analytics",
-    "MSc Project Management",
-    "MSc Strategic Management",
-    "MSc Management (Corporate Finance)",
-    "MSc Management (Marketing)",
-    "MSc International Business",
-    "MSc Human Resource Management",
-    "MSc Supply Chain Management",
+    // Accounting
+    "Master of Accounting",
+    "MSc Accounting & Financial Management",
+    // Finance
+    "MSc Aviation Finance",
     "MSc Finance",
-    "MSc Accounting",
+    "MSc Financial Data Science",
+    "MSc Quantitative Finance",
+    "MSc Sustainable Finance",
+    // Human Resource Management
+    "MSc Human Resource Management",
+    // Management
+    "MSc Food Business Strategy",
+    "MSc International Business",
+    "MSc International Management / CEMS MIM",
+    "MSc Management",
+    "MSc Management Consultancy",
+    "MSc Project Management",
+    "MSc Project Management (Online, Part-Time)",
+    "MSc Strategic Management",
+    "MSc Sustainable Supply Chain Management",
+    // Management Information Systems
+    "MSc Business Analytics",
+    "MSc Digital Innovation",
+    // Marketing
     "MSc Digital Marketing",
+    "MSc Marketing",
+    "MSc Marketing & Retail Innovation",
+    "MSc Marketing Practice",
+    // UCD Belfield courses run in conjunction with Smurfit
+    "MSc Biotechnology & Business",
+    "MSc Biotherapeutics & Business",
+    "MSc International Law & Business",
+    // MBA
+    "Full-Time MBA",
+    "Executive MBA",
+    // Fallback
+    "Other / Not listed",
   ],
 };
 

@@ -28,7 +28,7 @@ function createTransporter() {
  */
 export async function createAndSendOtp(
   email: string,
-  purpose: 'signup' | 'login' = 'signup'
+  purpose: 'signup' | 'login' | 'reset' = 'signup'
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const normalEmail = email.toLowerCase();
   const code = generateOtp();
@@ -57,11 +57,18 @@ export async function createAndSendOtp(
   // Send email via Gmail SMTP
   const transporter = createTransporter();
   const fromName = process.env.GMAIL_USER ?? 'noreply';
-  const heading = purpose === 'login' ? 'Sign in to Wellforward' : 'Verify your UCD email';
+  const heading =
+    purpose === 'login'
+      ? 'Sign in to Wellforward'
+      : purpose === 'reset'
+        ? 'Reset your Wellforward password'
+        : 'Verify your UCD email';
   const intro =
     purpose === 'login'
       ? 'Enter this code on the Wellforward sign-in page.'
-      : 'Enter this code on the Wellforward sign-up page.';
+      : purpose === 'reset'
+        ? 'Enter this code to reset your Wellforward password.'
+        : 'Enter this code on the Wellforward sign-up page.';
 
   try {
     await transporter.sendMail({
@@ -70,7 +77,9 @@ export async function createAndSendOtp(
       subject:
         purpose === 'login'
           ? 'Your Wellforward sign-in code'
-          : 'Your Wellforward verification code',
+          : purpose === 'reset'
+            ? 'Your Wellforward password reset code'
+            : 'Your Wellforward verification code',
       headers: {
         'X-Mailer': 'Wellforward/1.0',
         'X-Priority': '3',

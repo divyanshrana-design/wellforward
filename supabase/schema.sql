@@ -29,6 +29,10 @@ CREATE TABLE IF NOT EXISTS users (
 ALTER TABLE users ADD COLUMN IF NOT EXISTS linkedin      TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS instagram     TEXT;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS contact_email TEXT;
+-- Password support: scrypt hash stored as "salt:hash" (hex). NULL for legacy
+-- accounts created before passwords were introduced — those users can set a
+-- password via the "forgot password" flow.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash TEXT;
 
 -- Index for fast lookups by role (powers /api/students and /api/seniors)
 CREATE INDEX IF NOT EXISTS users_role_idx  ON users (role);

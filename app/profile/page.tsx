@@ -644,7 +644,9 @@ export default function ProfilePage() {
 
                   {/* Bio */}
                   <div>
-                    <label style={labelStyle}>Short bio</label>
+                    <label style={labelStyle}>
+                      Short bio <span style={{ fontWeight: 400, color: "#b0a0cc" }}>(optional)</span>
+                    </label>
                     <textarea
                       style={{ ...inputStyle, height: 80, resize: "none" }}
                       placeholder="Where you're from, what you're studying, what you're into..."

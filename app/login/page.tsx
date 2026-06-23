@@ -1,84 +1,20 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import MeshBackground from "../components/MeshBackground";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Mail, Check, RefreshCw } from "lucide-react";
-
-/* ─── OTP digit input (same behaviour as the join page) ─────────── */
-function OtpInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const inputs = useRef<(HTMLInputElement | null)[]>([]);
-  const digits = Array.from({ length: 6 }, (_, i) => value[i] ?? "");
-
-  const handleKey = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace") {
-      const target = digits[i] ? i : Math.max(0, i - 1);
-      const next = digits.map((d, idx) => (idx === target ? "" : d)).join("");
-      onChange(next);
-      if (i > 0 && !digits[i]) inputs.current[i - 1]?.focus();
-    }
-  };
-
-  const handleChange = (i: number, v: string) => {
-    const char = v.replace(/\D/g, "").slice(-1);
-    const next = digits.map((d, idx) => (idx === i ? char : d)).join("");
-    onChange(next);
-    if (char && i < 5) inputs.current[i + 1]?.focus();
-  };
-
-  const handlePaste = (e: React.ClipboardEvent) => {
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    onChange(pasted);
-    const focusIdx = Math.min(pasted.length, 5);
-    inputs.current[focusIdx]?.focus();
-    e.preventDefault();
-  };
-
-  return (
-    <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-      {Array.from({ length: 6 }).map((_, i) => (
-        <input
-          key={i}
-          ref={el => { inputs.current[i] = el; }}
-          type="text"
-          inputMode="numeric"
-          maxLength={1}
-          value={digits[i] || ""}
-          onChange={e => handleChange(i, e.target.value)}
-          onKeyDown={e => handleKey(i, e)}
-          onPaste={handlePaste}
-          style={{
-            width: 44, height: 52,
-            border: digits[i] ? "2px solid #7c5cff" : "1.5px solid #ede8ff",
-            borderRadius: 10,
-            textAlign: "center",
-            fontSize: "1.2rem",
-            fontWeight: 700,
-            color: "#1a0f2e",
-            background: digits[i] ? "rgba(124,92,255,0.06)" : "white",
-            outline: "none",
-            transition: "border-color 0.2s, background 0.2s",
-            fontFamily: "'Fraunces', Georgia, serif",
-          }}
-          onFocus={e => e.target.select()}
-          aria-label={`Code digit ${i + 1}`}
-        />
-      ))}
-    </div>
-  );
-}
+import { Lock, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [stage, setStage] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [resendTimer, setResendTimer] = useState(0);
 
   const isUcdEmail = (e: string) =>
     e.toLowerCase().endsWith("@ucdconnect.ie") || e.toLowerCase().endsWith("@ucd.ie");
@@ -91,16 +27,13 @@ export default function LoginPage() {
       .catch(() => {});
   }, [router]);
 
-  // Resend countdown
-  useEffect(() => {
-    if (resendTimer <= 0) return;
-    const t = setTimeout(() => setResendTimer(r => r - 1), 1000);
-    return () => clearTimeout(t);
-  }, [resendTimer]);
-
-  const sendCode = async () => {
+  const signIn = async () => {
     if (!isUcdEmail(email)) {
       setError("Please use your UCD email (@ucdconnect.ie or @ucd.ie).");
+      return;
+    }
+    if (!password) {
+      setError("Please enter your password.");
       return;
     }
     setLoading(true);
@@ -109,46 +42,24 @@ export default function LoginPage() {
       const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
       if (!res.ok) {
         if (data.notFound) {
           setError("No account found for this email. Tap “Join free” below to create one.");
+        } else if (data.needsPassword) {
+          setError("This account has no password yet. Tap “Forgot password?” to set one.");
         } else {
-          setError(data.error ?? "Could not send code.");
+          setError(data.error ?? "Could not sign in.");
         }
         return;
       }
-      setStage("code");
-      setResendTimer(60);
-    } catch {
-      setError("Could not send code. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const verifyCode = async () => {
-    if (otp.replace(/\D/g, "").length < 6) {
-      setError("Please enter the full 6-digit code.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code: otp }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Invalid code.");
       // Full reload so the Navbar re-reads the new session everywhere.
-      // If they already have a profile go there; otherwise finish setup.
-      window.location.href = data.hasProfile ? "/profile" : "/join";
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      window.location.href = "/profile";
+    } catch {
+      setError("Could not sign in. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
@@ -165,6 +76,10 @@ export default function LoginPage() {
     fontSize: "0.8rem", fontWeight: 600,
     color: "#38285c", marginBottom: 6, letterSpacing: "0.01em",
   };
+  const focus = (e: React.FocusEvent<HTMLInputElement>) =>
+    (e.target.style.borderColor = "#7c5cff");
+  const blur = (e: React.FocusEvent<HTMLInputElement>) =>
+    (e.target.style.borderColor = "#ede8ff");
 
   return (
     <main className="relative min-h-screen">
@@ -184,81 +99,76 @@ export default function LoginPage() {
               display: "flex", alignItems: "center", justifyContent: "center",
               margin: "0 auto 16px",
             }}>
-              <Mail size={22} color="white" />
+              <Lock size={22} color="white" />
             </div>
             <h1 style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: "1.6rem", fontWeight: 700, color: "#1a0f2e", letterSpacing: "-0.03em", marginBottom: 8 }}>
-              {stage === "email" ? "Welcome back" : "Check your email"}
+              Welcome back
             </h1>
             <p style={{ fontSize: "0.88rem", color: "#6b5a8e", lineHeight: 1.6 }}>
-              {stage === "email"
-                ? "Sign in with your UCD email. We'll send you a one-time code."
-                : <>We sent a 6-digit code to <strong style={{ color: "#7c5cff" }}>{email}</strong>.</>}
+              Sign in with your UCD email and password.
             </p>
           </div>
 
-          {stage === "email" ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <div>
-                <label style={labelStyle}>UCD email address</label>
-                <input
-                  style={inputStyle} type="email" placeholder="yourname@ucdconnect.ie"
-                  value={email} onChange={e => setEmail(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter") sendCode(); }}
-                  autoFocus
-                />
-              </div>
-              {error && <p style={{ fontSize: "0.78rem", color: "#ef4444" }}>{error}</p>}
-              <button
-                type="button" className="btn-primary"
-                style={{ width: "100%", padding: "14px", fontSize: "0.95rem", borderRadius: 12, opacity: loading ? 0.7 : 1 }}
-                onClick={sendCode}
-                disabled={loading || !isUcdEmail(email)}
-              >
-                {loading ? "Sending…" : "Send sign-in code →"}
-              </button>
-              <p style={{ fontSize: "0.78rem", color: "#9b8ec8", textAlign: "center" }}>
-                Don&apos;t have an account?{" "}
-                <Link href="/join" style={{ color: "#7c5cff", textDecoration: "underline", fontWeight: 600 }}>
-                  Join free
-                </Link>
-              </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div>
+              <label style={labelStyle}>UCD email address</label>
+              <input
+                style={inputStyle} type="email" placeholder="yourname@ucdconnect.ie"
+                value={email} onChange={e => setEmail(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") signIn(); }}
+                onFocus={focus} onBlur={blur}
+                autoComplete="username"
+                autoFocus
+              />
             </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-              <OtpInput value={otp} onChange={setOtp} />
-              {error && <p style={{ fontSize: "0.78rem", color: "#ef4444", textAlign: "center" }}>{error}</p>}
-              <button
-                type="button" className="btn-primary"
-                style={{ width: "100%", padding: "14px", fontSize: "0.95rem", borderRadius: 12, opacity: loading ? 0.7 : 1 }}
-                onClick={verifyCode}
-                disabled={otp.replace(/\D/g, "").length < 6 || loading}
-              >
-                {loading ? "Signing you in…" : "Sign in"}
-              </button>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+
+            <div>
+              <label style={labelStyle}>Password</label>
+              <div style={{ position: "relative" }}>
+                <input
+                  style={{ ...inputStyle, paddingRight: 42 }}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Your password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") signIn(); }}
+                  onFocus={focus} onBlur={blur}
+                  autoComplete="current-password"
+                />
                 <button
                   type="button"
-                  onClick={sendCode}
-                  disabled={resendTimer > 0 || loading}
-                  style={{
-                    background: "none", border: "none", cursor: resendTimer > 0 ? "default" : "pointer",
-                    fontSize: "0.78rem", color: resendTimer > 0 ? "#b0a0cc" : "#7c5cff",
-                    display: "flex", alignItems: "center", gap: 5,
-                  }}
+                  onClick={() => setShowPassword(s => !s)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#9b8ec8", display: "flex", padding: 4 }}
                 >
-                  <RefreshCw size={12} />
-                  {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Resend code"}
-                </button>
-                <span style={{ color: "#ede8ff" }}>·</span>
-                <button type="button"
-                  style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.78rem", color: "#9b8ec8" }}
-                  onClick={() => { setStage("email"); setOtp(""); setError(""); }}
-                >
-                  Change email
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+              <div style={{ textAlign: "right", marginTop: 6 }}>
+                <Link href="/forgot-password" style={{ fontSize: "0.76rem", color: "#7c5cff", textDecoration: "none", fontWeight: 600 }}>
+                  Forgot password?
+                </Link>
+              </div>
             </div>
-          )}
+
+            {error && <p style={{ fontSize: "0.78rem", color: "#ef4444" }}>{error}</p>}
+
+            <button
+              type="button" className="btn-primary"
+              style={{ width: "100%", padding: "14px", fontSize: "0.95rem", borderRadius: 12, opacity: loading ? 0.7 : 1 }}
+              onClick={signIn}
+              disabled={loading || !isUcdEmail(email) || !password}
+            >
+              {loading ? "Signing you in…" : "Sign in"}
+            </button>
+
+            <p style={{ fontSize: "0.78rem", color: "#9b8ec8", textAlign: "center" }}>
+              Don&apos;t have an account?{" "}
+              <Link href="/join" style={{ color: "#7c5cff", textDecoration: "underline", fontWeight: 600 }}>
+                Join free
+              </Link>
+            </p>
+          </div>
         </div>
       </section>
 

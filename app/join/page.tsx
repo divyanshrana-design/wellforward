@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import MeshBackground from "../components/MeshBackground";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Camera, Mail, ArrowRight, Check, RefreshCw } from "lucide-react";
+import { Camera, Mail, ArrowRight, Check, RefreshCw, Lock, Eye, EyeOff } from "lucide-react";
 import { PROGRAMMES, SCHOOLS } from "@/lib/data";
 import { compressImage } from "@/lib/image";
 
@@ -205,13 +205,15 @@ function StepDots({ step, total }: { step: number; total: number }) {
 export default function JoinPage() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1); // 4 = success
   const [form, setForm] = useState({
-    name: "", email: "", programme: "", school: "Smurfit Business School",
+    name: "", email: "", password: "", repeatPassword: "",
+    programme: "", school: "Smurfit Business School",
     intakeYear: "", hometown: "",
     photo: "",
     interests: "",
     bio: "", lookingFor: "",
     linkedin: "", instagram: "", contactEmail: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp]           = useState("");
   const [otpSent, setOtpSent]   = useState(false);
   const [otpError, setOtpError] = useState("");
@@ -261,6 +263,17 @@ export default function JoinPage() {
 
   const isUcdEmail = (email: string) =>
     email.toLowerCase().endsWith("@ucdconnect.ie") || email.toLowerCase().endsWith("@ucd.ie");
+
+  const passwordTooShort = form.password.length > 0 && form.password.length < 8;
+  const passwordsMatch =
+    form.repeatPassword.length > 0 && form.password === form.repeatPassword;
+  const passwordsMismatch =
+    form.repeatPassword.length > 0 && form.password !== form.repeatPassword;
+  const step1Valid =
+    !!form.name &&
+    isUcdEmail(form.email) &&
+    form.password.length >= 8 &&
+    form.password === form.repeatPassword;
 
   const sendOtp = async () => {
     if (!isUcdEmail(form.email)) return;
@@ -317,6 +330,7 @@ export default function JoinPage() {
           linkedin: form.linkedin || null,
           instagram: form.instagram || null,
           contactEmail: form.contactEmail || null,
+          password: form.password,
         }),
       });
       const regData = await regRes.json();
@@ -553,6 +567,64 @@ export default function JoinPage() {
                   )}
                 </div>
 
+                {/* Password + repeat password — sets up sign-in for later */}
+                <div>
+                  <label style={labelStyle}>
+                    Create a password
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <Lock size={15} style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", color: "#b0a0cc", pointerEvents: "none" }} />
+                    <input
+                      style={{ ...inputStyle, paddingLeft: 38, paddingRight: 42 }}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="At least 8 characters"
+                      value={form.password}
+                      onChange={e => update("password", e.target.value)}
+                      autoComplete="new-password"
+                      onFocus={focus} onBlur={blur}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(s => !s)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#9b8ec8", display: "flex", padding: 4 }}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {passwordTooShort && (
+                    <p style={{ fontSize: "0.72rem", color: "#ef4444", marginTop: 4 }}>
+                      Use at least 8 characters.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Repeat password</label>
+                  <div style={{ position: "relative" }}>
+                    <Lock size={15} style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", color: "#b0a0cc", pointerEvents: "none" }} />
+                    <input
+                      style={{ ...inputStyle, paddingLeft: 38 }}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Type your password again"
+                      value={form.repeatPassword}
+                      onChange={e => update("repeatPassword", e.target.value)}
+                      autoComplete="new-password"
+                      onFocus={focus} onBlur={blur}
+                    />
+                  </div>
+                  {passwordsMismatch && (
+                    <p style={{ fontSize: "0.72rem", color: "#ef4444", marginTop: 4 }}>
+                      Passwords don&apos;t match.
+                    </p>
+                  )}
+                  {passwordsMatch && !passwordTooShort && (
+                    <p style={{ fontSize: "0.72rem", color: "#10b981", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                      <Check size={11} /> Passwords match
+                    </p>
+                  )}
+                </div>
+
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div>
                     <label style={labelStyle}>Programme</label>
@@ -611,7 +683,7 @@ export default function JoinPage() {
                   type="button" className="btn-primary"
                   style={{ width: "100%", padding: "14px", fontSize: "0.95rem", borderRadius: 12, marginTop: 4 }}
                   onClick={() => setStep(2)}
-                  disabled={!form.name || !isUcdEmail(form.email) || apiLoading}
+                  disabled={!step1Valid || apiLoading}
                 >
                   Continue →
                 </button>
@@ -653,7 +725,9 @@ export default function JoinPage() {
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Short bio</label>
+                  <label style={labelStyle}>
+                    Short bio <span style={{ color: "#b0a0cc", fontWeight: 400 }}>(optional)</span>
+                  </label>
                   <textarea
                     style={{ ...inputStyle, height: 90, resize: "none" }}
                     placeholder="Where you're from, what you're studying, what you're into..."
@@ -759,7 +833,22 @@ export default function JoinPage() {
                   <p style={{ fontSize: "0.88rem", color: "#6b5a8e", lineHeight: 1.6 }}>
                     We sent a 6-digit code to{" "}
                     <strong style={{ color: "#7c5cff" }}>{form.email}</strong>.
-                    Enter it below to verify your UCD address.
+                    Enter it below to verify your UCD address. You&apos;ll only
+                    need this once — after that, just sign in with your password.
+                  </p>
+                </div>
+
+                {/* Spam folder hint — OTP emails sometimes land in spam */}
+                <div style={{
+                  display: "flex", alignItems: "flex-start", gap: 8,
+                  background: "rgba(245,158,11,0.1)",
+                  border: "1px solid rgba(245,158,11,0.35)",
+                  borderRadius: 10, padding: "10px 13px",
+                }}>
+                  <span style={{ fontSize: "1rem", lineHeight: 1.3 }} aria-hidden="true">⚠️</span>
+                  <p style={{ fontSize: "0.78rem", color: "#92400e", lineHeight: 1.5, margin: 0 }}>
+                    <strong>[ Can&apos;t see it? Check your spam / junk folder. ]</strong>{" "}
+                    The code sometimes lands there — mark it &ldquo;Not spam&rdquo; so future emails arrive in your inbox.
                   </p>
                 </div>
 

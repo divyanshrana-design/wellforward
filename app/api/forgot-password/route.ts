@@ -4,10 +4,8 @@ import { createAndSendOtp, isUcdEmail } from '@/lib/otp';
 
 export const dynamic = 'force-dynamic';
 
-// Sends a ONE-TIME sign-up verification OTP.
-// This is only used during account creation. If a verified account already
-// exists for this email, we refuse and tell the user to sign in with their
-// password instead — so existing users never get an OTP just for logging in.
+// Step 1 of the "forgot password" flow: send a reset OTP — but only if a
+// verified account exists for this email.
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
@@ -21,32 +19,28 @@ export async function POST(req: NextRequest) {
 
     const normalEmail = email.toLowerCase();
 
-    // Block sign-up OTPs for emails that already have a verified account.
-    const { data: existing } = await supabaseAdmin
+    const { data: user } = await supabaseAdmin
       .from('users')
       .select('id')
       .eq('email', normalEmail)
       .eq('verified', true)
       .maybeSingle();
 
-    if (existing) {
+    if (!user) {
       return NextResponse.json(
-        {
-          error: 'An account already exists for this email. Please sign in with your password.',
-          accountExists: true,
-        },
-        { status: 409 }
+        { error: 'No account found for this email. Please join free first.', notFound: true },
+        { status: 404 }
       );
     }
 
-    const result = await createAndSendOtp(normalEmail, 'signup');
+    const result = await createAndSendOtp(normalEmail, 'reset');
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('send-otp error:', err);
+    console.error('forgot-password error:', err);
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
   }
 }

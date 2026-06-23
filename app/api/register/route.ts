@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { hashPassword, validatePassword } from '@/lib/password';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,10 +25,21 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, programme, school, intakeYear, hometown, bio, interests, lookingFor, photo, linkedin, instagram, contactEmail } = body;
+    const { name, programme, school, intakeYear, hometown, bio, interests, lookingFor, photo, linkedin, instagram, contactEmail, password } = body;
 
     if (!name || !programme || !intakeYear) {
       return NextResponse.json({ error: 'Name, programme and intake year are required.' }, { status: 400 });
+    }
+
+    // Password is provided during sign-up (account creation). It is optional on
+    // later profile edits — when omitted, the existing password is preserved.
+    let passwordHash: string | null = null;
+    if (password !== undefined && password !== null && password !== '') {
+      const pwErr = validatePassword(password);
+      if (pwErr) {
+        return NextResponse.json({ error: pwErr }, { status: 400 });
+      }
+      passwordHash = await hashPassword(password);
     }
 
     // Determine role from intake year
@@ -83,6 +95,10 @@ export async function POST(req: NextRequest) {
     // Only set photo_url if we got a new upload (photoUrl will be non-null)
     if (photoUrl !== null) {
       upsertData.photo_url = photoUrl;
+    }
+    // Only set password_hash when a password was supplied (i.e. during sign-up).
+    if (passwordHash !== null) {
+      upsertData.password_hash = passwordHash;
     }
 
     // Upsert profile (update if already exists for this email)
