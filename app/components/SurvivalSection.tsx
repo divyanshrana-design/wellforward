@@ -89,8 +89,8 @@ function SurvivalCard({
       <div className="survival-card__footer">
         <span className="survival-card__pill">{urgency}</span>
         <span className="survival-card__toggle">
-          {open ? "Hide" : "How to →"}
-          <span className="survival-card__chevron" style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
+          {open ? "Hide" : "How to"}
+          <span className="survival-card__chevron" style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>↓</span>
         </span>
       </div>
 
@@ -173,7 +173,7 @@ export default function SurvivalSection() {
             IRP proves your legal right to be in Ireland. You need it to work part-time, open certain accounts, and apply for some services. The appointment system is through the Irish Immigration Service.
           </p>
           <Steps steps={[
-            { text: "Go to inis.gov.ie and create an account before you travel." },
+            { text: "Go to irishimmigration.ie and create an account on the booking portal before you travel." },
             { text: "Book your IRP appointment slot. Pick the earliest available date, even if it is weeks away." },
             { text: "Arrive in Ireland. Your countdown (90 days) starts from your entry date." },
             { text: "Bring your passport, acceptance letter, proof of accommodation, and proof of finances to the appointment." },

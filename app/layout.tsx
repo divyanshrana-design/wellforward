@@ -36,8 +36,9 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
     ],
-    apple: '/favicon.svg',
+    apple: '/apple-touch-icon.png',
   },
 };
 
@@ -49,10 +50,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Explicit favicon — overrides any Next.js/Vercel default */}
+        {/* Explicit favicon — overrides any Next.js/Vercel default.
+            SVG for modern browsers, .ico as universal fallback (this is the
+            one that shows in the browser tab). */}
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="shortcut icon" href="/favicon.svg" />
-        <link rel="apple-touch-icon" href="/favicon.svg" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

@@ -5,7 +5,7 @@ import { ExternalLink, Mail, Heart, Phone } from "lucide-react";
 import Link from "next/link";
 
 const USEFUL_LINKS = [
-  { label: "ISD: IRP Registration", href: "https://www.irishimmigration.ie" },
+  { label: "ISD: IRP Registration", href: "https://www.irishimmigration.ie/registering-your-immigration-permission/how-to-register-your-immigration-permission-for-the-first-time/" },
   { label: "MyWelfare.ie: PPS Number", href: "https://www.mywelfare.ie" },
   { label: "Student Leap Card", href: "https://www.studentleapcard.ie" },
   { label: "UCD Student Health", href: "https://www.ucd.ie/studenthealth/" },

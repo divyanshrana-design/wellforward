@@ -552,7 +552,8 @@ p { line-height: 1.7; }
 .survival-bento {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 18px;
+  gap: 16px;
+  align-items: start;          /* never stretch — cards hug their content */
   grid-template-areas:
     "card1"
     "card2"
@@ -560,26 +561,26 @@ p { line-height: 1.7; }
     "card4"
     "card5";
 }
-@media (min-width: 700px) {
+@media (min-width: 680px) {
   .survival-bento {
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 18px;
     grid-template-areas:
-      "card1 card2"
-      "card1 card3"
-      "card4 card3"
-      "card5 card5";
+      "card1 card1"
+      "card2 card3"
+      "card4 card5";
   }
 }
 @media (min-width: 1000px) {
   .survival-bento {
-    grid-template-columns: 1.15fr 1fr 1fr;
-    grid-auto-rows: 1fr;
-    gap: 22px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    /* Featured IRP spans the top two columns (wide, not tall); PPSN sits
+       beside it. Bottom row is three equal tiles. Content-sized rows = no
+       empty white space. */
     grid-template-areas:
-      "card1 card2 card2"
-      "card1 card4 card3"
-      "card5 card4 card3";
+      "card1 card1 card2"
+      "card3 card4 card5";
   }
 }
 
@@ -649,14 +650,19 @@ p { line-height: 1.7; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px; height: 40px;
-  border-radius: 13px;
-  font-size: 1.25rem;
+  width: 52px; height: 52px;
+  border-radius: 15px;
+  font-size: 1.7rem;
   line-height: 1;
   background: linear-gradient(160deg, rgba(124,92,255,0.10), rgba(200,184,255,0.18));
   box-shadow: 0 4px 12px -6px rgba(124,92,255,0.4), 0 1px 0 rgba(255,255,255,0.9) inset;
   transition: transform 0.5s var(--ease-out);
   flex-shrink: 0;
+}
+.survival-card--featured .survival-card__icon {
+  width: 60px; height: 60px;
+  font-size: 2rem;
+  border-radius: 18px;
 }
 .survival-card:hover .survival-card__icon {
   transform: translateY(-3px) rotate(-4deg) scale(1.06);
@@ -675,6 +681,50 @@ p { line-height: 1.7; }
   background-clip: text;
 }
 .survival-card--featured .survival-num { font-size: 5.4rem; }
+
+/* Featured (IRP) tile: on wide screens lay it out as two columns so the
+   big number fills the left and the copy fills the right — no dead space.
+   The header (icon chip) floats top-right across both columns. */
+@media (min-width: 1000px) {
+  .survival-card--featured {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto auto auto;
+    column-gap: 30px;
+    row-gap: 4px;
+    align-items: center;
+    padding: 32px 36px;
+  }
+  .survival-card--featured .survival-card__head {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    margin-bottom: 4px;
+  }
+  .survival-card--featured .survival-num {
+    grid-column: 1;
+    grid-row: 2 / 5;
+    align-self: center;
+    font-size: 6.8rem;
+    margin: 0;
+  }
+  .survival-card--featured .survival-card__title {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: end;
+    margin: 0 0 4px;
+    font-size: 1.7rem;
+  }
+  .survival-card--featured .survival-card__summary {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: start;
+    margin: 0 0 12px;
+  }
+  .survival-card--featured .survival-card__footer {
+    grid-column: 2;
+    grid-row: 4;
+  }
+}
 
 /* ---- Title + summary -------------------------------------------- */
 .survival-card__title {
