@@ -904,3 +904,133 @@ p { line-height: 1.7; }
   .visa-compare-row .visa-compare-cell:nth-child(2)::before { content: "Stamp 2 — "; font-weight: 700; color: #7c5cff; }
   .visa-compare-row .visa-compare-cell:nth-child(3)::before { content: "Stamp 1G — "; font-weight: 700; color: #0ea5e9; }
 }
+
+/* ── Visas page: extra animations & charts ──────────────────── */
+
+/* Animated connector line that "draws" across the journey */
+@keyframes visaLineGrow { from { width: 0; } to { width: 100%; } }
+.visa-progress-track {
+  position: relative;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--line);
+  margin: 6px 0 22px;
+  overflow: hidden;
+}
+.visa-progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7c5cff, #0ea5e9, #10b981, #ec4899, #f59e0b);
+  background-size: 200% 100%;
+  animation: visaLineGrow 1.4s var(--ease-out) forwards, gradShift 6s ease infinite;
+}
+
+/* Journey nodes: pop in one-by-one */
+@keyframes visaPop {
+  0%   { opacity: 0; transform: translateY(16px) scale(0.92); }
+  60%  { transform: translateY(-3px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.visa-node-anim { opacity: 0; animation: visaPop 0.55s var(--ease-out) forwards; }
+
+/* Active node gets a soft pulsing ring */
+@keyframes visaRing {
+  0%,100% { box-shadow: 0 0 0 0 var(--ring,rgba(124,92,255,0.35)); }
+  50%     { box-shadow: 0 0 0 8px rgba(124,92,255,0); }
+}
+.visa-node-active-ring { animation: visaRing 2.2s ease-in-out infinite; }
+
+/* Arrow keeps nudging toward the next stamp */
+@keyframes visaArrowNudge {
+  0%,100% { transform: translateX(0); opacity: 0.5; }
+  50%     { transform: translateX(4px); opacity: 1; }
+}
+.visa-arrow svg { animation: visaArrowNudge 1.8s ease-in-out infinite; }
+.visa-arrow.rot svg { animation: none; }
+
+/* Detail panel fade/slide when switching nodes */
+@keyframes visaDetailIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.visa-detail-anim { animation: visaDetailIn 0.4s var(--ease-out); }
+
+/* Horizontal bar chart (work-hours / duration comparisons) */
+.visa-bar-track {
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(237,232,255,0.5);
+  overflow: hidden;
+  position: relative;
+}
+.visa-bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  width: 0;
+  transition: width 1.1s var(--ease-out);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.78rem;
+  position: relative;
+  overflow: hidden;
+}
+.visa-bar-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 2.6s ease-in-out infinite;
+}
+
+/* Timeline / calendar bar for the 12 months of the year */
+.visa-year {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 3px;
+  margin-top: 8px;
+}
+.visa-month {
+  height: 38px;
+  border-radius: 6px;
+  background: rgba(237,232,255,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #9b8ec8;
+  opacity: 0;
+  animation: visaPop 0.4s var(--ease-out) forwards;
+  transition: transform 0.2s var(--ease-out);
+}
+.visa-month:hover { transform: translateY(-3px); }
+.visa-month.full {
+  background: linear-gradient(135deg, #7c5cff, #5a3ee8);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(124,92,255,0.3);
+}
+.visa-month.part { color: #6b5a8e; }
+
+/* Card lift on hover (a touch stronger than base .card) */
+.visa-lift { transition: transform 0.28s var(--ease-out), box-shadow 0.28s ease; }
+.visa-lift:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+
+/* Count-up number styling */
+.visa-stat-num {
+  font-family: var(--font-serif);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visa-node-anim, .visa-month, .visa-progress-fill { animation: none; opacity: 1; }
+  .visa-bar-fill { transition: none; }
+  .visa-node-active-ring, .visa-arrow svg, .visa-bar-fill::after { animation: none; }
+}

@@ -13,14 +13,40 @@ import {
   ArrowRight,
   Info,
   CalendarDays,
+  BarChart3,
 } from "lucide-react";
 import MeshBackground from "../components/MeshBackground";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-/* Scroll-reveal helper (same pattern used across the site) */
-function useReveal<T extends HTMLElement = HTMLDivElement>() {
+/* ── Shared serif heading style (matches the rest of the site) ───── */
+const SERIF = "'Fraunces', Georgia, serif";
+const h1Style: React.CSSProperties = {
+  fontFamily: SERIF,
+  fontWeight: 900,
+  letterSpacing: "-0.03em",
+  lineHeight: 1.05,
+  color: "#1a0f2e",
+};
+const h2Style: React.CSSProperties = {
+  fontFamily: SERIF,
+  fontWeight: 700,
+  letterSpacing: "-0.025em",
+  lineHeight: 1.1,
+  color: "#1a0f2e",
+};
+const h3Style: React.CSSProperties = {
+  fontFamily: SERIF,
+  fontWeight: 700,
+  letterSpacing: "-0.015em",
+  lineHeight: 1.2,
+  color: "#1a0f2e",
+};
+
+/* ── Scroll-reveal helper ────────────────────────────────────────── */
+function useReveal<T extends HTMLElement = HTMLDivElement>(threshold = 0.12) {
   const ref = useRef<T>(null);
+  const [seen, setSeen] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -28,15 +54,16 @@ function useReveal<T extends HTMLElement = HTMLDivElement>() {
       ([e]) => {
         if (e.isIntersecting) {
           el.classList.add("visible");
+          setSeen(true);
           obs.disconnect();
         }
       },
-      { threshold: 0.08 }
+      { threshold }
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
-  return ref;
+  }, [threshold]);
+  return { ref, seen };
 }
 
 function Reveal({
@@ -46,10 +73,90 @@ function Reveal({
   children: React.ReactNode;
   delay?: number;
 }) {
-  const ref = useReveal();
+  const { ref } = useReveal();
   return (
     <div ref={ref} className="reveal" style={{ transitionDelay: `${delay}ms` }}>
       {children}
+    </div>
+  );
+}
+
+/* ── Count-up number (animates when scrolled into view) ──────────── */
+function CountUp({
+  to,
+  suffix = "",
+  duration = 1100,
+  style,
+}: {
+  to: number;
+  suffix?: string;
+  duration?: number;
+  style?: React.CSSProperties;
+}) {
+  const { ref, seen } = useReveal<HTMLSpanElement>(0.4);
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!seen) return;
+    let raf = 0;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(Math.round(eased * to));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [seen, to, duration]);
+  return (
+    <span ref={ref} className="visa-stat-num" style={style}>
+      {val}
+      {suffix}
+    </span>
+  );
+}
+
+/* ── Animated horizontal bar (fills when in view) ────────────────── */
+function Bar({
+  label,
+  pct,
+  value,
+  color,
+  delay = 0,
+}: {
+  label: string;
+  pct: number;
+  value: string;
+  color: string;
+  delay?: number;
+}) {
+  const { ref, seen } = useReveal<HTMLDivElement>(0.35);
+  return (
+    <div ref={ref} style={{ marginBottom: 14 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: "0.82rem",
+          color: "#38285c",
+          fontWeight: 600,
+          marginBottom: 5,
+        }}
+      >
+        <span>{label}</span>
+      </div>
+      <div className="visa-bar-track">
+        <div
+          className="visa-bar-fill"
+          style={{
+            width: seen ? `${pct}%` : 0,
+            background: `linear-gradient(90deg, ${color}, ${color}cc)`,
+            transitionDelay: `${delay}ms`,
+          }}
+        >
+          {value}
+        </div>
+      </div>
     </div>
   );
 }
@@ -142,8 +249,25 @@ const COMPARE = [
   },
 ] as const;
 
+/* 12-month work calendar for Stamp 2 */
+const MONTHS: { m: string; full: boolean; note?: string }[] = [
+  { m: "Jan", full: true, note: "1–15 Jan full-time" },
+  { m: "Feb", full: false },
+  { m: "Mar", full: false },
+  { m: "Apr", full: false },
+  { m: "May", full: false },
+  { m: "Jun", full: true },
+  { m: "Jul", full: true },
+  { m: "Aug", full: true },
+  { m: "Sep", full: true },
+  { m: "Oct", full: false },
+  { m: "Nov", full: false },
+  { m: "Dec", full: true, note: "15–31 Dec full-time" },
+];
+
 export default function VisasPage() {
   const [active, setActive] = useState<string>("stamp2");
+  const activeNode = JOURNEY.find((n) => n.key === active)!;
 
   return (
     <main className="relative min-h-screen">
@@ -180,11 +304,9 @@ export default function VisasPage() {
               <Info size={13} /> Student immigration guide
             </span>
             <h1
-              className="serif"
               style={{
+                ...h1Style,
                 fontSize: "clamp(2rem, 5vw, 3.1rem)",
-                color: "#1a0f2e",
-                lineHeight: 1.08,
                 marginBottom: 14,
               }}
             >
@@ -204,6 +326,57 @@ export default function VisasPage() {
               that matters, and how you move from one to the next.
             </p>
           </Reveal>
+
+          {/* Quick animated stats */}
+          <Reveal delay={120}>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 20,
+                justifyContent: "center",
+                marginTop: 34,
+              }}
+            >
+              {[
+                { to: 5, suffix: "", label: "key stamps", color: "#7c5cff" },
+                { to: 40, suffix: "h", label: "max work/week", color: "#0ea5e9" },
+                { to: 24, suffix: "mo", label: "graduate stay", color: "#10b981" },
+                { to: 5, suffix: "yr", label: "to citizenship", color: "#f59e0b" },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className="visa-lift"
+                  style={{
+                    minWidth: 120,
+                    padding: "16px 18px",
+                    borderRadius: 16,
+                    background: "rgba(255,255,255,0.7)",
+                    border: "1px solid var(--line)",
+                    boxShadow: "var(--shadow-sm)",
+                  }}
+                >
+                  <CountUp
+                    to={s.to}
+                    suffix={s.suffix}
+                    style={{ fontSize: "2rem", color: s.color }}
+                  />
+                  <div
+                    style={{
+                      fontSize: "0.7rem",
+                      color: "#9b8ec8",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                      marginTop: 4,
+                    }}
+                  >
+                    {s.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Reveal>
         </section>
 
         {/* ── The journey graph ──────────────────────────────── */}
@@ -215,6 +388,11 @@ export default function VisasPage() {
               className="card"
               style={{ padding: "28px 22px", overflow: "hidden" }}
             >
+              {/* Animated progress line */}
+              <div className="visa-progress-track">
+                <div className="visa-progress-fill" />
+              </div>
+
               <div className="visa-flow">
                 {JOURNEY.map((node, i) => {
                   const Icon = node.icon;
@@ -223,17 +401,23 @@ export default function VisasPage() {
                     <div key={node.key} className="visa-flow-item">
                       <button
                         onClick={() => setActive(node.key)}
-                        className="visa-node"
+                        className={`visa-node visa-node-anim${
+                          isActive ? " visa-node-active-ring" : ""
+                        }`}
                         aria-pressed={isActive}
-                        style={{
-                          borderColor: isActive ? node.color : "var(--line)",
-                          boxShadow: isActive
-                            ? `0 10px 30px ${node.color}33`
-                            : "var(--shadow-sm)",
-                          background: isActive
-                            ? `${node.color}0d`
-                            : "rgba(255,255,255,0.9)",
-                        }}
+                        style={
+                          {
+                            animationDelay: `${i * 120}ms`,
+                            borderColor: isActive ? node.color : "var(--line)",
+                            boxShadow: isActive
+                              ? `0 10px 30px ${node.color}33`
+                              : "var(--shadow-sm)",
+                            background: isActive
+                              ? `${node.color}0d`
+                              : "rgba(255,255,255,0.9)",
+                            ["--ring" as string]: `${node.color}55`,
+                          } as React.CSSProperties
+                        }
                       >
                         <span
                           className="visa-node-icon"
@@ -245,10 +429,9 @@ export default function VisasPage() {
                           <Icon size={20} />
                         </span>
                         <span
-                          className="serif"
                           style={{
+                            ...h3Style,
                             fontSize: "1.02rem",
-                            color: "#1a0f2e",
                             lineHeight: 1.1,
                           }}
                         >
@@ -275,57 +458,189 @@ export default function VisasPage() {
               </div>
 
               {/* Active node detail */}
-              {JOURNEY.filter((n) => n.key === active).map((node) => (
+              <div
+                key={active}
+                className="visa-detail-anim"
+                style={{
+                  marginTop: 26,
+                  padding: "18px 20px",
+                  borderRadius: 14,
+                  background: `${activeNode.color}0d`,
+                  border: `1px solid ${activeNode.color}33`,
+                }}
+              >
                 <div
-                  key={node.key}
                   style={{
-                    marginTop: 26,
-                    padding: "18px 20px",
-                    borderRadius: 14,
-                    background: `${node.color}0d`,
-                    border: `1px solid ${node.color}33`,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 6,
+                    flexWrap: "wrap",
                   }}
                 >
-                  <div
+                  <span
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      marginBottom: 6,
+                      fontSize: "0.68rem",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      color: activeNode.color,
+                      background: `${activeNode.color}1f`,
+                      padding: "2px 9px",
+                      borderRadius: 999,
                     }}
                   >
-                    <span
-                      style={{
-                        fontSize: "0.68rem",
-                        fontWeight: 700,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                        color: node.color,
-                        background: `${node.color}1f`,
-                        padding: "2px 9px",
-                        borderRadius: 999,
-                      }}
-                    >
-                      {node.tag}
-                    </span>
-                    <h3
-                      className="serif"
-                      style={{ fontSize: "1.25rem", color: "#1a0f2e" }}
-                    >
-                      {node.stamp} — {node.title}
-                    </h3>
-                  </div>
-                  <p
-                    style={{
-                      fontSize: "0.95rem",
-                      color: "#38285c",
-                      lineHeight: 1.7,
-                    }}
-                  >
-                    {node.summary}
-                  </p>
+                    {activeNode.tag}
+                  </span>
+                  <h3 style={{ ...h3Style, fontSize: "1.25rem" }}>
+                    {activeNode.stamp} — {activeNode.title}
+                  </h3>
                 </div>
-              ))}
+                <p
+                  style={{
+                    fontSize: "0.95rem",
+                    color: "#38285c",
+                    lineHeight: 1.7,
+                  }}
+                >
+                  {activeNode.summary}
+                </p>
+              </div>
+              <p
+                style={{
+                  fontSize: "0.74rem",
+                  color: "#b0a0cc",
+                  textAlign: "center",
+                  marginTop: 12,
+                }}
+              >
+                Tap any stamp above to see what it means.
+              </p>
+            </div>
+          </Reveal>
+        </section>
+
+        {/* ── Work hours chart ───────────────────────────────── */}
+        <section
+          style={{ maxWidth: 1080, margin: "0 auto", padding: "40px 24px 8px" }}
+        >
+          <Reveal>
+            <h2
+              style={{
+                ...h2Style,
+                fontSize: "clamp(1.5rem, 3vw, 2rem)",
+                marginBottom: 6,
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <BarChart3 size={26} style={{ color: "#7c5cff" }} />
+              How many hours can you work?
+            </h2>
+            <p style={{ color: "#6b5a8e", marginBottom: 22, lineHeight: 1.6 }}>
+              A quick visual comparison of the weekly work limits on each stamp.
+            </p>
+          </Reveal>
+          <Reveal delay={60}>
+            <div className="card" style={{ padding: "26px 24px" }}>
+              <Bar
+                label="Stamp 2 — term time"
+                pct={50}
+                value="20 hrs"
+                color="#7c5cff"
+              />
+              <Bar
+                label="Stamp 2 — holiday periods"
+                pct={100}
+                value="40 hrs"
+                color="#0ea5e9"
+                delay={120}
+              />
+              <Bar
+                label="Stamp 1G — graduate"
+                pct={100}
+                value="40 hrs (full-time)"
+                color="#10b981"
+                delay={240}
+              />
+              <Bar
+                label="Stamp 1 / Stamp 4"
+                pct={100}
+                value="Full-time"
+                color="#ec4899"
+                delay={360}
+              />
+              <p
+                style={{
+                  fontSize: "0.74rem",
+                  color: "#b0a0cc",
+                  marginTop: 4,
+                }}
+              >
+                Bars are relative to a 40-hour full-time week.
+              </p>
+            </div>
+          </Reveal>
+        </section>
+
+        {/* ── Permission duration chart ──────────────────────── */}
+        <section
+          style={{ maxWidth: 1080, margin: "0 auto", padding: "28px 24px 8px" }}
+        >
+          <Reveal>
+            <h2
+              style={{
+                ...h2Style,
+                fontSize: "clamp(1.5rem, 3vw, 2rem)",
+                marginBottom: 6,
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <Clock size={24} style={{ color: "#7c5cff" }} />
+              How long does each permission last?
+            </h2>
+            <p style={{ color: "#6b5a8e", marginBottom: 22, lineHeight: 1.6 }}>
+              Typical maximum durations, in months.
+            </p>
+          </Reveal>
+          <Reveal delay={60}>
+            <div className="card" style={{ padding: "26px 24px" }}>
+              <Bar
+                label="Stamp 1G — Level 8 graduate"
+                pct={50}
+                value="12 months"
+                color="#0ea5e9"
+              />
+              <Bar
+                label="Stamp 1G — Level 9 / Master's"
+                pct={100}
+                value="24 months"
+                color="#10b981"
+                delay={120}
+              />
+              <Bar
+                label="To Stamp 4 (Critical Skills)"
+                pct={100}
+                value="~2 years"
+                color="#7c5cff"
+                delay={240}
+              />
+              <Bar
+                label="To citizenship (reckonable)"
+                pct={100}
+                value="~5 years"
+                color="#f59e0b"
+                delay={360}
+              />
+              <p
+                style={{ fontSize: "0.74rem", color: "#b0a0cc", marginTop: 4 }}
+              >
+                Graduate-programme bars are to scale; residence bars are shown
+                full to highlight the milestone.
+              </p>
             </div>
           </Reveal>
         </section>
@@ -336,10 +651,9 @@ export default function VisasPage() {
         >
           <Reveal>
             <h2
-              className="serif"
               style={{
+                ...h2Style,
                 fontSize: "clamp(1.5rem, 3vw, 2rem)",
-                color: "#1a0f2e",
                 marginBottom: 6,
               }}
             >
@@ -353,7 +667,10 @@ export default function VisasPage() {
           </Reveal>
 
           <Reveal delay={60}>
-            <div className="card visa-compare" style={{ padding: 0, overflow: "hidden" }}>
+            <div
+              className="card visa-compare"
+              style={{ padding: 0, overflow: "hidden" }}
+            >
               <div className="visa-compare-head">
                 <div className="visa-compare-cell visa-compare-rowlabel" />
                 <div
@@ -375,7 +692,9 @@ export default function VisasPage() {
                 <div
                   key={row.label}
                   className="visa-compare-row"
-                  style={{ background: i % 2 ? "rgba(237,232,255,0.35)" : "transparent" }}
+                  style={{
+                    background: i % 2 ? "rgba(237,232,255,0.35)" : "transparent",
+                  }}
                 >
                   <div className="visa-compare-cell visa-compare-rowlabel">
                     {row.label}
@@ -394,10 +713,9 @@ export default function VisasPage() {
         >
           <Reveal>
             <h2
-              className="serif"
               style={{
+                ...h2Style,
                 fontSize: "clamp(1.5rem, 3vw, 2rem)",
-                color: "#1a0f2e",
                 marginBottom: 6,
               }}
             >
@@ -440,14 +758,14 @@ export default function VisasPage() {
                 d: "Once approved, your permission is updated to Stamp 1G and you can start working full-time with no employment permit.",
               },
             ].map((s, i) => (
-              <Reveal key={s.n} delay={i * 60}>
+              <Reveal key={s.n} delay={i * 80}>
                 <div
-                  className="card glow-on-hover"
+                  className="card glow-on-hover visa-lift"
                   style={{ padding: "20px 18px", height: "100%" }}
                 >
                   <span
-                    className="serif"
                     style={{
+                      ...h3Style,
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -463,10 +781,9 @@ export default function VisasPage() {
                     {s.n}
                   </span>
                   <h3
-                    className="serif"
                     style={{
+                      ...h3Style,
                       fontSize: "1.05rem",
-                      color: "#1a0f2e",
                       marginBottom: 6,
                     }}
                   >
@@ -487,28 +804,78 @@ export default function VisasPage() {
           </div>
         </section>
 
-        {/* ── Working hours under Stamp 2 ────────────────────── */}
+        {/* ── Working hours under Stamp 2 (calendar chart) ───── */}
         <section
           style={{ maxWidth: 1080, margin: "0 auto", padding: "40px 24px 8px" }}
         >
           <Reveal>
             <h2
-              className="serif"
               style={{
+                ...h2Style,
                 fontSize: "clamp(1.5rem, 3vw, 2rem)",
-                color: "#1a0f2e",
                 marginBottom: 6,
               }}
             >
               Working 40 hours on Stamp 2
             </h2>
-            <p style={{ color: "#6b5a8e", marginBottom: 22, lineHeight: 1.6 }}>
+            <p style={{ color: "#6b5a8e", marginBottom: 18, lineHeight: 1.6 }}>
               On Stamp 2 you can normally work{" "}
               <strong>20 hours a week during term</strong>. But{" "}
               <strong>twice a year</strong> you're allowed to work{" "}
               <strong>full-time, up to 40 hours a week</strong> — during the
-              official holiday periods below.
+              official holiday periods highlighted below.
             </p>
+          </Reveal>
+
+          {/* 12-month animated calendar */}
+          <Reveal delay={60}>
+            <div className="card" style={{ padding: "22px 22px 18px" }}>
+              <div className="visa-year">
+                {MONTHS.map((mo, i) => (
+                  <div
+                    key={mo.m}
+                    className={`visa-month ${mo.full ? "full" : "part"}`}
+                    style={{ animationDelay: `${i * 55}ms` }}
+                    title={mo.note ?? (mo.full ? "Full-time allowed" : "20 hrs/week")}
+                  >
+                    {mo.m}
+                  </div>
+                ))}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 18,
+                  marginTop: 14,
+                  flexWrap: "wrap",
+                  fontSize: "0.78rem",
+                  color: "#6b5a8e",
+                }}
+              >
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span
+                    style={{
+                      width: 14,
+                      height: 14,
+                      borderRadius: 4,
+                      background: "linear-gradient(135deg,#7c5cff,#5a3ee8)",
+                    }}
+                  />
+                  Full-time OK (up to 40 hrs)
+                </span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span
+                    style={{
+                      width: 14,
+                      height: 14,
+                      borderRadius: 4,
+                      background: "rgba(237,232,255,0.55)",
+                    }}
+                  />
+                  Term time (20 hrs/week)
+                </span>
+              </div>
+            </div>
           </Reveal>
 
           <div
@@ -516,11 +883,12 @@ export default function VisasPage() {
               display: "grid",
               gap: 16,
               gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              marginTop: 16,
             }}
           >
             <Reveal>
               <div
-                className="card glow-on-hover"
+                className="card glow-on-hover visa-lift"
                 style={{ padding: "22px 20px", height: "100%" }}
               >
                 <div
@@ -542,16 +910,11 @@ export default function VisasPage() {
                   >
                     <CalendarDays size={20} />
                   </span>
-                  <h3
-                    className="serif"
-                    style={{ fontSize: "1.15rem", color: "#1a0f2e" }}
-                  >
-                    Summer
-                  </h3>
+                  <h3 style={{ ...h3Style, fontSize: "1.15rem" }}>Summer</h3>
                 </div>
                 <p
-                  className="serif"
                   style={{
+                    ...h3Style,
                     fontSize: "1.35rem",
                     color: "#7c5cff",
                     marginBottom: 4,
@@ -559,16 +922,22 @@ export default function VisasPage() {
                 >
                   1 June – 30 September
                 </p>
-                <p style={{ fontSize: "0.86rem", color: "#6b5a8e", lineHeight: 1.6 }}>
+                <p
+                  style={{
+                    fontSize: "0.86rem",
+                    color: "#6b5a8e",
+                    lineHeight: 1.6,
+                  }}
+                >
                   Full-time, up to 40 hours/week. (September has 30 days — the
                   period ends on the 30th, not the 31st.)
                 </p>
               </div>
             </Reveal>
 
-            <Reveal delay={60}>
+            <Reveal delay={80}>
               <div
-                className="card glow-on-hover"
+                className="card glow-on-hover visa-lift"
                 style={{ padding: "22px 20px", height: "100%" }}
               >
                 <div
@@ -590,16 +959,11 @@ export default function VisasPage() {
                   >
                     <CalendarDays size={20} />
                   </span>
-                  <h3
-                    className="serif"
-                    style={{ fontSize: "1.15rem", color: "#1a0f2e" }}
-                  >
-                    Winter
-                  </h3>
+                  <h3 style={{ ...h3Style, fontSize: "1.15rem" }}>Winter</h3>
                 </div>
                 <p
-                  className="serif"
                   style={{
+                    ...h3Style,
                     fontSize: "1.35rem",
                     color: "#7c5cff",
                     marginBottom: 4,
@@ -607,7 +971,13 @@ export default function VisasPage() {
                 >
                   15 December – 15 January
                 </p>
-                <p style={{ fontSize: "0.86rem", color: "#6b5a8e", lineHeight: 1.6 }}>
+                <p
+                  style={{
+                    fontSize: "0.86rem",
+                    color: "#6b5a8e",
+                    lineHeight: 1.6,
+                  }}
+                >
                   Full-time, up to 40 hours/week over the Christmas / New Year
                   break.
                 </p>
@@ -628,7 +998,10 @@ export default function VisasPage() {
                 border: "1px solid var(--line)",
               }}
             >
-              <Clock size={18} style={{ color: "#7c5cff", flexShrink: 0, marginTop: 2 }} />
+              <Clock
+                size={18}
+                style={{ color: "#7c5cff", flexShrink: 0, marginTop: 2 }}
+              />
               <p style={{ fontSize: "0.85rem", color: "#38285c", lineHeight: 1.6 }}>
                 Outside those two windows you're limited to{" "}
                 <strong>20 hours per week</strong>. Going over the limit can put
@@ -645,10 +1018,9 @@ export default function VisasPage() {
         >
           <Reveal>
             <h2
-              className="serif"
               style={{
+                ...h2Style,
                 fontSize: "clamp(1.5rem, 3vw, 2rem)",
-                color: "#1a0f2e",
                 marginBottom: 6,
               }}
             >
@@ -668,7 +1040,7 @@ export default function VisasPage() {
           >
             <Reveal>
               <div
-                className="card glow-on-hover"
+                className="card glow-on-hover visa-lift"
                 style={{ padding: "22px 20px", height: "100%" }}
               >
                 <div
@@ -690,28 +1062,30 @@ export default function VisasPage() {
                   >
                     <Calculator size={20} />
                   </span>
-                  <h3
-                    className="serif"
-                    style={{ fontSize: "1.2rem", color: "#1a0f2e" }}
-                  >
+                  <h3 style={{ ...h3Style, fontSize: "1.2rem" }}>
                     Stamp 1A — Trainee accountants
                   </h3>
                 </div>
-                <p style={{ fontSize: "0.9rem", color: "#38285c", lineHeight: 1.7 }}>
-                  Stamp 1A is a special permission given{" "}
-                  <strong>only</strong> to people doing{" "}
-                  <strong>full-time paid accountancy training</strong> under a
-                  training contract with an Irish firm (regulated by IAASA). It's
-                  not a general work stamp — it exists specifically for trainee
-                  accountants completing their professional qualification,
-                  usually over about 3–4 years.
+                <p
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "#38285c",
+                    lineHeight: 1.7,
+                  }}
+                >
+                  Stamp 1A is a special permission given <strong>only</strong> to
+                  people doing <strong>full-time paid accountancy training</strong>{" "}
+                  under a training contract with an Irish firm (regulated by
+                  IAASA). It's not a general work stamp — it exists specifically
+                  for trainee accountants completing their professional
+                  qualification, usually over about 3–4 years.
                 </p>
               </div>
             </Reveal>
 
-            <Reveal delay={60}>
+            <Reveal delay={80}>
               <div
-                className="card glow-on-hover"
+                className="card glow-on-hover visa-lift"
                 style={{ padding: "22px 20px", height: "100%" }}
               >
                 <div
@@ -733,19 +1107,24 @@ export default function VisasPage() {
                   >
                     <ShieldCheck size={20} />
                   </span>
-                  <h3
-                    className="serif"
-                    style={{ fontSize: "1.2rem", color: "#1a0f2e" }}
-                  >
+                  <h3 style={{ ...h3Style, fontSize: "1.2rem" }}>
                     Stamp 4 — Long-term residence
                   </h3>
                 </div>
-                <p style={{ fontSize: "0.9rem", color: "#38285c", lineHeight: 1.7 }}>
+                <p
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "#38285c",
+                    lineHeight: 1.7,
+                  }}
+                >
                   Stamp 4 is the big one: you can{" "}
-                  <strong>work for any employer with no employment permit</strong>
-                  , take up self-employment, and run a business. You usually reach
-                  it after 5 years on an employment permit (or just 2 years on a
-                  Critical Skills permit). Crucially, Stamp 4 time is{" "}
+                  <strong>
+                    work for any employer with no employment permit
+                  </strong>
+                  , take up self-employment, and run a business. You usually
+                  reach it after 5 years on an employment permit (or just 2 years
+                  on a Critical Skills permit). Crucially, Stamp 4 time is{" "}
                   <strong>reckonable toward citizenship</strong>.
                 </p>
               </div>
@@ -759,7 +1138,7 @@ export default function VisasPage() {
         >
           <Reveal>
             <div
-              className="card"
+              className="card visa-lift"
               style={{
                 padding: "30px 26px",
                 background:
@@ -787,10 +1166,9 @@ export default function VisasPage() {
                   <Flag size={24} />
                 </span>
                 <h2
-                  className="serif"
                   style={{
+                    ...h2Style,
                     fontSize: "clamp(1.5rem, 3vw, 2rem)",
-                    color: "#1a0f2e",
                   }}
                 >
                   Getting the Irish passport
@@ -806,9 +1184,10 @@ export default function VisasPage() {
                   "The final 12 months before you apply must be continuous residence in Ireland.",
                   "Time spent on a student stamp (Stamp 2) and on the graduate scheme (Stamp 1G) does NOT count — the clock effectively starts on Stamp 1 / Stamp 4.",
                   "Once you have the residence, you apply for naturalisation; if approved you become an Irish citizen and can get an Irish (EU) passport.",
-                ].map((t) => (
+                ].map((t, i) => (
                   <li
                     key={t}
+                    className="reveal-child"
                     style={{
                       display: "flex",
                       gap: 10,
@@ -847,7 +1226,6 @@ export default function VisasPage() {
                 textAlign: "center",
                 fontSize: "0.78rem",
                 color: "#9b8ec8",
-                marginTop: 28,
                 lineHeight: 1.6,
                 maxWidth: 640,
                 margin: "28px auto 0",
@@ -855,8 +1233,8 @@ export default function VisasPage() {
             >
               This is a friendly student guide, not legal advice. Rules and dates
               can change — always confirm the current details on{" "}
-              <span style={{ color: "#7c5cff" }}>irishimmigration.ie</span> or with
-              your college's international office before you apply.
+              <span style={{ color: "#7c5cff" }}>irishimmigration.ie</span> or
+              with your college's international office before you apply.
             </p>
           </Reveal>
 
