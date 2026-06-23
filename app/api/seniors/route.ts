@@ -9,12 +9,24 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const { data, error } = await supabaseAdmin
+    const cols = 'id, name, programme, school, intake_year, hometown, bio, interests, photo_url, linkedin, instagram, contact_email, created_at';
+    let { data, error } = await supabaseAdmin
       .from('users')
-      .select('id, name, programme, school, intake_year, hometown, bio, interests, photo_url, linkedin, instagram, contact_email, created_at')
+      .select(cols)
       .eq('role', 'senior')
       .eq('verified', true)
+      .or('hidden.is.null,hidden.eq.false')
       .order('created_at', { ascending: false });
+
+    // Fallback if the moderation `hidden` column hasn't been added yet.
+    if (error && /hidden/i.test(error.message || '')) {
+      ({ data, error } = await supabaseAdmin
+        .from('users')
+        .select(cols)
+        .eq('role', 'senior')
+        .eq('verified', true)
+        .order('created_at', { ascending: false }));
+    }
 
     if (error) {
       console.error('seniors fetch error:', error);

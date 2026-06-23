@@ -33,6 +33,10 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS contact_email TEXT;
 -- accounts created before passwords were introduced — those users can set a
 -- password via the "forgot password" flow.
 ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash TEXT;
+-- Moderation: when TRUE the profile is hidden from the public lists
+-- (/api/students, /api/seniors) but kept in the DB. Toggled from the moderator
+-- dashboard (/admin). NULL/FALSE means visible.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS hidden BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- Index for fast lookups by role (powers /api/students and /api/seniors)
 CREATE INDEX IF NOT EXISTS users_role_idx  ON users (role);

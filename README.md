@@ -1,5 +1,36 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Moderator / Master account
+
+There is a single master/moderator account, locked to one email at the code
+level. Only that account can access the moderation dashboard.
+
+- **Master email**: set via the `ADMIN_EMAIL` env var (defaults to
+  `divyansh.rana@ucdconnect.ie`). Only this exact, signed-in email is allowed.
+- **Dashboard**: `/admin` (an "Admin" button also appears in the navbar, but
+  only for the master account). Lists every profile with search + role filter.
+- **Moderation actions** per profile:
+  - **Edit** any field (name, programme, bio, links, role, etc.)
+  - **Hide / unhide** - hides a profile from the public Meet people / Ask a
+    senior lists without deleting it.
+  - **Delete** - permanently removes the user row and their avatar file.
+- **Safety**: the master account cannot hide or delete itself.
+- **Security**: every `/api/admin/*` endpoint re-checks the session email
+  server-side, so the dashboard and endpoints are useless to anyone else even
+  if they find the URLs.
+
+### One-time DB setup for Hide/unhide
+
+Hide/unhide needs a `hidden` column on the `users` table. Run this once in
+**Supabase → SQL Editor** (it is also in `supabase/schema.sql`):
+
+```sql
+ALTER TABLE users ADD COLUMN IF NOT EXISTS hidden BOOLEAN NOT NULL DEFAULT FALSE;
+```
+
+Edit and Delete work without this; only Hide/unhide requires it. In production,
+also set `ADMIN_EMAIL` in your Vercel environment variables.
+
 ## Getting Started
 
 First, run the development server:

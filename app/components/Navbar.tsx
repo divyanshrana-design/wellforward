@@ -3,7 +3,7 @@
 import { useState, useEffect, useLayoutEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, Shield } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Meet people",   href: "/meet-people"   },
@@ -48,6 +48,7 @@ export default function Navbar() {
   // in a layout effect - which runs *before* the browser paints - so the user
   // never actually sees the empty placeholder when navigating between pages.
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const pathname = usePathname();
 
   // Synchronously hydrate from the session cache before first paint.
@@ -76,6 +77,15 @@ export default function Navbar() {
         const loggedIn = !!d.loggedIn;
         setIsLoggedIn(loggedIn);
         writeCachedAuth(loggedIn);
+        // Only the master account gets the Admin link. Checked server-side.
+        if (loggedIn) {
+          fetch('/api/admin/check', { cache: 'no-store' })
+            .then(r => r.json())
+            .then(a => { if (!cancelled) setIsAdmin(!!a.isAdmin); })
+            .catch(() => { if (!cancelled) setIsAdmin(false); });
+        } else {
+          setIsAdmin(false);
+        }
       })
       .catch(() => {
         if (!cancelled) setIsLoggedIn(prev => (prev === null ? false : prev));
@@ -176,6 +186,26 @@ export default function Navbar() {
             <div style={{ marginLeft: 12, width: 96, height: 36 }} aria-hidden="true" />
           ) : isLoggedIn ? (
             <div style={{ marginLeft: 12, display: "flex", alignItems: "center", gap: 8 }}>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  style={{
+                    padding: "8px 16px",
+                    fontSize: "0.875rem",
+                    borderRadius: 10,
+                    textDecoration: "none",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    background: "linear-gradient(160deg, #7c5cff 0%, #5a3ee8 100%)",
+                    color: "#fff",
+                    fontWeight: 600,
+                    border: "1.5px solid transparent",
+                  }}
+                >
+                  <Shield size={14} /> Admin
+                </Link>
+              )}
               <Link
                 href="/profile"
                 style={{
@@ -306,6 +336,29 @@ export default function Navbar() {
             ))}
             {isLoggedIn === null ? null : isLoggedIn ? (
               <>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    style={{
+                      marginTop: 8,
+                      padding: "12px 16px",
+                      fontSize: "0.9rem",
+                      textAlign: "center",
+                      textDecoration: "none",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6,
+                      background: "linear-gradient(160deg, #7c5cff 0%, #5a3ee8 100%)",
+                      color: "#fff",
+                      fontWeight: 600,
+                      border: "1.5px solid transparent",
+                      borderRadius: 10,
+                    }}
+                  >
+                    <Shield size={15} /> Admin
+                  </Link>
+                )}
                 <Link
                   href="/profile"
                   style={{
