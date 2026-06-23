@@ -934,12 +934,17 @@ p { line-height: 1.7; }
 }
 .visa-node-anim { opacity: 0; animation: visaPop 0.55s var(--ease-out) forwards; }
 
-/* Active node gets a soft pulsing ring */
+/* Active node gets a soft pulsing ring.
+   IMPORTANT: it must ALSO keep opacity:1, otherwise it overrides the
+   entrance animation's `forwards` fill and the node would render blank. */
 @keyframes visaRing {
   0%,100% { box-shadow: 0 0 0 0 var(--ring,rgba(124,92,255,0.35)); }
   50%     { box-shadow: 0 0 0 8px rgba(124,92,255,0); }
 }
-.visa-node-active-ring { animation: visaRing 2.2s ease-in-out infinite; }
+.visa-node-active-ring {
+  opacity: 1 !important;
+  animation: visaRing 2.2s ease-in-out infinite, visaPop 0.55s var(--ease-out) forwards;
+}
 
 /* Arrow keeps nudging toward the next stamp */
 @keyframes visaArrowNudge {
@@ -1033,4 +1038,17 @@ p { line-height: 1.7; }
   .visa-node-anim, .visa-month, .visa-progress-fill { animation: none; opacity: 1; }
   .visa-bar-fill { transition: none; }
   .visa-node-active-ring, .visa-arrow svg, .visa-bar-fill::after { animation: none; }
+}
+
+/* Citizenship rule list: self-contained fade/slide (no parent .visible needed) */
+@keyframes visaRuleIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.visa-rule {
+  opacity: 0;
+  animation: visaRuleIn 0.5s var(--ease-out) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .visa-rule { animation: none; opacity: 1; }
 }

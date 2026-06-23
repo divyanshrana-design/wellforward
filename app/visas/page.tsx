@@ -410,11 +410,12 @@ export default function VisasPage() {
                             animationDelay: `${i * 120}ms`,
                             borderColor: isActive ? node.color : "var(--line)",
                             boxShadow: isActive
-                              ? `0 10px 30px ${node.color}33`
+                              ? `0 12px 30px ${node.color}4d`
                               : "var(--shadow-sm)",
                             background: isActive
-                              ? `${node.color}0d`
+                              ? `linear-gradient(160deg, ${node.color} 0%, ${node.color}d9 100%)`
                               : "rgba(255,255,255,0.9)",
+                            transform: isActive ? "translateY(-3px)" : undefined,
                             ["--ring" as string]: `${node.color}55`,
                           } as React.CSSProperties
                         }
@@ -422,7 +423,9 @@ export default function VisasPage() {
                         <span
                           className="visa-node-icon"
                           style={{
-                            background: `${node.color}18`,
+                            background: isActive
+                              ? "rgba(255,255,255,0.92)"
+                              : `${node.color}18`,
                             color: node.color,
                           }}
                         >
@@ -433,6 +436,7 @@ export default function VisasPage() {
                             ...h3Style,
                             fontSize: "1.02rem",
                             lineHeight: 1.1,
+                            color: isActive ? "#ffffff" : "#1a0f2e",
                           }}
                         >
                           {node.stamp}
@@ -440,7 +444,9 @@ export default function VisasPage() {
                         <span
                           style={{
                             fontSize: "0.72rem",
-                            color: "#9b8ec8",
+                            color: isActive
+                              ? "rgba(255,255,255,0.92)"
+                              : "#9b8ec8",
                             marginTop: 2,
                           }}
                         >
@@ -1187,13 +1193,14 @@ export default function VisasPage() {
                 ].map((t, i) => (
                   <li
                     key={t}
-                    className="reveal-child"
+                    className="visa-rule"
                     style={{
                       display: "flex",
                       gap: 10,
                       fontSize: "0.92rem",
                       color: "#38285c",
                       lineHeight: 1.6,
+                      animationDelay: `${i * 90}ms`,
                     }}
                   >
                     <CheckCircle2
