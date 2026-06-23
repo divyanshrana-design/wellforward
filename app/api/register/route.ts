@@ -4,7 +4,7 @@ import { hashPassword, validatePassword } from '@/lib/password';
 
 export const dynamic = 'force-dynamic';
 
-// Helper — read email from session cookie
+// Helper - read email from session cookie
 function getEmailFromCookie(req: NextRequest): string | null {
   const cookie = req.cookies.get('wf_session')?.value;
   if (!cookie) return null;
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Password is provided during sign-up (account creation). It is optional on
-    // later profile edits — when omitted, the existing password is preserved.
+    // later profile edits - when omitted, the existing password is preserved.
     let passwordHash: string | null = null;
     if (password !== undefined && password !== null && password !== '') {
       const pwErr = validatePassword(password);
@@ -71,11 +71,11 @@ export async function POST(req: NextRequest) {
         photoUrl = urlData.publicUrl;
       } else {
         console.warn('Photo upload failed:', uploadError.message);
-        // Non-fatal — profile saved without photo
+        // Non-fatal - profile saved without photo
       }
     }
 
-    // Build upsert object — only include photo_url if a new photo was actually uploaded
+    // Build upsert object - only include photo_url if a new photo was actually uploaded
     const upsertData: Record<string, unknown> = {
       email,
       name,

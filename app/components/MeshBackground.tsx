@@ -101,7 +101,7 @@ export default function MeshBackground() {
         b.x += b.vx;
         b.y += b.vy;
 
-        // Wrap-around — bubble exits right → re-enter from left
+        // Wrap-around - bubble exits right → re-enter from left
         if (b.x - b.r > W + 20)  { b.x = -b.r - 20; b.y = Math.random() * H; }
         if (b.x + b.r < -20)     { b.x = W + b.r + 20; b.y = Math.random() * H; }
         if (b.y - b.r > H + 20)  { b.y = -b.r - 20; }
@@ -109,7 +109,7 @@ export default function MeshBackground() {
 
         const drawY = b.y + wobbleY;
 
-        // Radial gradient — soft glowing circle
+        // Radial gradient - soft glowing circle
         const grad = ctx.createRadialGradient(b.x, drawY, 0, b.x, drawY, b.r);
         const [r, g, bCh] = b.color;
         grad.addColorStop(0,   `rgba(${r},${g},${bCh},${(b.alpha * 0.85).toFixed(3)})`);

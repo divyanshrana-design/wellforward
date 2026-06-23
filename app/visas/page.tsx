@@ -181,7 +181,7 @@ const JOURNEY = [
     color: "#0ea5e9",
     tag: "After you graduate",
     summary:
-      "The Third Level Graduate Programme. After finishing an eligible Irish course you can stay and work full-time — with no employment permit needed — for up to 24 months (Master's / Level 9).",
+      "The Third Level Graduate Programme. After finishing an eligible Irish course you can stay and work full-time - with no employment permit needed - for up to 24 months (Master's / Level 9).",
   },
   {
     key: "stamp1",
@@ -201,7 +201,7 @@ const JOURNEY = [
     color: "#ec4899",
     tag: "Settled status",
     summary:
-      "After enough time on a permit (typically 5 years, or 2 years on a Critical Skills permit) you can move to Stamp 4 — work for any employer, no permit needed, and run a business.",
+      "After enough time on a permit (typically 5 years, or 2 years on a Critical Skills permit) you can move to Stamp 4 - work for any employer, no permit needed, and run a business.",
   },
   {
     key: "citizenship",
@@ -211,7 +211,7 @@ const JOURNEY = [
     color: "#f59e0b",
     tag: "The final step",
     summary:
-      "With 5 years of reckonable residence out of the last 9 (including the final 12 months continuously), you can apply for naturalisation — and become an Irish citizen with an Irish/EU passport.",
+      "With 5 years of reckonable residence out of the last 9 (including the final 12 months continuously), you can apply for naturalisation - and become an Irish citizen with an Irish/EU passport.",
   },
 ] as const;
 
@@ -224,18 +224,18 @@ const COMPARE = [
   },
   {
     label: "What it's for",
-    s2: "Studying — work is only a part-time extra",
+    s2: "Studying - work is only a part-time extra",
     s1g: "Working full-time while you look for a long-term role",
   },
   {
     label: "Work allowed",
     s2: "20 hrs/week in term · 40 hrs/week in holiday periods",
-    s1g: "Full-time (up to 40 hrs/week, any employer) — no permit",
+    s1g: "Full-time (up to 40 hrs/week, any employer) - no permit",
   },
   {
     label: "Employment permit needed?",
     s2: "No (work is incidental to study)",
-    s1g: "No — that's the whole point of the programme",
+    s1g: "No - that's the whole point of the programme",
   },
   {
     label: "How long it lasts",
@@ -244,8 +244,8 @@ const COMPARE = [
   },
   {
     label: "Counts toward citizenship?",
-    s2: "No — student time is not reckonable",
-    s1g: "No — graduate-scheme time is not reckonable either",
+    s2: "No - student time is not reckonable",
+    s1g: "No - graduate-scheme time is not reckonable either",
   },
 ] as const;
 
@@ -322,7 +322,7 @@ export default function VisasPage() {
               }}
             >
               From the day you arrive as a student to the day you can hold an
-              Irish passport — here's every immigration <strong>stamp</strong>{" "}
+              Irish passport - here's every immigration <strong>stamp</strong>{" "}
               that matters, and how you move from one to the next.
             </p>
           </Reveal>
@@ -499,7 +499,7 @@ export default function VisasPage() {
                     {activeNode.tag}
                   </span>
                   <h3 style={{ ...h3Style, fontSize: "1.25rem" }}>
-                    {activeNode.stamp} — {activeNode.title}
+                    {activeNode.stamp} - {activeNode.title}
                   </h3>
                 </div>
                 <p
@@ -551,20 +551,20 @@ export default function VisasPage() {
           <Reveal delay={60}>
             <div className="card" style={{ padding: "26px 24px" }}>
               <Bar
-                label="Stamp 2 — term time"
+                label="Stamp 2 - term time"
                 pct={50}
                 value="20 hrs"
                 color="#7c5cff"
               />
               <Bar
-                label="Stamp 2 — holiday periods"
+                label="Stamp 2 - holiday periods"
                 pct={100}
                 value="40 hrs"
                 color="#0ea5e9"
                 delay={120}
               />
               <Bar
-                label="Stamp 1G — graduate"
+                label="Stamp 1G - graduate"
                 pct={100}
                 value="40 hrs (full-time)"
                 color="#10b981"
@@ -615,13 +615,13 @@ export default function VisasPage() {
           <Reveal delay={60}>
             <div className="card" style={{ padding: "26px 24px" }}>
               <Bar
-                label="Stamp 1G — Level 8 graduate"
+                label="Stamp 1G - Level 8 graduate"
                 pct={50}
                 value="12 months"
                 color="#0ea5e9"
               />
               <Bar
-                label="Stamp 1G — Level 9 / Master's"
+                label="Stamp 1G - Level 9 / Master's"
                 pct={100}
                 value="24 months"
                 color="#10b981"
@@ -746,12 +746,12 @@ export default function VisasPage() {
               {
                 n: "1",
                 t: "Create your account online",
-                d: "Everything is handled on the immigration portal — there is no appointment to book and no queue to stand in.",
+                d: "Everything is handled on the immigration portal - there is no appointment to book and no queue to stand in.",
               },
               {
                 n: "2",
                 t: "Submit your documents on the site",
-                d: "After making your account, you simply upload your documents on the portal. That's it — nothing to post or hand in.",
+                d: "After making your account, you simply upload your documents on the portal. That's it - nothing to post or hand in.",
               },
               {
                 n: "3",
@@ -828,7 +828,7 @@ export default function VisasPage() {
               On Stamp 2 you can normally work{" "}
               <strong>20 hours a week during term</strong>. But{" "}
               <strong>twice a year</strong> you're allowed to work{" "}
-              <strong>full-time, up to 40 hours a week</strong> — during the
+              <strong>full-time, up to 40 hours a week</strong> - during the
               official holiday periods highlighted below.
             </p>
           </Reveal>
@@ -935,7 +935,7 @@ export default function VisasPage() {
                     lineHeight: 1.6,
                   }}
                 >
-                  Full-time, up to 40 hours/week. (September has 30 days — the
+                  Full-time, up to 40 hours/week. (September has 30 days - the
                   period ends on the 30th, not the 31st.)
                 </p>
               </div>
@@ -1011,7 +1011,7 @@ export default function VisasPage() {
               <p style={{ fontSize: "0.85rem", color: "#38285c", lineHeight: 1.6 }}>
                 Outside those two windows you're limited to{" "}
                 <strong>20 hours per week</strong>. Going over the limit can put
-                your permission — and any future Stamp 1G — at risk, so keep your
+                your permission - and any future Stamp 1G - at risk, so keep your
                 hours documented.
               </p>
             </div>
@@ -1069,7 +1069,7 @@ export default function VisasPage() {
                     <Calculator size={20} />
                   </span>
                   <h3 style={{ ...h3Style, fontSize: "1.2rem" }}>
-                    Stamp 1A — Trainee accountants
+                    Stamp 1A - Trainee accountants
                   </h3>
                 </div>
                 <p
@@ -1082,7 +1082,7 @@ export default function VisasPage() {
                   Stamp 1A is a special permission given <strong>only</strong> to
                   people doing <strong>full-time paid accountancy training</strong>{" "}
                   under a training contract with an Irish firm (regulated by
-                  IAASA). It's not a general work stamp — it exists specifically
+                  IAASA). It's not a general work stamp - it exists specifically
                   for trainee accountants completing their professional
                   qualification, usually over about 3–4 years.
                 </p>
@@ -1114,7 +1114,7 @@ export default function VisasPage() {
                     <ShieldCheck size={20} />
                   </span>
                   <h3 style={{ ...h3Style, fontSize: "1.2rem" }}>
-                    Stamp 4 — Long-term residence
+                    Stamp 4 - Long-term residence
                   </h3>
                 </div>
                 <p
@@ -1188,7 +1188,7 @@ export default function VisasPage() {
                 {[
                   "You need 5 years of reckonable residence out of the last 9 years.",
                   "The final 12 months before you apply must be continuous residence in Ireland.",
-                  "Time spent on a student stamp (Stamp 2) and on the graduate scheme (Stamp 1G) does NOT count — the clock effectively starts on Stamp 1 / Stamp 4.",
+                  "Time spent on a student stamp (Stamp 2) and on the graduate scheme (Stamp 1G) does NOT count - the clock effectively starts on Stamp 1 / Stamp 4.",
                   "Once you have the residence, you apply for naturalisation; if approved you become an Irish citizen and can get an Irish (EU) passport.",
                 ].map((t, i) => (
                   <li
@@ -1239,7 +1239,7 @@ export default function VisasPage() {
               }}
             >
               This is a friendly student guide, not legal advice. Rules and dates
-              can change — always confirm the current details on{" "}
+              can change - always confirm the current details on{" "}
               <span style={{ color: "#7c5cff" }}>irishimmigration.ie</span> or
               with your college's international office before you apply.
             </p>

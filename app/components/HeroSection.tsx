@@ -11,7 +11,7 @@ interface Props {
   onBrowseGuide: () => void;
 }
 
-// Sparkle particle — CSS-animated dot
+// Sparkle particle - CSS-animated dot
 function Sparkle({ style }: { style: React.CSSProperties }) {
   return (
     <div
@@ -48,7 +48,7 @@ function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
   return <span ref={ref}>{val.toLocaleString()}{suffix}</span>;
 }
 
-// Mini checklist card — "show don't tell"
+// Mini checklist card - "show don't tell"
 function ChecklistPreview() {
   const items = [
     { done: true,  text: "Book IRP appointment",   note: "do this before you land" },
@@ -158,7 +158,7 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
   const copyRef  = useRef<HTMLDivElement>(null);
   const cardRef  = useRef<HTMLDivElement>(null);
 
-  // Entrance animation — stagger the left copy
+  // Entrance animation - stagger the left copy
   useEffect(() => {
     const els = copyRef.current?.querySelectorAll<HTMLElement>("[data-enter]");
     els?.forEach((el, i) => {
@@ -184,7 +184,7 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
     }
   }, []);
 
-  // Sparkle positions — deliberately irregular, hand-placed feel
+  // Sparkle positions - deliberately irregular, hand-placed feel
   const sparkles: React.CSSProperties[] = [
     { top: "12%",  left: "8%",   width: 4, height: 4, "--dur": "3.2s", "--delay": "0s",    "--max-opacity": "0.4" } as React.CSSProperties,
     { top: "8%",   left: "42%",  width: 3, height: 3, "--dur": "4.5s", "--delay": "0.8s",  "--max-opacity": "0.3" } as React.CSSProperties,
@@ -208,12 +208,12 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
         <HeroCanvas />
       </div>
 
-      {/* Sparkle particles — scattered over full hero */}
+      {/* Sparkle particles - scattered over full hero */}
       <div className="sparkles absolute inset-0 z-10 pointer-events-none">
         {sparkles.map((s, i) => <Sparkle key={i} style={s} />)}
       </div>
 
-      {/* Main grid — left copy + right card */}
+      {/* Main grid - left copy + right card */}
       <div
         className="relative z-20 flex-1 flex items-center"
         style={{ padding: "6vh 0 4vh" }}
@@ -236,7 +236,7 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
               </span>
             </div>
 
-            {/* Headline — Fraunces, heavy weight, italic accent */}
+            {/* Headline - Fraunces, heavy weight, italic accent */}
             <h1
               data-enter
               style={{
@@ -269,7 +269,7 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
             {/* Squiggle */}
             <div className="squiggle-divider" aria-hidden="true" />
 
-            {/* Sub — conversational, specific */}
+            {/* Sub - conversational, specific */}
             <p
               data-enter
               style={{
@@ -352,7 +352,7 @@ export default function HeroSection({ onMakeFriend, onBrowseGuide }: Props) {
         </div>
       </div>
 
-      {/* ─── Stat strip — bottom of viewport ─── */}
+      {/* ─── Stat strip - bottom of viewport ─── */}
       <div
         className="relative z-20 w-full"
         style={{

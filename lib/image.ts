@@ -12,7 +12,7 @@ export async function compressImage(
   maxSize = 512,
   quality = 0.82
 ): Promise<string> {
-  // Non-images (shouldn't happen given accept="image/*") — just read as-is.
+  // Non-images (shouldn't happen given accept="image/*") - just read as-is.
   if (!file.type.startsWith('image/')) {
     return readAsDataUrl(file);
   }

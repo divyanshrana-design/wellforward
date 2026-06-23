@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { X, Link2, Filter, Lock, ArrowRight, AlertCircle, Mail } from "lucide-react";
 import Link from "next/link";
 import { INTEREST_TAGS, StudentProfile } from "@/lib/data";
-// Note: static STUDENT_PROFILES no longer used — profiles come from /api/students
+// Note: static STUDENT_PROFILES no longer used - profiles come from /api/students
 
 function InstagramIcon({ size = 15 }: { size?: number }) {
   return (
@@ -20,7 +20,7 @@ function getInitials(name: string) {
   return name.split(" ").map(n => n[0]).join("").toUpperCase();
 }
 
-// Ensure URL always has a protocol — prevents relative-path redirects
+// Ensure URL always has a protocol - prevents relative-path redirects
 function ensureHttps(url: string): string {
   if (!url) return url;
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
@@ -131,7 +131,7 @@ function LoginGate() {
   );
 }
 
-/* ─── Profile card — intentionally varied heights ──────────────── */
+/* ─── Profile card - intentionally varied heights ──────────────── */
 function ProfileCard({ profile, onClick, index }: { profile: StudentProfile; onClick: () => void; index: number }) {
   const ref = useReveal();
   const rotations = ["-0.4deg", "0.3deg", "-0.2deg", "0.5deg", "0deg", "-0.3deg"];
@@ -436,9 +436,9 @@ export default function MakeFriendSection() {
         {/* Tag marquee */}
         <TagMarquee />
 
-        {/* Profile grid — gated behind login */}
+        {/* Profile grid - gated behind login */}
         <div style={{ position: "relative", minHeight: 480 }}>
-          {/* Blurred preview grid — always rendered underneath */}
+          {/* Blurred preview grid - always rendered underneath */}
           <div style={{ filter: isLoggedIn ? "none" : "blur(6px)", pointerEvents: isLoggedIn ? "auto" : "none", userSelect: "none", transition: "filter 0.4s ease" }}>
             {/* Filter bar */}
             {isLoggedIn && (

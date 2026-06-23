@@ -45,7 +45,7 @@ export default function Navbar() {
   const [open, setOpen]         = useState(false);
   // Start as null so the server-rendered HTML and the client's first render
   // match (no hydration mismatch). We then immediately apply the cached value
-  // in a layout effect — which runs *before* the browser paints — so the user
+  // in a layout effect - which runs *before* the browser paints - so the user
   // never actually sees the empty placeholder when navigating between pages.
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const pathname = usePathname();
@@ -96,7 +96,7 @@ export default function Navbar() {
     // show the logged-in buttons.
     writeCachedAuth(false);
     // Full reload to the home page so every component re-reads the cleared
-    // session — this is what makes logout feel seamless everywhere.
+    // session - this is what makes logout feel seamless everywhere.
     window.location.href = '/';
   };
 
@@ -117,7 +117,7 @@ export default function Navbar() {
 
       <nav className="max-w-6xl mx-auto px-5 sm:px-8 h-[64px] flex items-center justify-between">
 
-        {/* Wordmark — links back to home */}
+        {/* Wordmark - links back to home */}
         <Link
           href="/"
           aria-label="Wellforward home"
@@ -171,7 +171,7 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* CTA — renders nothing until auth resolved to prevent flash */}
+          {/* CTA - renders nothing until auth resolved to prevent flash */}
           {isLoggedIn === null ? (
             <div style={{ marginLeft: 12, width: 96, height: 36 }} aria-hidden="true" />
           ) : isLoggedIn ? (

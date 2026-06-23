@@ -16,7 +16,7 @@ function avatarColorFor(name: string) {
   return AVATAR_COLORS[h % AVATAR_COLORS.length];
 }
 
-// Always run on every request — never statically cache (see seniors route).
+// Always run on every request - never statically cache (see seniors route).
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 

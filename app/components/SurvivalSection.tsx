@@ -82,7 +82,7 @@ function SurvivalCard({
       {/* Headline */}
       <h3 className="survival-card__title">{title}</h3>
 
-      {/* Summary — trimmed on small tiles, full on the featured tile */}
+      {/* Summary - trimmed on small tiles, full on the featured tile */}
       <p className="survival-card__summary">{summary}</p>
 
       {/* Footer: urgency pill + expand toggle pinned to the bottom */}
@@ -322,7 +322,7 @@ export default function SurvivalSection() {
           </p>
         </div>
 
-        {/* Bento grid — card 01 is the tall feature on the left, 02 wide top-right,
+        {/* Bento grid - card 01 is the tall feature on the left, 02 wide top-right,
             03 tall on the right, 04 + 05 across the bottom. Layout is driven by
             named grid-areas in globals.css (.survival-bento) and collapses to a
             single column on mobile. */}

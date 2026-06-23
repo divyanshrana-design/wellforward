@@ -421,7 +421,7 @@ export default function ProfilePage() {
                       display: "flex", alignItems: "center", gap: 4,
                     }}
                   >
-                    <Camera size={11} /> Add a photo — it helps others recognise you
+                    <Camera size={11} /> Add a photo - it helps others recognise you
                   </button>
                 )}
 
@@ -552,7 +552,7 @@ export default function ProfilePage() {
                         Add your contact details
                       </p>
                       <p style={{ fontSize: "0.72rem", color: "#9b8ec8", margin: 0, lineHeight: 1.5 }}>
-                        LinkedIn, Instagram or email — these are shown to other logged-in users so they can reach you.
+                        LinkedIn, Instagram or email - these are shown to other logged-in users so they can reach you.
                       </p>
                     </div>
                   </div>
@@ -566,7 +566,7 @@ export default function ProfilePage() {
                     textAlign: "center",
                   }}>
                     <p style={{ fontSize: "0.8rem", color: "#9b8ec8", margin: "0 0 10px" }}>
-                      Your profile is looking a bit empty — add a bio to show up in the community.
+                      Your profile is looking a bit empty - add a bio to show up in the community.
                     </p>
                     <button
                       onClick={() => setEditMode(true)}

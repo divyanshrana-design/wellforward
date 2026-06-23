@@ -304,7 +304,7 @@ export default function JoinPage() {
     setApiLoading(true);
     setOtpError('');
     try {
-      // Step 1 — verify OTP
+      // Step 1 - verify OTP
       const verifyRes = await fetch('/api/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -313,7 +313,7 @@ export default function JoinPage() {
       const verifyData = await verifyRes.json();
       if (!verifyRes.ok) throw new Error(verifyData.error ?? 'Invalid code.');
 
-      // Step 2 — register profile
+      // Step 2 - register profile
       const regRes = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -336,7 +336,7 @@ export default function JoinPage() {
       const regData = await regRes.json();
       if (!regRes.ok) throw new Error(regData.error ?? 'Failed to save profile.');
 
-      // Account created and session cookie set — prime the navbar's cached
+      // Account created and session cookie set - prime the navbar's cached
       // auth state so links from the success screen show the logged-in buttons.
       try { window.sessionStorage.setItem("wf_is_logged_in", "1"); } catch { /* ignore */ }
 
@@ -571,7 +571,7 @@ export default function JoinPage() {
                   )}
                 </div>
 
-                {/* Password + repeat password — sets up sign-in for later */}
+                {/* Password + repeat password - sets up sign-in for later */}
                 <div>
                   <label style={labelStyle}>
                     Create a password
@@ -707,7 +707,7 @@ export default function JoinPage() {
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Interests — pick what applies</label>
+                  <label style={labelStyle}>Interests - pick what applies</label>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 4 }}>
                     {INTERESTS.map(tag => (
                       <button
@@ -770,7 +770,7 @@ export default function JoinPage() {
                 </div>
 
                 <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
-                  {/* Social links — collapsible optional section */}
+                  {/* Social links - collapsible optional section */}
                 </div>
 
                 {/* Optional: Social / contact links */}
@@ -790,7 +790,7 @@ export default function JoinPage() {
                         value={form.instagram} onChange={e => update("instagram", e.target.value)} onFocus={focus} onBlur={blur} />
                     </div>
                     <div>
-                      <label style={labelStyle}>Public email <span style={{ color: "#b0a0cc", fontWeight: 400 }}>(seniors only — shown to logged-in users)</span></label>
+                      <label style={labelStyle}>Public email <span style={{ color: "#b0a0cc", fontWeight: 400 }}>(seniors only - shown to logged-in users)</span></label>
                       <input style={inputStyle} type="email" placeholder="your@email.com"
                         value={form.contactEmail} onChange={e => update("contactEmail", e.target.value)} onFocus={focus} onBlur={blur} />
                     </div>
@@ -838,11 +838,11 @@ export default function JoinPage() {
                     We sent a 6-digit code to{" "}
                     <strong style={{ color: "#7c5cff" }}>{form.email}</strong>.
                     Enter it below to verify your UCD address. You&apos;ll only
-                    need this once — after that, just sign in with your password.
+                    need this once - after that, just sign in with your password.
                   </p>
                 </div>
 
-                {/* Spam folder hint — OTP emails sometimes land in spam */}
+                {/* Spam folder hint - OTP emails sometimes land in spam */}
                 <div style={{
                   display: "flex", alignItems: "flex-start", gap: 8,
                   background: "rgba(245,158,11,0.1)",
@@ -852,7 +852,7 @@ export default function JoinPage() {
                   <span style={{ fontSize: "1rem", lineHeight: 1.3 }} aria-hidden="true">⚠️</span>
                   <p style={{ fontSize: "0.78rem", color: "#92400e", lineHeight: 1.5, margin: 0 }}>
                     <strong>[ Can&apos;t see it? Check your spam / junk folder. ]</strong>{" "}
-                    The code sometimes lands there — mark it &ldquo;Not spam&rdquo; so future emails arrive in your inbox.
+                    The code sometimes lands there - mark it &ldquo;Not spam&rdquo; so future emails arrive in your inbox.
                   </p>
                 </div>
 

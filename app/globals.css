@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Fonts: Fraunces (serif display) + Inter (sans body) — same pair as PM Éire ─── */
+/* ─── Fonts: Fraunces (serif display) + Inter (sans body) - same pair as PM Éire ─── */
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,600;1,9..144,700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* ─── Root tokens ─── */
@@ -10,13 +10,13 @@
   --font-serif: 'Fraunces', Georgia, serif;
   --font-sans:  'Inter', system-ui, sans-serif;
 
-  /* Ink scale — near-black to faded purple */
+  /* Ink scale - near-black to faded purple */
   --ink:        #1a0f2e;
   --ink-mid:    #38285c;
   --ink-soft:   #6b5a8e;
   --ink-muted:  #9b8ec8;
 
-  /* Purple accent — unchanged */
+  /* Purple accent - unchanged */
   --violet:      #7c5cff;
   --violet-dark: #5a3ee8;
   --violet-pale: #ede8ff;
@@ -25,16 +25,16 @@
   --periwinkle:  #b8c8ff;
   --sky:         #c4e0ff;
 
-  /* Background — cream-white, NOT lavender */
+  /* Background - cream-white, NOT lavender */
   --bg:          #fdfcff;
   --bg-alt:      #f9f7ff;
   --surface:     rgba(255,255,255,0.82);
   --surface-border: rgba(200,184,255,0.25);
 
-  /* Warm line colour — like PM Éire's --line */
+  /* Warm line colour - like PM Éire's --line */
   --line:        #ede8ff;
 
-  /* Shadows — purple-tinted only */
+  /* Shadows - purple-tinted only */
   --shadow-sm:  0 2px 8px  rgba(92,60,220,0.07);
   --shadow-md:  0 10px 30px rgba(92,60,220,0.12);
   --shadow-lg:  0 25px 60px rgba(92,60,220,0.18);
@@ -57,11 +57,11 @@ body {
   color: var(--ink);
   overflow-x: hidden;
   min-height: 100vh;
-  /* Very subtle grain — paper texture, not render artifact */
+  /* Very subtle grain - paper texture, not render artifact */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.022'/%3E%3C/svg%3E");
 }
 
-/* ─── Type hierarchy — Fraunces for display, Inter for everything else ─── */
+/* ─── Type hierarchy - Fraunces for display, Inter for everything else ─── */
 h1 {
   font-family: var(--font-serif);
   line-height: 1.05;
@@ -115,13 +115,13 @@ p { line-height: 1.7; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ═══════════════════════════════════════════════
-   ANIMATED BACKGROUND — Canvas-based bubble system
+   ANIMATED BACKGROUND - Canvas-based bubble system
    (MeshBackground.tsx handles the animation;
    no CSS needed here)
 ═══════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════
-   SPARKLE PARTICLES — CSS only, like PM Éire
+   SPARKLE PARTICLES - CSS only, like PM Éire
    Small dots that fade in/out at various speeds
 ═══════════════════════════════════════════════ */
 .sparkles {
@@ -142,7 +142,7 @@ p { line-height: 1.7; }
 }
 
 /* ═══════════════════════════════════════════════
-   CARDS — plain white, clean borders, PM Éire style
+   CARDS - plain white, clean borders, PM Éire style
    No glassmorphism. Depth from shadow on hover.
 ═══════════════════════════════════════════════ */
 .card {
@@ -166,7 +166,7 @@ p { line-height: 1.7; }
   box-shadow: var(--shadow-sm);
 }
 
-/* Glass — only for navbar/overlays, not cards */
+/* Glass - only for navbar/overlays, not cards */
 .glass {
   background: rgba(255,255,255,0.88);
   backdrop-filter: blur(20px) saturate(160%);
@@ -175,7 +175,7 @@ p { line-height: 1.7; }
 }
 
 /* ═══════════════════════════════════════════════
-   BUTTONS — rounded but not pill-shaped
+   BUTTONS - rounded but not pill-shaped
 ═══════════════════════════════════════════════ */
 .btn-primary {
   background: linear-gradient(135deg, #7c5cff 0%, #6040f0 100%);
@@ -205,7 +205,7 @@ p { line-height: 1.7; }
 }
 .btn-primary:active { transform: translateY(0) scale(0.98); }
 
-/* Ghost button — like PM Éire's btn-ghost */
+/* Ghost button - like PM Éire's btn-ghost */
 .btn-ghost {
   background: white;
   color: var(--ink-mid);
@@ -267,7 +267,7 @@ p { line-height: 1.7; }
 }
 
 /* ═══════════════════════════════════════════════
-   EYEBROW — small label above headings (PM Éire pattern)
+   EYEBROW - small label above headings (PM Éire pattern)
 ═══════════════════════════════════════════════ */
 .eyebrow {
   display: inline-block;
@@ -280,7 +280,7 @@ p { line-height: 1.7; }
   margin-bottom: 12px;
 }
 
-/* Section label pill — kept for compatibility */
+/* Section label pill - kept for compatibility */
 .section-label {
   display: inline-flex;
   align-items: center;
@@ -343,7 +343,7 @@ p { line-height: 1.7; }
 }
 
 /* ═══════════════════════════════════════════════
-   NAV LINK — underline slide (PM Éire pattern)
+   NAV LINK - underline slide (PM Éire pattern)
 ═══════════════════════════════════════════════ */
 .nav-link {
   font-size: 0.875rem;
@@ -488,7 +488,7 @@ p { line-height: 1.7; }
 }
 
 /* ═══════════════════════════════════════════════
-   RIPPLE — button micro-interaction
+   RIPPLE - button micro-interaction
 ═══════════════════════════════════════════════ */
 .ripple {
   position: absolute;
@@ -538,7 +538,7 @@ p { line-height: 1.7; }
 }
 
 /* ═══════════════════════════════════════════════
-   SURVIVAL SECTION — "Your first week in Dublin" bento
+   SURVIVAL SECTION - "Your first week in Dublin" bento
 ═══════════════════════════════════════════════ */
 
 /* ---- Bento grid -------------------------------------------------
@@ -553,7 +553,7 @@ p { line-height: 1.7; }
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
-  align-items: start;          /* never stretch — cards hug their content */
+  align-items: start;          /* never stretch - cards hug their content */
   grid-template-areas:
     "card1"
     "card2"
@@ -683,7 +683,7 @@ p { line-height: 1.7; }
 .survival-card--featured .survival-num { font-size: 5.4rem; }
 
 /* Featured (IRP) tile: on wide screens lay it out as two columns so the
-   big number fills the left and the copy fills the right — no dead space.
+   big number fills the left and the copy fills the right - no dead space.
    The header (icon chip) floats top-right across both columns. */
 @media (min-width: 1000px) {
   .survival-card--featured {
@@ -901,8 +901,8 @@ p { line-height: 1.7; }
 @media (max-width: 640px) {
   .visa-compare-head { display: none; }
   .visa-compare-row { grid-template-columns: 1fr; }
-  .visa-compare-row .visa-compare-cell:nth-child(2)::before { content: "Stamp 2 — "; font-weight: 700; color: #7c5cff; }
-  .visa-compare-row .visa-compare-cell:nth-child(3)::before { content: "Stamp 1G — "; font-weight: 700; color: #0ea5e9; }
+  .visa-compare-row .visa-compare-cell:nth-child(2)::before { content: "Stamp 2 - "; font-weight: 700; color: #7c5cff; }
+  .visa-compare-row .visa-compare-cell:nth-child(3)::before { content: "Stamp 1G - "; font-weight: 700; color: #0ea5e9; }
 }
 
 /* ── Visas page: extra animations & charts ──────────────────── */

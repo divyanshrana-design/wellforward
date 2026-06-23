@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-// Small floating gradient balls — soft, ambient, non-intrusive
+// Small floating gradient balls - soft, ambient, non-intrusive
 // Nothing cursor-reactive, nothing burst-like
 interface Particle {
   x: number;

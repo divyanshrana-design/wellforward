@@ -38,7 +38,7 @@ function TermCard({ term, index }: { term: GlossaryTerm; index: number }) {
         className="card glow-on-hover text-left w-full"
         style={{ padding: "16px 18px", minHeight: 90 }}
         aria-expanded={revealed}
-        aria-label={`${term.term}${revealed ? " — hide definition" : " — tap to reveal"}`}
+        aria-label={`${term.term}${revealed ? " - hide definition" : " - tap to reveal"}`}
       >
         <div className="flex items-start justify-between gap-2 mb-2">
           <div>

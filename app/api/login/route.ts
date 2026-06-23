@@ -5,7 +5,7 @@ import { verifyPassword } from '@/lib/password';
 
 export const dynamic = 'force-dynamic';
 
-// Password-based sign in. No OTP — once an account is created, the user signs
+// Password-based sign in. No OTP - once an account is created, the user signs
 // in with just their email + password. OTP is only used for sign-up and for
 // the "forgot password" reset flow.
 export async function POST(req: NextRequest) {

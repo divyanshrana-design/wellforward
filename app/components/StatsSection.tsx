@@ -231,7 +231,7 @@ export default function StatsSection() {
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
 
-          {/* Bar chart — biggest week-one challenges */}
+          {/* Bar chart - biggest week-one challenges */}
           <div className="card" style={{ padding: "24px 26px" }}>
             <h3 style={{ fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.07em", color: "#9b8ec8", textTransform: "uppercase", marginBottom: 18 }}>
               Biggest week-one challenges
@@ -242,11 +242,11 @@ export default function StatsSection() {
             <Bar label="Feeling socially isolated" value={49} max={100} color="linear-gradient(90deg,#ec4899,#f472b6)" delay={300} />
             <Bar label="Navigating public transport" value={38} max={100} color="linear-gradient(90deg,#7c5cff,#a78bfa)" delay={400} />
             <p style={{ fontSize: "0.68rem", color: "#b0a0cc", marginTop: 10 }}>
-              Directional estimates — Wellforward founder interviews &amp; UCD SU surveys. Not a formal study.
+              Directional estimates - Wellforward founder interviews &amp; UCD SU surveys. Not a formal study.
             </p>
           </div>
 
-          {/* Donut — nationalities */}
+          {/* Donut - nationalities */}
           <div className="card" style={{ padding: "24px 26px" }}>
             <h3 style={{ fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.07em", color: "#9b8ec8", textTransform: "uppercase", marginBottom: 18 }}>
               Smurfit intake by region
@@ -276,11 +276,11 @@ export default function StatsSection() {
               ))}
             </div>
             <p style={{ fontSize: "0.68rem", color: "#b0a0cc", marginTop: 12, textAlign: "center" }}>
-              Approximate — based on publicly available UCD international admissions data 2024/25
+              Approximate - based on publicly available UCD international admissions data 2024/25
             </p>
           </div>
 
-          {/* Radar — what students wish they knew */}
+          {/* Radar - what students wish they knew */}
           <div className="card" style={{ padding: "24px 26px" }}>
             <h3 style={{ fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.07em", color: "#9b8ec8", textTransform: "uppercase", marginBottom: 12 }}>
               &ldquo;I wish I&apos;d known more about…&rdquo;
@@ -296,7 +296,7 @@ export default function StatsSection() {
               % of students who felt underprepared in each area on arrival
             </p>
             <p style={{ fontSize: "0.68rem", color: "#b0a0cc", marginTop: 8, textAlign: "center" }}>
-              Directional estimates — Wellforward founder interviews, not a formal survey
+              Directional estimates - Wellforward founder interviews, not a formal survey
             </p>
           </div>
 
@@ -337,7 +337,7 @@ export default function StatsSection() {
             ))}
           </div>
           <p style={{ fontSize: "0.65rem", color: "#b0a0cc", textAlign: "center", lineHeight: 1.6, borderTop: "1px solid rgba(200,184,255,0.25)", paddingTop: 12, margin: 0 }}>
-            The bar chart and radar data are directional estimates based on Wellforward founder interviews and UCD SU research — not from a formal survey.
+            The bar chart and radar data are directional estimates based on Wellforward founder interviews and UCD SU research - not from a formal survey.
             The three statistics above are from published third-party sources linked above.
           </p>
         </div>

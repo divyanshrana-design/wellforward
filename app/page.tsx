@@ -9,7 +9,7 @@ import DublinGame from "./components/DublinGame";
 import StatsSection from "./components/StatsSection";
 import Footer from "./components/Footer";
 
-/* Scroll-reveal hook — reusable */
+/* Scroll-reveal hook - reusable */
 function useReveal(threshold = 0.12) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -172,7 +172,7 @@ export default function Home() {
         onBrowseGuide={() => scrollTo("#survival")}
       />
 
-      {/* Dublin Quiz — interactive game between hero and survival guide */}
+      {/* Dublin Quiz - interactive game between hero and survival guide */}
       <section
         id="quiz"
         style={{
@@ -190,10 +190,10 @@ export default function Home() {
             }}
             className="gap-12"
           >
-            {/* Left copy — staggered reveal */}
+            {/* Left copy - staggered reveal */}
             <QuizCopy />
 
-            {/* Right — game card */}
+            {/* Right - game card */}
             <div className="flex justify-center lg:justify-end">
               <DublinGame />
             </div>

@@ -10,7 +10,7 @@ export function isUcdEmail(email: string): boolean {
   return lower.endsWith('@ucdconnect.ie') || lower.endsWith('@ucd.ie');
 }
 
-// Gmail SMTP transporter — uses App Password (never your real Gmail password)
+// Gmail SMTP transporter - uses App Password (never your real Gmail password)
 function createTransporter() {
   return nodemailer.createTransport({
     service: 'gmail',
@@ -114,7 +114,7 @@ export async function createAndSendOtp(
     });
   } catch (emailError) {
     console.error('Gmail send error:', emailError);
-    // Non-fatal — OTP is still in DB
+    // Non-fatal - OTP is still in DB
   }
 
   return { ok: true };

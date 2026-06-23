@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 // Sends a ONE-TIME sign-up verification OTP.
 // This is only used during account creation. If a verified account already
 // exists for this email, we refuse and tell the user to sign in with their
-// password instead — so existing users never get an OTP just for logging in.
+// password instead - so existing users never get an OTP just for logging in.
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();

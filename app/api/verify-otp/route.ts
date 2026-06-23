@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Atomically mark this OTP as used — and only succeed if it was still
+    // Atomically mark this OTP as used - and only succeed if it was still
     // unused. This prevents a replay / double-submit from verifying twice.
     const { data: claimed } = await supabaseAdmin
       .from('otps')
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
 
     // Does a completed profile already exist for this email? This lets the
     // client route returning users straight to /profile, and brand-new users
-    // to /join to finish setting up — instead of guessing.
+    // to /join to finish setting up - instead of guessing.
     const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('id')
@@ -65,14 +65,14 @@ export async function POST(req: NextRequest) {
     const hasProfile = !!existingUser;
 
     // Create a simple signed session token (email + timestamp, base64)
-    // For production you'd use a proper JWT library — this is lightweight & works
+    // For production you'd use a proper JWT library - this is lightweight & works
     const sessionPayload = Buffer.from(
       JSON.stringify({ email: normalEmail, verified: true, ts: Date.now() })
     ).toString('base64');
 
     const response = NextResponse.json({ success: true, email: normalEmail, hasProfile });
 
-    // Set session cookie — httpOnly, 30 days.
+    // Set session cookie - httpOnly, 30 days.
     // `secure` is only added when the request actually arrived over HTTPS, so
     // the cookie is never silently dropped when served over plain HTTP
     // (e.g. behind a proxy that terminates TLS upstream).

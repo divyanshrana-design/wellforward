@@ -226,7 +226,7 @@ export const CHECKLIST_TASKS: ChecklistTask[] = [
     why: "You need mobile data to navigate Dublin, find your way to campus, and contact your accommodation. Don't rely on Wi-Fi for your first few days.",
     howLong: "Buy a SIM and top up in any convenience store, supermarket, or the network's own shop. Takes 10 minutes.",
     whatToBring: ["Your phone (make sure it's unlocked before travelling)", "Cash or card"],
-    pitfall: "48 (runs on Three's network) is the best value SIM for students — unlimited calls, texts and data from €12.99/month. Use the referral link below and you get a €20 voucher on your first top-up. Buy the SIM in any Centra, Spar, or Tesco.",
+    pitfall: "48 (runs on Three's network) is the best value SIM for students - unlimited calls, texts and data from €12.99/month. Use the referral link below and you get a €20 voucher on your first top-up. Buy the SIM in any Centra, Spar, or Tesco.",
     link: "https://refer.48.ie/divyanshr-26",
     linkLabel: "Get 48 SIM + €20 voucher →",
   },
@@ -400,13 +400,13 @@ export const VOICE_QUOTES: VoiceQuote[] = [
   },
   {
     id: "v2",
-    quote: "I even get nervous when locals greet me with 'how are you' — I struggle with natural replies.",
+    quote: "I even get nervous when locals greet me with 'how are you' - I struggle with natural replies.",
     profile: "Experienced professional, first semester",
     gradient: "from-indigo-400/20 to-blue-500/20",
   },
   {
     id: "v3",
-    quote: "Practical daily guidance matters more than pure mental support — knowing what to do on day one would have changed everything.",
+    quote: "Practical daily guidance matters more than pure mental support - knowing what to do on day one would have changed everything.",
     profile: "Fresh graduate, third week in Dublin",
     gradient: "from-pink-400/20 to-rose-500/20",
   },
@@ -418,7 +418,7 @@ export const VOICE_QUOTES: VoiceQuote[] = [
   },
   {
     id: "v5",
-    quote: "At Smurfit I do feel like the Irish students kind of keep to themselves. Not unfriendly — just… separate.",
+    quote: "At Smurfit I do feel like the Irish students kind of keep to themselves. Not unfriendly - just… separate.",
     profile: "European student, semester two",
     gradient: "from-teal-400/20 to-emerald-500/20",
   },
@@ -436,7 +436,7 @@ export const VOICE_QUOTES: VoiceQuote[] = [
   },
   {
     id: "v8",
-    quote: "Finding your people is the whole game. Once you do, everything else — the weather, the prices, the paperwork — becomes manageable.",
+    quote: "Finding your people is the whole game. Once you do, everything else - the weather, the prices, the paperwork - becomes manageable.",
     profile: "MBA graduate, now working in Dublin",
     gradient: "from-fuchsia-400/20 to-purple-500/20",
   },

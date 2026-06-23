@@ -34,7 +34,7 @@ function getInitials(name: string) {
   return name.split(" ").map(n => n[0]).join("").toUpperCase();
 }
 
-// Ensure URL always has a protocol — prevents relative-path redirects
+// Ensure URL always has a protocol - prevents relative-path redirects
 function ensureHttps(url: string): string {
   if (!url) return url;
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
@@ -405,7 +405,7 @@ export default function AskSeniorSection() {
           ))}
         </div>
 
-        {/* Senior grid — gated */}
+        {/* Senior grid - gated */}
         <div style={{ position: "relative", minHeight: 380 }}>
           <div style={{ filter: isLoggedIn ? "none" : "blur(5px)", pointerEvents: isLoggedIn ? "auto" : "none", userSelect: "none", transition: "filter 0.4s ease" }}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

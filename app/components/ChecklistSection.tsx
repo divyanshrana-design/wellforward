@@ -31,7 +31,7 @@ const TASK_XP: Record<string, number> = {
   sim: 50, accommodation: 90, "ucd-reg": 80, mygovid: 40, groceries: 30,
 };
 
-// Confetti burst — pure CSS keyframe confetti pieces
+// Confetti burst - pure CSS keyframe confetti pieces
 function ConfettiBurst({ onDone }: { onDone: () => void }) {
   const colors = ["#7c5cff","#c8b8ff","#ffd166","#06d6a0","#ef476f","#118ab2"];
   useEffect(() => { const t = setTimeout(onDone, 1800); return () => clearTimeout(t); }, [onDone]);
@@ -342,7 +342,7 @@ export default function ChecklistSection() {
             </p>
           </div>
 
-          {/* Player card — XP + level */}
+          {/* Player card - XP + level */}
           <div style={{
             background: "white",
             border: "1px solid #ede8ff",
@@ -458,7 +458,7 @@ export default function ChecklistSection() {
 
           {/* Timeline */}
           <div style={{ position: "relative", paddingLeft: 72 }}>
-            {/* Vertical line — 20px from left edge of this container */}
+            {/* Vertical line - 20px from left edge of this container */}
             <div aria-hidden="true" style={{
               position: "absolute",
               left: 20, top: 0, bottom: 0,
@@ -468,7 +468,7 @@ export default function ChecklistSection() {
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {tasks.map((t, i) => (
                 <div key={t.id} style={{ position: "relative" }}>
-                  {/* Dot button — absolutely positioned at left edge of container, centered on line */}
+                  {/* Dot button - absolutely positioned at left edge of container, centered on line */}
                   <button
                     onClick={() => toggle(t.id)}
                     className="tl-dot"

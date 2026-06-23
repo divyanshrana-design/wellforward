@@ -4,7 +4,7 @@ import { createAndSendOtp, isUcdEmail } from '@/lib/otp';
 
 export const dynamic = 'force-dynamic';
 
-// Step 1 of the "forgot password" flow: send a reset OTP — but only if a
+// Step 1 of the "forgot password" flow: send a reset OTP - but only if a
 // verified account exists for this email.
 export async function POST(req: NextRequest) {
   try {

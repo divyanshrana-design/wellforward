@@ -50,7 +50,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Explicit favicon — overrides any Next.js/Vercel default.
+        {/* Explicit favicon - overrides any Next.js/Vercel default.
             SVG for modern browsers, .ico as universal fallback (this is the
             one that shows in the browser tab). */}
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

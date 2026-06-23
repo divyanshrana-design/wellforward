@@ -113,7 +113,7 @@ export default function VoicesSection() {
           </div>
         </div>
 
-        {/* Cards — horizontal scroll */}
+        {/* Cards - horizontal scroll */}
         <div
           ref={scrollRef}
           onScroll={onScroll}
@@ -139,7 +139,7 @@ export default function VoicesSection() {
               onMouseEnter={e => (e.currentTarget.style.transform = "rotate(0deg) translateY(-4px)")}
               onMouseLeave={e => (e.currentTarget.style.transform = `rotate(${CARD_ROTATIONS[i % CARD_ROTATIONS.length]})`)}
             >
-              {/* Big opening quote — decorative, CSS handled */}
+              {/* Big opening quote - decorative, CSS handled */}
               <blockquote
                 className="serif flex-1"
                 style={{
@@ -155,13 +155,13 @@ export default function VoicesSection() {
               </blockquote>
 
               <footer style={{ fontSize: "0.72rem", color: "#9b8ec8", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                — {q.profile}
+                - {q.profile}
               </footer>
             </article>
           ))}
         </div>
 
-        {/* Support note — tucked at the bottom, understated */}
+        {/* Support note - tucked at the bottom, understated */}
         <div
           style={{
             marginTop: 40,
