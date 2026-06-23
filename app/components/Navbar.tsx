@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Meet people",   href: "/meet-people"   },
@@ -24,16 +24,30 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  // Check session on mount
+  // Check session on mount AND whenever the route changes (so the navbar
+  // reflects login/logout immediately after those actions).
   useEffect(() => {
-    fetch('/api/me')
+    let cancelled = false;
+    fetch('/api/me', { cache: 'no-store' })
       .then(r => r.json())
-      .then(d => { if (d.loggedIn) setIsLoggedIn(true); })
-      .catch(() => {});
-  }, []);
+      .then(d => { if (!cancelled) setIsLoggedIn(!!d.loggedIn); })
+      .catch(() => { if (!cancelled) setIsLoggedIn(false); });
+    return () => { cancelled = true; };
+  }, [pathname]);
 
   // Close mobile menu on route change
   useEffect(() => { setOpen(false); }, [pathname]);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/me', { method: 'DELETE' });
+    } catch {
+      /* ignore */
+    }
+    // Full reload to the home page so every component re-reads the cleared
+    // session — this is what makes logout feel seamless everywhere.
+    window.location.href = '/';
+  };
 
   const isActive = (href: string) => pathname === href;
 
@@ -106,45 +120,86 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* CTA — Join / My Profile — renders nothing until auth resolved to prevent flash */}
+          {/* CTA — renders nothing until auth resolved to prevent flash */}
           {isLoggedIn === null ? (
             <div style={{ marginLeft: 12, width: 96, height: 36 }} aria-hidden="true" />
           ) : isLoggedIn ? (
-            <Link
-              href="/profile"
-              style={{
-                marginLeft: 12,
-                padding: "8px 18px",
-                fontSize: "0.875rem",
-                borderRadius: 10,
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                background: "rgba(124,92,255,0.1)",
-                color: "#7c5cff",
-                fontWeight: 600,
-                border: "1.5px solid rgba(124,92,255,0.25)",
-                transition: "background 0.15s",
-              }}
-            >
-              <User size={14} /> My profile
-            </Link>
+            <div style={{ marginLeft: 12, display: "flex", alignItems: "center", gap: 8 }}>
+              <Link
+                href="/profile"
+                style={{
+                  padding: "8px 18px",
+                  fontSize: "0.875rem",
+                  borderRadius: 10,
+                  textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  background: "rgba(124,92,255,0.1)",
+                  color: "#7c5cff",
+                  fontWeight: 600,
+                  border: "1.5px solid rgba(124,92,255,0.25)",
+                  transition: "background 0.15s",
+                }}
+              >
+                <User size={14} /> My profile
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                style={{
+                  padding: "8px 14px",
+                  fontSize: "0.875rem",
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  background: "transparent",
+                  color: "#9b8ec8",
+                  fontWeight: 500,
+                  border: "1.5px solid #ede8ff",
+                  transition: "border-color 0.15s, color 0.15s",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#ef4444"; (e.currentTarget as HTMLButtonElement).style.color = "#ef4444"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#ede8ff"; (e.currentTarget as HTMLButtonElement).style.color = "#9b8ec8"; }}
+                aria-label="Log out"
+              >
+                <LogOut size={14} /> Log out
+              </button>
+            </div>
           ) : (
-            <Link
-              href="/join"
-              className="btn-primary"
-              style={{
-                marginLeft: 12,
-                padding: "9px 20px",
-                fontSize: "0.875rem",
-                borderRadius: 10,
-                textDecoration: "none",
-                display: "inline-block",
-              }}
-            >
-              Join free
-            </Link>
+            <div style={{ marginLeft: 12, display: "flex", alignItems: "center", gap: 8 }}>
+              <Link
+                href="/login"
+                style={{
+                  padding: "8px 16px",
+                  fontSize: "0.875rem",
+                  borderRadius: 10,
+                  textDecoration: "none",
+                  display: "inline-block",
+                  color: "#38285c",
+                  fontWeight: 600,
+                  border: "1.5px solid #ede8ff",
+                  transition: "border-color 0.15s",
+                }}
+              >
+                Log in
+              </Link>
+              <Link
+                href="/join"
+                className="btn-primary"
+                style={{
+                  padding: "9px 20px",
+                  fontSize: "0.875rem",
+                  borderRadius: 10,
+                  textDecoration: "none",
+                  display: "inline-block",
+                }}
+              >
+                Join free
+              </Link>
+            </div>
           )}
         </div>
 
@@ -199,42 +254,85 @@ export default function Navbar() {
               </Link>
             ))}
             {isLoggedIn === null ? null : isLoggedIn ? (
-              <Link
-                href="/profile"
-                style={{
-                  marginTop: 8,
-                  padding: "12px 16px",
-                  fontSize: "0.9rem",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 6,
-                  background: "rgba(124,92,255,0.1)",
-                  color: "#7c5cff",
-                  fontWeight: 600,
-                  border: "1.5px solid rgba(124,92,255,0.25)",
-                  borderRadius: 10,
-                }}
-              >
-                <User size={15} /> My profile
-              </Link>
+              <>
+                <Link
+                  href="/profile"
+                  style={{
+                    marginTop: 8,
+                    padding: "12px 16px",
+                    fontSize: "0.9rem",
+                    textAlign: "center",
+                    textDecoration: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
+                    background: "rgba(124,92,255,0.1)",
+                    color: "#7c5cff",
+                    fontWeight: 600,
+                    border: "1.5px solid rgba(124,92,255,0.25)",
+                    borderRadius: 10,
+                  }}
+                >
+                  <User size={15} /> My profile
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  style={{
+                    marginTop: 8,
+                    padding: "12px 16px",
+                    fontSize: "0.9rem",
+                    textAlign: "center",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
+                    background: "transparent",
+                    color: "#9b8ec8",
+                    fontWeight: 500,
+                    border: "1.5px solid #ede8ff",
+                    borderRadius: 10,
+                  }}
+                >
+                  <LogOut size={15} /> Log out
+                </button>
+              </>
             ) : (
-              <Link
-                href="/join"
-                className="btn-primary"
-                style={{
-                  marginTop: 8,
-                  padding: "12px 16px",
-                  fontSize: "0.9rem",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  display: "block",
-                }}
-              >
-                Join free ✦
-              </Link>
+              <>
+                <Link
+                  href="/login"
+                  style={{
+                    marginTop: 8,
+                    padding: "12px 16px",
+                    fontSize: "0.9rem",
+                    textAlign: "center",
+                    textDecoration: "none",
+                    display: "block",
+                    color: "#38285c",
+                    fontWeight: 600,
+                    border: "1.5px solid #ede8ff",
+                    borderRadius: 10,
+                  }}
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/join"
+                  className="btn-primary"
+                  style={{
+                    marginTop: 8,
+                    padding: "12px 16px",
+                    fontSize: "0.9rem",
+                    textAlign: "center",
+                    textDecoration: "none",
+                    display: "block",
+                  }}
+                >
+                  Join free ✦
+                </Link>
+              </>
             )}
           </div>
         </div>

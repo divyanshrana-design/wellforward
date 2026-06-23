@@ -10,6 +10,7 @@ import {
   Pencil, X, Mail, MapPin,
   GraduationCap, Calendar, Link2,
 } from "lucide-react";
+import { compressImage } from "@/lib/image";
 
 function InstagramIcon({ size = 14 }: { size?: number }) {
   return (
@@ -51,12 +52,17 @@ function avatarColorFor(name: string) {
 
 function PhotoUpload({ value, onChange }: { value: string; onChange: (url: string) => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => { if (ev.target?.result) onChange(ev.target.result as string); };
-    reader.readAsDataURL(file);
+    try {
+      const compressed = await compressImage(file);
+      onChange(compressed);
+    } catch {
+      const reader = new FileReader();
+      reader.onload = ev => { if (ev.target?.result) onChange(ev.target.result as string); };
+      reader.readAsDataURL(file);
+    }
   };
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
@@ -149,32 +155,55 @@ export default function ProfilePage() {
 
   // Load session + profile
   useEffect(() => {
-    fetch('/api/me')
-      .then(r => r.json())
-      .then(d => {
-        if (!d.loggedIn || !d.user) {
-          router.replace('/join');
+    let cancelled = false;
+
+    const applyUser = (u: UserProfile) => {
+      setUser(u);
+      setForm({
+        name: u.name ?? "",
+        programme: u.programme ?? "",
+        school: u.school ?? "Smurfit Business School",
+        intakeYear: u.intake_year ?? "",
+        hometown: u.hometown ?? "",
+        bio: u.bio ?? "",
+        interests: u.interests ?? "",
+        lookingFor: u.looking_for ?? "",
+        photo: u.photo_url ?? "",
+        linkedin: u.linkedin ?? "",
+        instagram: u.instagram ?? "",
+        contactEmail: u.contact_email ?? "",
+      });
+      setLoading(false);
+    };
+
+    // Try /api/me; if it briefly reports logged-out right after a login
+    // redirect (cookie not yet committed), retry once before giving up.
+    const load = async (attempt = 0): Promise<void> => {
+      try {
+        const r = await fetch('/api/me', { cache: 'no-store' });
+        const d = await r.json();
+        if (cancelled) return;
+        if (d.loggedIn && d.user) {
+          applyUser(d.user as UserProfile);
           return;
         }
-        const u: UserProfile = d.user;
-        setUser(u);
-        setForm({
-          name: u.name ?? "",
-          programme: u.programme ?? "",
-          school: u.school ?? "Smurfit Business School",
-          intakeYear: u.intake_year ?? "",
-          hometown: u.hometown ?? "",
-          bio: u.bio ?? "",
-          interests: u.interests ?? "",
-          lookingFor: u.looking_for ?? "",
-          photo: u.photo_url ?? "",
-          linkedin: u.linkedin ?? "",
-          instagram: u.instagram ?? "",
-          contactEmail: u.contact_email ?? "",
-        });
-        setLoading(false);
-      })
-      .catch(() => { router.replace('/join'); });
+        if (attempt < 1) {
+          await new Promise(res => setTimeout(res, 400));
+          return load(attempt + 1);
+        }
+        router.replace('/join');
+      } catch {
+        if (cancelled) return;
+        if (attempt < 1) {
+          await new Promise(res => setTimeout(res, 400));
+          return load(attempt + 1);
+        }
+        router.replace('/join');
+      }
+    };
+
+    load();
+    return () => { cancelled = true; };
   }, [router]);
 
   const update = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
@@ -233,7 +262,8 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     await fetch('/api/me', { method: 'DELETE' });
-    router.push('/');
+    // Full reload so the Navbar (and any cached session state) resets cleanly.
+    window.location.href = '/';
   };
 
   if (loading) {

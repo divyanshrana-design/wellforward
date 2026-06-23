@@ -123,7 +123,7 @@ function LoginGate() {
       </Link>
       <p style={{ fontSize: "0.72rem", color: "#9b8ec8", marginTop: 14 }}>
         Already have an account?{" "}
-        <Link href="/join" style={{ color: "#7c5cff", textDecoration: "underline" }}>
+        <Link href="/login" style={{ color: "#7c5cff", textDecoration: "underline" }}>
           Sign in
         </Link>
       </p>
@@ -395,13 +395,13 @@ export default function MakeFriendSection() {
 
   useEffect(() => {
     // Check session
-    fetch('/api/me')
+    fetch('/api/me', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { if (d.loggedIn) setIsLoggedIn(true); })
       .catch(() => {});
 
     // Load live student profiles
-    fetch('/api/students')
+    fetch('/api/students', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { if (d.profiles) setProfiles(d.profiles); })
       .catch(() => {});

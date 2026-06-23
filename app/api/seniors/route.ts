@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
+// Always run on every request — never statically cache. Without this, Next.js
+// pre-renders this route at build time and freezes the senior list to whoever
+// existed then, so new sign-ups would never appear.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const { data, error } = await supabaseAdmin

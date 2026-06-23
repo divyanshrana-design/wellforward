@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 // Helper — read email from session cookie
 function getEmailFromCookie(req: NextRequest): string | null {
   const cookie = req.cookies.get('wf_session')?.value;

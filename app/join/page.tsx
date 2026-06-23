@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Camera, Mail, ArrowRight, Check, RefreshCw } from "lucide-react";
 import { PROGRAMMES, SCHOOLS } from "@/lib/data";
+import { compressImage } from "@/lib/image";
 
 const INTAKE_YEARS = ["2026/27", "2025/26", "2024/25", "2023/24", "2022/23"];
 const isMeetPeople = (y: string) => y === "2026/27";
@@ -19,27 +20,32 @@ const INTERESTS = [
 /* ─── OTP digit input ──────────────────────────────────────── */
 function OtpInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
-  const digits = value.padEnd(6, "").split("").slice(0, 6);
+  // Build a fixed 6-slot array. Note: "".padEnd(6, "") returns "" (an empty
+  // pad string is a no-op), so we must build the slots explicitly instead.
+  const digits = Array.from({ length: 6 }, (_, i) => value[i] ?? "");
 
   const handleKey = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Backspace") {
-      const next = digits.map((d, idx) => idx === i ? "" : d).join("");
+      // If the current slot is empty, clear the previous one and move back.
+      const target = digits[i] ? i : Math.max(0, i - 1);
+      const next = digits.map((d, idx) => (idx === target ? "" : d)).join("");
       onChange(next);
-      if (i > 0) inputs.current[i - 1]?.focus();
+      if (i > 0 && !digits[i]) inputs.current[i - 1]?.focus();
     }
   };
 
   const handleChange = (i: number, v: string) => {
     const char = v.replace(/\D/g, "").slice(-1);
-    const next = digits.map((d, idx) => idx === i ? char : d).join("");
+    const next = digits.map((d, idx) => (idx === i ? char : d)).join("");
     onChange(next);
     if (char && i < 5) inputs.current[i + 1]?.focus();
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
     const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    onChange(pasted.padEnd(6, "").slice(0, 6));
-    if (pasted.length === 6) inputs.current[5]?.focus();
+    onChange(pasted);
+    const focusIdx = Math.min(pasted.length, 5);
+    inputs.current[focusIdx]?.focus();
     e.preventDefault();
   };
 
@@ -81,14 +87,19 @@ function OtpInput({ value, onChange }: { value: string; onChange: (v: string) =>
 function PhotoUpload({ value, onChange }: { value: string; onChange: (url: string) => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      if (ev.target?.result) onChange(ev.target.result as string);
-    };
-    reader.readAsDataURL(file);
+    // Compress client-side so the upload stays small & reliable at scale.
+    try {
+      const compressed = await compressImage(file);
+      onChange(compressed);
+    } catch {
+      // Fallback to raw read if compression somehow fails
+      const reader = new FileReader();
+      reader.onload = ev => { if (ev.target?.result) onChange(ev.target.result as string); };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
