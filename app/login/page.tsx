@@ -55,6 +55,9 @@ export default function LoginPage() {
         }
         return;
       }
+      // Prime the navbar's cached auth state so the destination page shows the
+      // logged-in buttons immediately (no flash to logged-out).
+      try { window.sessionStorage.setItem("wf_is_logged_in", "1"); } catch { /* ignore */ }
       // Full reload so the Navbar re-reads the new session everywhere.
       window.location.href = "/profile";
     } catch {

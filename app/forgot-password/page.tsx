@@ -147,6 +147,9 @@ export default function ForgotPasswordPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Could not reset password.");
+      // Prime the navbar's cached auth state so the destination shows the
+      // logged-in buttons immediately.
+      try { window.sessionStorage.setItem("wf_is_logged_in", "1"); } catch { /* ignore */ }
       // Logged straight in — reload so the Navbar reflects the new session.
       window.location.href = "/profile";
     } catch (err: unknown) {

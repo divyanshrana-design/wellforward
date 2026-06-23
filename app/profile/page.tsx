@@ -262,6 +262,9 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     await fetch('/api/me', { method: 'DELETE' });
+    // Clear the navbar's cached auth state so the home page doesn't briefly
+    // show the logged-in buttons after signing out.
+    try { window.sessionStorage.setItem("wf_is_logged_in", "0"); } catch { /* ignore */ }
     // Full reload so the Navbar (and any cached session state) resets cleanly.
     window.location.href = '/';
   };

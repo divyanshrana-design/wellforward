@@ -336,6 +336,10 @@ export default function JoinPage() {
       const regData = await regRes.json();
       if (!regRes.ok) throw new Error(regData.error ?? 'Failed to save profile.');
 
+      // Account created and session cookie set — prime the navbar's cached
+      // auth state so links from the success screen show the logged-in buttons.
+      try { window.sessionStorage.setItem("wf_is_logged_in", "1"); } catch { /* ignore */ }
+
       setStep(4);
     } catch (err: unknown) {
       setOtpError(err instanceof Error ? err.message : 'Something went wrong.');

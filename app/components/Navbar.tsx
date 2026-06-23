@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, User, LogOut } from "lucide-react";
@@ -12,11 +12,50 @@ const NAV_LINKS = [
   { label: "Voices",        href: "/voices"        },
 ];
 
+// The Navbar is rendered per-page (not in the shared layout), so every
+// navigation mounts a brand-new instance whose auth state starts unknown.
+// To stop the auth buttons from briefly disappearing on every click, we
+// remember the last-known login state in sessionStorage and seed the new
+// instance with it immediately, then refresh it in the background.
+const AUTH_CACHE_KEY = "wf_is_logged_in";
+
+function readCachedAuth(): boolean | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const v = window.sessionStorage.getItem(AUTH_CACHE_KEY);
+    if (v === "1") return true;
+    if (v === "0") return false;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedAuth(value: boolean) {
+  try {
+    window.sessionStorage.setItem(AUTH_CACHE_KEY, value ? "1" : "0");
+  } catch {
+    /* ignore (private mode etc.) */
+  }
+}
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen]         = useState(false);
+  // Start as null so the server-rendered HTML and the client's first render
+  // match (no hydration mismatch). We then immediately apply the cached value
+  // in a layout effect — which runs *before* the browser paints — so the user
+  // never actually sees the empty placeholder when navigating between pages.
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const pathname = usePathname();
+
+  // Synchronously hydrate from the session cache before first paint.
+  // useLayoutEffect runs after DOM mutations but before the browser repaints,
+  // so swapping null -> cached value here is invisible (no flicker).
+  useLayoutEffect(() => {
+    const cached = readCachedAuth();
+    if (cached !== null) setIsLoggedIn(cached);
+  }, []);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 24);
@@ -25,13 +64,21 @@ export default function Navbar() {
   }, []);
 
   // Check session on mount AND whenever the route changes (so the navbar
-  // reflects login/logout immediately after those actions).
+  // reflects login/logout immediately after those actions). The cached value
+  // already keeps the buttons visible, so this just keeps them accurate.
   useEffect(() => {
     let cancelled = false;
     fetch('/api/me', { cache: 'no-store' })
       .then(r => r.json())
-      .then(d => { if (!cancelled) setIsLoggedIn(!!d.loggedIn); })
-      .catch(() => { if (!cancelled) setIsLoggedIn(false); });
+      .then(d => {
+        if (cancelled) return;
+        const loggedIn = !!d.loggedIn;
+        setIsLoggedIn(loggedIn);
+        writeCachedAuth(loggedIn);
+      })
+      .catch(() => {
+        if (!cancelled) setIsLoggedIn(prev => (prev === null ? false : prev));
+      });
     return () => { cancelled = true; };
   }, [pathname]);
 
@@ -44,6 +91,9 @@ export default function Navbar() {
     } catch {
       /* ignore */
     }
+    // Clear the cached auth state so the post-logout navbar doesn't briefly
+    // show the logged-in buttons.
+    writeCachedAuth(false);
     // Full reload to the home page so every component re-reads the cleared
     // session — this is what makes logout feel seamless everywhere.
     window.location.href = '/';
