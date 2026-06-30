@@ -270,46 +270,65 @@ export default function ChecklistSection() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [xpPop, setXpPop] = useState<number | null>(null);
   const [streakToday, setStreakToday] = useState(0);
+  const [storageKey, setStorageKey] = useState("wf-checklist"); // default key; becomes user-specific when logged in
   const headerRef = useReveal();
 
+  // Determine user-specific storage key on mount so checklist progress
+  // is tied to the logged-in account (not shared across different users
+  // on the same device/browser).
+  useEffect(() => {
+    fetch("/api/me", { cache: "no-store" })
+      .then(r => r.json())
+      .then(d => {
+        if (d.loggedIn && d.user?.email) {
+          // Encode email so it's safe as a localStorage key
+          const userKey = `wf-checklist:${d.user.email}`;
+          setStorageKey(userKey);
+        }
+      })
+      .catch(() => { /* keep default key */ });
+  }, []);
+
+  // Load saved progress whenever the storage key is resolved
   useEffect(() => {
     try {
-      const s = localStorage.getItem("wf-checklist");
+      const s = localStorage.getItem(storageKey);
       if (s) setDone(JSON.parse(s));
       const today = new Date().toDateString();
-      const lastDay = localStorage.getItem("wf-streak-day");
-      const streak = parseInt(localStorage.getItem("wf-streak") || "0");
+      const streakKey = storageKey.replace("wf-checklist", "wf-streak");
+      const lastDay = localStorage.getItem(`${streakKey}-day`);
+      const streak = parseInt(localStorage.getItem(streakKey) || "0");
       if (lastDay === today) setStreakToday(streak);
     } catch {}
-  }, []);
+  }, [storageKey]);
 
   const toggle = useCallback((id: string) => {
     setDone(prev => {
       const isNowDone = !prev[id];
       const next = { ...prev, [id]: isNowDone };
-      try { localStorage.setItem("wf-checklist", JSON.stringify(next)); } catch {}
+      try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch {}
 
       if (isNowDone) {
         const xp = TASK_XP[id] ?? 50;
         setXpPop(xp);
-        const newTotal = Object.entries(next).filter(([,v]) => v).reduce((s,[k]) => s + (TASK_XP[k] ?? 50), 0);
         const newDone = Object.values(next).filter(Boolean).length;
         // Confetti on certain milestones
         if (newDone === CHECKLIST_TASKS.length || newDone % 3 === 0) setShowConfetti(true);
         // Update streak
         try {
           const today = new Date().toDateString();
-          const lastDay = localStorage.getItem("wf-streak-day");
-          const streak = parseInt(localStorage.getItem("wf-streak") || "0");
+          const streakKey = storageKey.replace("wf-checklist", "wf-streak");
+          const lastDay = localStorage.getItem(`${streakKey}-day`);
+          const streak = parseInt(localStorage.getItem(streakKey) || "0");
           const newStreak = lastDay === today ? streak : streak + 1;
-          localStorage.setItem("wf-streak", String(newStreak));
-          localStorage.setItem("wf-streak-day", today);
+          localStorage.setItem(streakKey, String(newStreak));
+          localStorage.setItem(`${streakKey}-day`, today);
           setStreakToday(newStreak);
         } catch {}
       }
       return next;
     });
-  }, []);
+  }, [storageKey]);
 
   const totalXp = Object.entries(done).filter(([,v]) => v).reduce((s,[k]) => s + (TASK_XP[k] ?? 50), 0);
   const doneCount = CHECKLIST_TASKS.filter(t => done[t.id]).length;

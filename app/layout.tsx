@@ -28,6 +28,23 @@ export const metadata: Metadata = {
       "You're not the only one figuring it out. Find friends, ask seniors, and survive your first month in Dublin.",
     type: "website",
     locale: "en_IE",
+    url: "https://wellforward.pages.dev",
+    siteName: "Wellforward",
+    images: [
+      {
+        url: "/og-preview.png",
+        width: 1365,
+        height: 768,
+        alt: "Wellforward — For UCD International Students. Find friends, ask seniors, and survive your first month in Dublin.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Wellforward: For UCD International Students",
+    description:
+      "You're not the only one figuring it out. Find friends, ask seniors, and survive your first month in Dublin.",
+    images: ["/og-preview.png"],
   },
   robots: {
     index: true,

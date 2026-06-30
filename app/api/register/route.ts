@@ -25,9 +25,19 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, programme, school, intakeYear, hometown, bio, interests, lookingFor, photo, linkedin, instagram, contactEmail, password } = body;
+    const {
+      name, programme, school, intakeYear, hometown, bio, interests, lookingFor,
+      photo, linkedin, instagram, contactEmail, password,
+      // Faculty-specific fields
+      accountType, facultyTitle, facultyModules, facultyOffice, facultyWebsite,
+    } = body;
 
-    if (!name || !programme || !intakeYear) {
+    const isFaculty = accountType === 'faculty';
+
+    if (!name) {
+      return NextResponse.json({ error: 'Name is required.' }, { status: 400 });
+    }
+    if (!isFaculty && (!programme || !intakeYear)) {
       return NextResponse.json({ error: 'Name, programme and intake year are required.' }, { status: 400 });
     }
 
@@ -42,9 +52,14 @@ export async function POST(req: NextRequest) {
       passwordHash = await hashPassword(password);
     }
 
-    // Determine role from intake year
-    const isMeetPeople = intakeYear === '2026/27';
-    const role = isMeetPeople ? 'student' : 'senior';
+    // Determine role
+    let role: string;
+    if (isFaculty) {
+      role = 'faculty';
+    } else {
+      const isMeetPeople = intakeYear === '2026/27';
+      role = isMeetPeople ? 'student' : 'senior';
+    }
 
     // Handle photo upload to Supabase Storage
     let photoUrl: string | null = null;
@@ -79,9 +94,9 @@ export async function POST(req: NextRequest) {
     const upsertData: Record<string, unknown> = {
       email,
       name,
-      programme,
+      programme: programme ?? (isFaculty ? 'Faculty' : null),
       school: school ?? 'Smurfit Business School',
-      intake_year: intakeYear,
+      intake_year: intakeYear ?? (isFaculty ? 'Faculty' : null),
       hometown: hometown ?? null,
       bio: bio ?? null,
       interests: interests ?? null,
@@ -91,6 +106,11 @@ export async function POST(req: NextRequest) {
       contact_email: contactEmail ?? null,
       role,
       verified: true,
+      // Faculty-specific fields
+      faculty_title:   isFaculty ? (facultyTitle ?? null) : null,
+      faculty_modules: isFaculty ? (facultyModules ?? null) : null,
+      faculty_office:  isFaculty ? (facultyOffice ?? null) : null,
+      faculty_website: isFaculty ? (facultyWebsite ?? null) : null,
     };
     // Only set photo_url if we got a new upload (photoUrl will be non-null)
     if (photoUrl !== null) {
@@ -102,18 +122,45 @@ export async function POST(req: NextRequest) {
     }
 
     // Upsert profile (update if already exists for this email)
-    const { data: user, error: upsertError } = await supabaseAdmin
+    // If faculty columns don't exist yet in the DB, fall back to base upsert
+    let user: Record<string, unknown> | null = null;
+
+    const { data: userData, error: upsertError } = await supabaseAdmin
       .from('users')
       .upsert(upsertData, { onConflict: 'email' })
       .select()
       .single();
 
     if (upsertError) {
-      console.error('Profile upsert error:', upsertError);
-      return NextResponse.json({ error: 'Failed to save profile.' }, { status: 500 });
+      // If it's a missing column error for faculty fields, retry without them
+      if (
+        isFaculty &&
+        (upsertError.code === '42703' || (upsertError.message ?? '').includes('does not exist'))
+      ) {
+        const { faculty_title, faculty_modules, faculty_office, faculty_website, ...baseData } = upsertData;
+        void faculty_title; void faculty_modules; void faculty_office; void faculty_website;
+        const { data: fallbackUser, error: fallbackError } = await supabaseAdmin
+          .from('users')
+          .upsert(baseData, { onConflict: 'email' })
+          .select()
+          .single();
+        if (fallbackError) {
+          console.error('Profile upsert error (fallback):', fallbackError);
+          return NextResponse.json({
+            error: 'Faculty columns not yet in database. Please run the DB migration first.',
+            migrationNeeded: true,
+          }, { status: 500 });
+        }
+        user = fallbackUser;
+      } else {
+        console.error('Profile upsert error:', upsertError);
+        return NextResponse.json({ error: 'Failed to save profile.' }, { status: 500 });
+      }
+    } else {
+      user = userData;
     }
 
-    return NextResponse.json({ success: true, user: { id: user.id, role, email } });
+    return NextResponse.json({ success: true, user: { id: (user as Record<string, unknown>)?.id, role, email }, isFaculty });
   } catch (err) {
     console.error('register error:', err);
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });

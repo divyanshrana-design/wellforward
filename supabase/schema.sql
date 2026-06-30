@@ -20,7 +20,12 @@ CREATE TABLE IF NOT EXISTS users (
   instagram       TEXT,          -- Instagram handle or URL
   contact_email   TEXT,          -- public contact email (optional, separate from login email)
   role            TEXT NOT NULL DEFAULT 'student',
-                                 -- 'student' (meet-people) | 'senior' (ask-a-senior)
+                                 -- 'student' (meet-people) | 'senior' (ask-a-senior) | 'faculty' (faculty directory)
+  -- Faculty-specific fields (only populated when role = 'faculty')
+  faculty_title   TEXT,          -- e.g. "Professor", "Dr.", "Associate Professor"
+  faculty_modules TEXT,          -- comma-separated list of modules they teach
+  faculty_office  TEXT,          -- e.g. "Room Q206, Quinn School"
+  faculty_website TEXT,          -- personal/academic website URL
   verified        BOOLEAN NOT NULL DEFAULT FALSE,
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -37,6 +42,11 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash TEXT;
 -- (/api/students, /api/seniors) but kept in the DB. Toggled from the moderator
 -- dashboard (/admin). NULL/FALSE means visible.
 ALTER TABLE users ADD COLUMN IF NOT EXISTS hidden BOOLEAN NOT NULL DEFAULT FALSE;
+-- Faculty-specific columns (safe to re-run if role='faculty' was added later)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS faculty_title   TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS faculty_modules TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS faculty_office  TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS faculty_website TEXT;
 
 -- Index for fast lookups by role (powers /api/students and /api/seniors)
 CREATE INDEX IF NOT EXISTS users_role_idx  ON users (role);
