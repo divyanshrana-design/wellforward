@@ -221,7 +221,7 @@ function AccountTypeSelector({
       id: "student" as const,
       icon: <User size={20} />,
       label: "I&apos;m a student",
-      desc: "UCD international student — connect with others, track admin tasks, ask seniors.",
+      desc: "UCD international student. Connect with your cohort, find programme peers, and get advice from seniors.",
       color: "#7c5cff",
       bg: "rgba(124,92,255,0.06)",
       border: "rgba(124,92,255,0.25)",
@@ -230,7 +230,7 @@ function AccountTypeSelector({
       id: "faculty" as const,
       icon: <GraduationCap size={20} />,
       label: "I&apos;m faculty",
-      desc: "UCD Smurfit professor or lecturer — list your modules so students can find and reach out to you.",
+      desc: "UCD Smurfit professor or lecturer. List your modules so students can find and reach out to you.",
       color: "#0ea5e9",
       bg: "rgba(14,165,233,0.06)",
       border: "rgba(14,165,233,0.25)",
@@ -723,8 +723,8 @@ export default function JoinPage() {
             }}>
               <p style={{ fontSize: "0.85rem", color: "#38285c", lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>
                 {isFaculty
-                  ? "&ldquo;Having a place where students can see who teaches what and reach out directly makes a real difference to their onboarding experience.&rdquo;"
-                  : "&ldquo;I found my two closest friends here within the first week. We were all from completely different countries but in the same MSc programme.&rdquo;"}
+                  ? "\u201CHaving a place where students can see who teaches what and reach out directly makes a real difference to their onboarding experience.\u201D"
+                  : "\u201CI found my two closest friends here within the first week. We were all from completely different countries but in the same MSc programme.\u201D"}
               </p>
               <div style={{ marginTop: 10, fontSize: "0.75rem", color: "#9b8ec8", fontWeight: 600 }}>
                 {isFaculty ? "UCD Smurfit, International Student Services" : "Ananya, MSc Data Analytics, India"}

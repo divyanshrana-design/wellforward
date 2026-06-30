@@ -8,7 +8,7 @@ import Link from "next/link";
 import {
   GraduationCap, Mail, Link2, Globe, BookOpen,
   MapPin, Search, X, ExternalLink, UserCheck,
-  ChevronDown, Building2
+  ChevronDown, Building2, Lock
 } from "lucide-react";
 
 interface FacultyProfile {
@@ -70,6 +70,60 @@ function useReveal() {
     return () => { obs.disconnect(); clearTimeout(t); };
   }, []);
   return ref;
+}
+
+/* ─── Login Gate ───────────────────────────────────────────────── */
+function LoginGate() {
+  return (
+    <div style={{
+      position: "absolute", inset: 0, zIndex: 10,
+      backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+      background: "rgba(253,252,255,0.75)",
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      borderRadius: 20, padding: "40px 24px",
+      minHeight: 320,
+    }}>
+      <Lock size={28} style={{ color: "#7c5cff", marginBottom: 14 }} />
+      <p style={{
+        fontFamily: "'Fraunces', Georgia, serif",
+        fontSize: "1.1rem", fontWeight: 700,
+        color: "#1a0f2e", marginBottom: 8, textAlign: "center",
+      }}>
+        Log in to browse faculty
+      </p>
+      <p style={{
+        fontSize: "0.85rem", color: "#6b5a8e",
+        marginBottom: 24, textAlign: "center", maxWidth: 300, lineHeight: 1.6,
+      }}>
+        Create a free account or log in to see faculty profiles and reach out to professors.
+      </p>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
+        <Link
+          href="/login"
+          style={{
+            padding: "10px 22px", borderRadius: 10, textDecoration: "none",
+            fontWeight: 600, fontSize: "0.88rem",
+            background: "linear-gradient(135deg,#7c5cff,#5a3ee8)",
+            color: "white",
+          }}
+        >
+          Log in
+        </Link>
+        <Link
+          href="/join"
+          style={{
+            padding: "10px 22px", borderRadius: 10, textDecoration: "none",
+            fontWeight: 600, fontSize: "0.88rem",
+            background: "rgba(124,92,255,0.08)",
+            color: "#7c5cff", border: "1.5px solid rgba(124,92,255,0.25)",
+          }}
+        >
+          Join free
+        </Link>
+      </div>
+    </div>
+  );
 }
 
 /* ─── Faculty Card ────────────────────────────────────────────── */
@@ -387,6 +441,10 @@ export default function FacultyPage() {
               </div>
             </div>
 
+            {/* Gated content — search + grid + CTA */}
+            <div style={{ position: "relative" }}>
+              {isLoggedIn === false && <LoginGate />}
+
             {/* Grid */}
             {loading ? (
               <div style={{ textAlign: "center", padding: "60px 0", color: "#9b8ec8" }}>
@@ -499,6 +557,7 @@ export default function FacultyPage() {
                 </Link>
               </div>
             )}
+            </div>{/* end gated wrapper */}
           </div>
         </section>
 
