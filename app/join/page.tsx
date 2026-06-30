@@ -298,6 +298,15 @@ export default function JoinPage() {
   const [accountType, setAccountType] = useState<"student" | "faculty">("student");
   const isFaculty = accountType === "faculty";
 
+  // Admin preview mode — fetched once on mount
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    fetch("/api/me", { cache: "no-store" })
+      .then(r => r.json())
+      .then(d => { if (d.loggedIn && d.user?.role === "admin") setIsAdmin(true); })
+      .catch(() => {});
+  }, []);
+
   const [form, setForm] = useState({
     name: "", email: "", password: "", repeatPassword: "",
     programme: "", school: "Smurfit Business School",
@@ -381,9 +390,11 @@ export default function JoinPage() {
   const passwordsMatch   = form.repeatPassword.length > 0 && form.password === form.repeatPassword;
   const passwordsMismatch = form.repeatPassword.length > 0 && form.password !== form.repeatPassword;
 
-  const step1Valid = isFaculty
+  const step1ValidReal = isFaculty
     ? !!form.name && isUcdEmail(form.email) && form.password.length >= 8 && form.password === form.repeatPassword
     : !!form.name && isUcdEmail(form.email) && form.password.length >= 8 && form.password === form.repeatPassword && !!form.programme && !!form.intakeYear;
+  // Admins can always proceed regardless of validation
+  const step1Valid = isAdmin || step1ValidReal;
 
   const sendOtp = async () => {
     if (!isUcdEmail(form.email)) return;
@@ -915,6 +926,19 @@ export default function JoinPage() {
                   </>
                 )}
 
+                {isAdmin && (
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: 8,
+                    padding: "9px 14px", borderRadius: 10,
+                    background: "rgba(124,92,255,0.07)",
+                    border: "1px dashed rgba(124,92,255,0.35)",
+                    fontSize: "0.76rem", color: "#7c5cff", fontWeight: 600,
+                  }}>
+                    <span>👁</span>
+                    Admin preview — validation skipped. No account will be created.
+                  </div>
+                )}
+
                 <button
                   type="button"
                   style={{
@@ -1189,10 +1213,18 @@ export default function JoinPage() {
                       color: "white", fontWeight: 700, cursor: "pointer",
                       opacity: apiLoading ? 0.7 : 1, fontFamily: "'Inter', sans-serif",
                     }}
-                    onClick={async () => { await sendOtp(); setStep(3); }}
+                    onClick={async () => {
+                      if (isAdmin) {
+                        // Admin: skip OTP entirely, just advance to step 3 preview
+                        setStep(3);
+                      } else {
+                        await sendOtp();
+                        setStep(3);
+                      }
+                    }}
                     disabled={apiLoading}
                   >
-                    {apiLoading ? "Sending…" : "Send verification code →"}
+                    {isAdmin ? "Preview step 3 →" : apiLoading ? "Sending…" : "Send verification code →"}
                   </button>
                 </div>
 
@@ -1202,91 +1234,167 @@ export default function JoinPage() {
               </div>
             )}
 
-            {/* ── STEP 3: OTP verification ── */}
+            {/* ── STEP 3: OTP verification (or admin preview) ── */}
             {step === 3 && (
               <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{
-                    width: 52, height: 52, borderRadius: "50%",
-                    background: isFaculty
-                      ? "linear-gradient(135deg, #0ea5e9, #38bdf8)"
-                      : "linear-gradient(135deg, #7c5cff, #c8b8ff)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    margin: "0 auto 16px",
-                  }}>
-                    <Mail size={22} color="white" />
-                  </div>
-                  <h2 style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: "1.5rem", fontWeight: 700, color: "#1a0f2e", letterSpacing: "-0.025em", marginBottom: 8 }}>
-                    Check your email
-                  </h2>
-                  <p style={{ fontSize: "0.88rem", color: "#6b5a8e", lineHeight: 1.6 }}>
-                    We sent a 6-digit code to{" "}
-                    <strong style={{ color: primaryColor }}>{form.email}</strong>.
-                    Enter it below to verify your UCD address.
-                  </p>
-                </div>
 
-                <div style={{
-                  display: "flex", alignItems: "flex-start", gap: 8,
-                  background: "rgba(245,158,11,0.1)",
-                  border: "1px solid rgba(245,158,11,0.35)",
-                  borderRadius: 10, padding: "10px 13px",
-                }}>
-                  <span style={{ fontSize: "1rem", lineHeight: 1.3 }} aria-hidden="true">⚠️</span>
-                  <p style={{ fontSize: "0.78rem", color: "#92400e", lineHeight: 1.5, margin: 0 }}>
-                    <strong>[Can&apos;t see it? Check your spam / junk folder.]</strong>{" "}
-                    The code sometimes lands there - mark it &ldquo;Not spam&rdquo; so future emails arrive in your inbox.
-                  </p>
-                </div>
+                {/* ── ADMIN PREVIEW MODE ── */}
+                {isAdmin ? (
+                  <>
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{
+                        width: 52, height: 52, borderRadius: "50%",
+                        background: "linear-gradient(135deg, #7c5cff, #c8b8ff)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        margin: "0 auto 16px",
+                      }}>
+                        <span style={{ fontSize: "1.4rem" }}>👁</span>
+                      </div>
+                      <h2 style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: "1.5rem", fontWeight: 700, color: "#1a0f2e", letterSpacing: "-0.025em", marginBottom: 8 }}>
+                        Step 3 — Email verification
+                      </h2>
+                      <p style={{ fontSize: "0.88rem", color: "#6b5a8e", lineHeight: 1.6 }}>
+                        In the real flow, a 6-digit code is sent to the user&apos;s UCD email.
+                        They enter it here to verify their address and create their account.
+                      </p>
+                    </div>
 
-                <OtpInput value={otp} onChange={setOtp} />
+                    {/* Admin preview: show what the real OTP step looks like, greyed out */}
+                    <div style={{ opacity: 0.45, pointerEvents: "none", userSelect: "none" }}>
+                      <div style={{
+                        display: "flex", alignItems: "flex-start", gap: 8,
+                        background: "rgba(245,158,11,0.1)",
+                        border: "1px solid rgba(245,158,11,0.35)",
+                        borderRadius: 10, padding: "10px 13px", marginBottom: 16,
+                      }}>
+                        <span style={{ fontSize: "1rem", lineHeight: 1.3 }}>⚠️</span>
+                        <p style={{ fontSize: "0.78rem", color: "#92400e", lineHeight: 1.5, margin: 0 }}>
+                          <strong>Can&apos;t see it? Check your spam / junk folder.</strong>{" "}
+                          The code sometimes lands there — mark it &ldquo;Not spam&rdquo; so future emails arrive in your inbox.
+                        </p>
+                      </div>
+                      <OtpInput value="" onChange={() => {}} />
+                    </div>
 
-                {otpError && (
-                  <p style={{ fontSize: "0.78rem", color: "#ef4444", textAlign: "center" }}>{otpError}</p>
+                    {/* Admin info box */}
+                    <div style={{
+                      padding: "14px 16px", borderRadius: 12,
+                      background: "rgba(124,92,255,0.07)",
+                      border: "1px dashed rgba(124,92,255,0.35)",
+                      fontSize: "0.8rem", color: "#5a3ee8", lineHeight: 1.6,
+                    }}>
+                      <strong>Admin preview only.</strong> No OTP was sent and no account will be created.
+                      This is exactly what a real user would see when they reach step 3.
+                    </div>
+
+                    {/* Navigation */}
+                    <div style={{ display: "flex", gap: 10 }}>
+                      <button type="button" className="btn-ghost"
+                        style={{ flex: "0 0 auto", padding: "13px 20px", fontSize: "0.9rem", borderRadius: 12 }}
+                        onClick={() => setStep(2)}
+                      >
+                        ← Back to step 2
+                      </button>
+                      <button type="button"
+                        style={{
+                          flex: 1, padding: "13px", fontSize: "0.9rem", borderRadius: 12, border: "none",
+                          background: "linear-gradient(160deg, #7c5cff 0%, #5a3ee8 100%)",
+                          color: "white", fontWeight: 700, cursor: "pointer",
+                          fontFamily: "'Inter', sans-serif",
+                        }}
+                        onClick={() => setStep(1)}
+                      >
+                        ← Back to step 1
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  /* ── NORMAL USER OTP FLOW ── */
+                  <>
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{
+                        width: 52, height: 52, borderRadius: "50%",
+                        background: isFaculty
+                          ? "linear-gradient(135deg, #0ea5e9, #38bdf8)"
+                          : "linear-gradient(135deg, #7c5cff, #c8b8ff)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        margin: "0 auto 16px",
+                      }}>
+                        <Mail size={22} color="white" />
+                      </div>
+                      <h2 style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: "1.5rem", fontWeight: 700, color: "#1a0f2e", letterSpacing: "-0.025em", marginBottom: 8 }}>
+                        Check your email
+                      </h2>
+                      <p style={{ fontSize: "0.88rem", color: "#6b5a8e", lineHeight: 1.6 }}>
+                        We sent a 6-digit code to{" "}
+                        <strong style={{ color: primaryColor }}>{form.email}</strong>.
+                        Enter it below to verify your UCD address.
+                      </p>
+                    </div>
+
+                    <div style={{
+                      display: "flex", alignItems: "flex-start", gap: 8,
+                      background: "rgba(245,158,11,0.1)",
+                      border: "1px solid rgba(245,158,11,0.35)",
+                      borderRadius: 10, padding: "10px 13px",
+                    }}>
+                      <span style={{ fontSize: "1rem", lineHeight: 1.3 }} aria-hidden="true">⚠️</span>
+                      <p style={{ fontSize: "0.78rem", color: "#92400e", lineHeight: 1.5, margin: 0 }}>
+                        <strong>[Can&apos;t see it? Check your spam / junk folder.]</strong>{" "}
+                        The code sometimes lands there - mark it &ldquo;Not spam&rdquo; so future emails arrive in your inbox.
+                      </p>
+                    </div>
+
+                    <OtpInput value={otp} onChange={setOtp} />
+
+                    {otpError && (
+                      <p style={{ fontSize: "0.78rem", color: "#ef4444", textAlign: "center" }}>{otpError}</p>
+                    )}
+                    {apiError && (
+                      <p style={{ fontSize: "0.78rem", color: "#ef4444", textAlign: "center" }}>{apiError}</p>
+                    )}
+
+                    <button
+                      type="button"
+                      style={{
+                        width: "100%", padding: "14px", fontSize: "0.95rem", borderRadius: 12, border: "none",
+                        background: isFaculty
+                          ? "linear-gradient(135deg, #0ea5e9, #0284c7)"
+                          : "linear-gradient(160deg, #7c5cff 0%, #5a3ee8 100%)",
+                        color: "white", fontWeight: 700, cursor: "pointer",
+                        opacity: (otp.replace(/\D/g, "").length < 6 || apiLoading) ? 0.5 : 1,
+                        fontFamily: "'Inter', sans-serif",
+                      }}
+                      onClick={verifyOtp}
+                      disabled={otp.replace(/\D/g, "").length < 6 || apiLoading}
+                    >
+                      {apiLoading ? "Creating your profile…" : "Verify and create profile"}
+                    </button>
+
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                      <button
+                        type="button"
+                        onClick={() => { sendOtp(); }}
+                        disabled={resendTimer > 0 || apiLoading}
+                        style={{
+                          background: "none", border: "none", cursor: resendTimer > 0 ? "default" : "pointer",
+                          fontSize: "0.78rem", color: resendTimer > 0 ? "#b0a0cc" : primaryColor,
+                          display: "flex", alignItems: "center", gap: 5,
+                        }}
+                      >
+                        <RefreshCw size={12} />
+                        {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Resend code"}
+                      </button>
+                      <span style={{ color: "#ede8ff" }}>·</span>
+                      <button type="button"
+                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.78rem", color: "#9b8ec8" }}
+                        onClick={() => setStep(1)}
+                      >
+                        Change email
+                      </button>
+                    </div>
+                  </>
                 )}
-                {apiError && (
-                  <p style={{ fontSize: "0.78rem", color: "#ef4444", textAlign: "center" }}>{apiError}</p>
-                )}
-
-                <button
-                  type="button"
-                  style={{
-                    width: "100%", padding: "14px", fontSize: "0.95rem", borderRadius: 12, border: "none",
-                    background: isFaculty
-                      ? "linear-gradient(135deg, #0ea5e9, #0284c7)"
-                      : "linear-gradient(160deg, #7c5cff 0%, #5a3ee8 100%)",
-                    color: "white", fontWeight: 700, cursor: "pointer",
-                    opacity: (otp.replace(/\D/g, "").length < 6 || apiLoading) ? 0.5 : 1,
-                    fontFamily: "'Inter', sans-serif",
-                  }}
-                  onClick={verifyOtp}
-                  disabled={otp.replace(/\D/g, "").length < 6 || apiLoading}
-                >
-                  {apiLoading ? "Creating your profile…" : "Verify and create profile"}
-                </button>
-
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                  <button
-                    type="button"
-                    onClick={() => { sendOtp(); }}
-                    disabled={resendTimer > 0 || apiLoading}
-                    style={{
-                      background: "none", border: "none", cursor: resendTimer > 0 ? "default" : "pointer",
-                      fontSize: "0.78rem", color: resendTimer > 0 ? "#b0a0cc" : primaryColor,
-                      display: "flex", alignItems: "center", gap: 5,
-                    }}
-                  >
-                    <RefreshCw size={12} />
-                    {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Resend code"}
-                  </button>
-                  <span style={{ color: "#ede8ff" }}>·</span>
-                  <button type="button"
-                    style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.78rem", color: "#9b8ec8" }}
-                    onClick={() => setStep(1)}
-                  >
-                    Change email
-                  </button>
-                </div>
               </div>
             )}
           </div>
