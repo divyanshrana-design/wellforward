@@ -126,7 +126,7 @@ export default function Navbar() {
     >
       {/* scroll progress bar removed */}
 
-      <nav className="max-w-6xl mx-auto px-5 sm:px-8 h-[64px] flex items-center justify-between">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-[64px] flex items-center justify-between">
 
         {/* Wordmark - links back to home */}
         <Link
@@ -152,7 +152,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav links */}
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-0.5">
           {NAV_LINKS.map(l => (
             <Link
               key={l.href}
@@ -160,14 +160,15 @@ export default function Navbar() {
               className="nav-link"
               style={{
                 textDecoration: "none",
-                padding: "8px 14px",
+                padding: "7px 10px",
                 borderRadius: 8,
                 fontFamily: "'Inter', sans-serif",
-                fontSize: "0.875rem",
+                fontSize: "0.82rem",
                 fontWeight: isActive(l.href) ? 600 : 500,
                 color: isActive(l.href) ? "#7c5cff" : "#38285c",
                 background: isActive(l.href) ? "rgba(124,92,255,0.08)" : "none",
                 transition: "background 0.15s, color 0.15s",
+                whiteSpace: "nowrap",
               }}
               onMouseEnter={e => {
                 if (!isActive(l.href))
@@ -184,86 +185,90 @@ export default function Navbar() {
 
           {/* CTA - renders nothing until auth resolved to prevent flash */}
           {isLoggedIn === null ? (
-            <div style={{ marginLeft: 12, width: 96, height: 36 }} aria-hidden="true" />
+            <div style={{ marginLeft: 8, width: 80, height: 34 }} aria-hidden="true" />
           ) : isLoggedIn ? (
-            <div style={{ marginLeft: 12, display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ marginLeft: 8, display: "flex", alignItems: "center", gap: 6 }}>
               {isAdmin && (
                 <Link
                   href="/admin"
                   style={{
-                    padding: "8px 16px",
-                    fontSize: "0.875rem",
-                    borderRadius: 10,
+                    padding: "7px 12px",
+                    fontSize: "0.8rem",
+                    borderRadius: 8,
                     textDecoration: "none",
                     display: "inline-flex",
                     alignItems: "center",
-                    gap: 6,
+                    gap: 5,
                     background: "linear-gradient(160deg, #7c5cff 0%, #5a3ee8 100%)",
                     color: "#fff",
                     fontWeight: 600,
                     border: "1.5px solid transparent",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  <Shield size={14} /> Admin
+                  <Shield size={13} /> Admin
                 </Link>
               )}
               <Link
                 href="/profile"
                 style={{
-                  padding: "8px 18px",
-                  fontSize: "0.875rem",
-                  borderRadius: 10,
+                  padding: "7px 12px",
+                  fontSize: "0.8rem",
+                  borderRadius: 8,
                   textDecoration: "none",
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: 6,
+                  gap: 5,
                   background: "rgba(124,92,255,0.1)",
                   color: "#7c5cff",
                   fontWeight: 600,
                   border: "1.5px solid rgba(124,92,255,0.25)",
                   transition: "background 0.15s",
+                  whiteSpace: "nowrap",
                 }}
               >
-                <User size={14} /> My profile
+                <User size={13} /> My profile
               </Link>
               <button
                 type="button"
                 onClick={handleLogout}
                 style={{
-                  padding: "8px 14px",
-                  fontSize: "0.875rem",
-                  borderRadius: 10,
+                  padding: "7px 10px",
+                  fontSize: "0.8rem",
+                  borderRadius: 8,
                   cursor: "pointer",
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: 6,
+                  gap: 5,
                   background: "transparent",
                   color: "#9b8ec8",
                   fontWeight: 500,
                   border: "1.5px solid #ede8ff",
                   transition: "border-color 0.15s, color 0.15s",
+                  whiteSpace: "nowrap",
                 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#ef4444"; (e.currentTarget as HTMLButtonElement).style.color = "#ef4444"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#ede8ff"; (e.currentTarget as HTMLButtonElement).style.color = "#9b8ec8"; }}
                 aria-label="Log out"
               >
-                <LogOut size={14} /> Log out
+                <LogOut size={13} /> Log out
               </button>
             </div>
           ) : (
-            <div style={{ marginLeft: 12, display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ marginLeft: 8, display: "flex", alignItems: "center", gap: 6 }}>
               <Link
                 href="/login"
                 style={{
-                  padding: "8px 16px",
-                  fontSize: "0.875rem",
-                  borderRadius: 10,
+                  padding: "7px 14px",
+                  fontSize: "0.82rem",
+                  borderRadius: 8,
                   textDecoration: "none",
                   display: "inline-block",
                   color: "#38285c",
                   fontWeight: 600,
                   border: "1.5px solid #ede8ff",
                   transition: "border-color 0.15s",
+                  whiteSpace: "nowrap",
                 }}
               >
                 Log in
@@ -272,11 +277,12 @@ export default function Navbar() {
                 href="/join"
                 className="btn-primary"
                 style={{
-                  padding: "9px 20px",
-                  fontSize: "0.875rem",
-                  borderRadius: 10,
+                  padding: "8px 16px",
+                  fontSize: "0.82rem",
+                  borderRadius: 8,
                   textDecoration: "none",
                   display: "inline-block",
+                  whiteSpace: "nowrap",
                 }}
               >
                 Join free
@@ -287,7 +293,7 @@ export default function Navbar() {
 
         {/* Mobile burger */}
         <button
-          className="md:hidden"
+          className="lg:hidden"
           style={{
             background: "none",
             border: "none",
