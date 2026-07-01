@@ -158,6 +158,19 @@ p { line-height: 1.7; }
   border-color: rgba(124,92,255,0.25);
 }
 
+/* Checklist accordion cards — disable hover lift so expanded content
+   never goes blank due to GPU compositing conflicts with overflow */
+.card--checklist {
+  overflow: visible !important;
+}
+.card--checklist:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+.card--checklist .task-detail {
+  overflow: visible;
+}
+
 /* White surface panel (used in sections) */
 .surface {
   background: #ffffff;

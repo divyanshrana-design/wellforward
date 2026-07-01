@@ -121,11 +121,12 @@ function TaskCard({ task, done, onToggle, index }: {
   return (
     <div ref={ref} className="reveal" style={{ transitionDelay: `${index * 40}ms` }}>
       <div
-        className="card overflow-hidden"
+        className="card card--checklist"
         style={{
           opacity: done ? 0.65 : 1,
-          transition: "all 0.3s cubic-bezier(.22,.68,0,1.2)",
+          transition: "opacity 0.3s ease, transform 0.3s cubic-bezier(.22,.68,0,1.2), box-shadow 0.25s ease, border-color 0.25s ease",
           transform: done ? "scale(0.99)" : "scale(1)",
+          overflow: "visible",
         }}
       >
         {/* Header */}

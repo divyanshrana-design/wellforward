@@ -159,8 +159,8 @@ function PhotoUpload({ value, onChange }: { value: string; onChange: (url: strin
         onChange={handleFile}
         aria-hidden="true"
       />
-      <p style={{ fontSize: "0.72rem", color: "#9b8ec8", textAlign: "center" }}>
-        {value ? "Tap to change photo" : "Add a photo (optional)"}
+      <p style={{ fontSize: "0.72rem", color: value ? "#10b981" : "#ef4444", textAlign: "center", fontWeight: value ? 500 : 600 }}>
+        {value ? "✓ Photo added" : "Profile photo required"}
       </p>
     </div>
   );
@@ -391,10 +391,14 @@ export default function JoinPage() {
   const passwordsMismatch = form.repeatPassword.length > 0 && form.password !== form.repeatPassword;
 
   const step1ValidReal = isFaculty
-    ? !!form.name && isUcdEmail(form.email) && form.password.length >= 8 && form.password === form.repeatPassword
-    : !!form.name && isUcdEmail(form.email) && form.password.length >= 8 && form.password === form.repeatPassword && !!form.programme && !!form.intakeYear;
+    ? !!form.name && isUcdEmail(form.email) && form.password.length >= 8 && form.password === form.repeatPassword && !!form.photo
+    : !!form.name && isUcdEmail(form.email) && form.password.length >= 8 && form.password === form.repeatPassword && !!form.programme && !!form.intakeYear && !!form.photo;
   // Admins can always proceed regardless of validation
   const step1Valid = isAdmin || step1ValidReal;
+
+  // Step 2 requires LinkedIn for everyone
+  const isLinkedinValid = form.linkedin.trim().length > 0;
+  const step2Valid = isAdmin || isLinkedinValid;
 
   const sendOtp = async () => {
     if (!isUcdEmail(form.email)) return;
@@ -1084,13 +1088,18 @@ export default function JoinPage() {
                       </p>
                     </div>
 
-                    {/* LinkedIn */}
+                    {/* LinkedIn - required */}
                     <div>
                       <label style={labelStyle}>
-                        LinkedIn URL <span style={{ color: "#b0a0cc", fontWeight: 400 }}>(optional)</span>
+                        LinkedIn URL <span style={{ color: "#ef4444", fontWeight: 600 }}>*</span>
                       </label>
-                      <input style={inputStyle} type="url" placeholder="https://linkedin.com/in/yourname"
+                      <input style={{ ...inputStyle, borderColor: form.linkedin.trim() ? "#10b981" : undefined }} type="url" placeholder="https://linkedin.com/in/yourname"
                         value={form.linkedin} onChange={e => update("linkedin", e.target.value)} onFocus={focus} onBlur={blur} />
+                      {!form.linkedin.trim() ? (
+                        <p style={{ fontSize: "0.72rem", color: "#ef4444", marginTop: 4 }}>Required — helps students and peers verify who you are.</p>
+                      ) : (
+                        <p style={{ fontSize: "0.72rem", color: "#10b981", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}><Check size={11} /> Looks good</p>
+                      )}
                     </div>
 
                     {/* Public contact email */}
@@ -1171,16 +1180,25 @@ export default function JoinPage() {
                       </div>
                     </div>
 
+                    {/* LinkedIn - required for students too */}
+                    <div>
+                      <label style={labelStyle}>
+                        LinkedIn URL <span style={{ color: "#ef4444", fontWeight: 600 }}>*</span>
+                      </label>
+                      <input style={{ ...inputStyle, borderColor: form.linkedin.trim() ? "#10b981" : undefined }} type="url" placeholder="https://linkedin.com/in/yourname"
+                        value={form.linkedin} onChange={e => update("linkedin", e.target.value)} onFocus={focus} onBlur={blur} />
+                      {!form.linkedin.trim() ? (
+                        <p style={{ fontSize: "0.72rem", color: "#ef4444", marginTop: 4 }}>Required — helps peers verify who you are and connect properly.</p>
+                      ) : (
+                        <p style={{ fontSize: "0.72rem", color: "#10b981", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}><Check size={11} /> Looks good</p>
+                      )}
+                    </div>
+
                     <details style={{ marginTop: -4 }}>
                       <summary style={{ fontSize: "0.8rem", color: "#7c5cff", cursor: "pointer", fontWeight: 600, listStyle: "none", display: "flex", alignItems: "center", gap: 6 }}>
-                        ＋ Add LinkedIn / Instagram / email (optional)
+                        ＋ Add Instagram / email (optional)
                       </summary>
                       <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 14, paddingTop: 14, borderTop: "1px solid #f0ecff" }}>
-                        <div>
-                          <label style={labelStyle}>LinkedIn URL</label>
-                          <input style={inputStyle} type="url" placeholder="https://linkedin.com/in/yourname"
-                            value={form.linkedin} onChange={e => update("linkedin", e.target.value)} onFocus={focus} onBlur={blur} />
-                        </div>
                         <div>
                           <label style={labelStyle}>Instagram handle</label>
                           <input style={inputStyle} type="text" placeholder="@yourhandle"
@@ -1210,19 +1228,19 @@ export default function JoinPage() {
                       background: isFaculty
                         ? "linear-gradient(135deg, #0ea5e9, #0284c7)"
                         : "linear-gradient(160deg, #7c5cff 0%, #5a3ee8 100%)",
-                      color: "white", fontWeight: 700, cursor: "pointer",
-                      opacity: apiLoading ? 0.7 : 1, fontFamily: "'Inter', sans-serif",
+                      color: "white", fontWeight: 700,
+                      cursor: step2Valid && !apiLoading ? "pointer" : "not-allowed",
+                      opacity: step2Valid && !apiLoading ? 1 : 0.5, fontFamily: "'Inter', sans-serif",
                     }}
                     onClick={async () => {
                       if (isAdmin) {
-                        // Admin: skip OTP entirely, just advance to step 3 preview
                         setStep(3);
                       } else {
                         await sendOtp();
                         setStep(3);
                       }
                     }}
-                    disabled={apiLoading}
+                    disabled={!step2Valid || apiLoading}
                   >
                     {isAdmin ? "Preview step 3 →" : apiLoading ? "Sending…" : "Send verification code →"}
                   </button>
