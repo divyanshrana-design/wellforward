@@ -331,7 +331,7 @@ p { line-height: 1.7; }
   to   { opacity: 1; transform: translateY(0); }
 }
 .task-detail {
-  animation: taskDetailIn 0.28s var(--ease-out);
+  /* content revealed via max-height transition on parent — no separate animation needed */
 }
 
 /* ═══════════════════════════════════════════════

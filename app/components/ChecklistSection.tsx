@@ -115,6 +115,7 @@ function TaskCard({ task, done, onToggle, index }: {
 }) {
   const [open, setOpen] = useState(false);
   const ref = useReveal();
+  const detailRef = useRef<HTMLDivElement>(null);
   const ph = PHASE[task.phase];
   const xp = TASK_XP[task.id] ?? 50;
 
@@ -124,14 +125,14 @@ function TaskCard({ task, done, onToggle, index }: {
         className="card card--checklist"
         style={{
           opacity: done ? 0.65 : 1,
-          transition: "opacity 0.3s ease, transform 0.3s cubic-bezier(.22,.68,0,1.2), box-shadow 0.25s ease, border-color 0.25s ease",
-          transform: done ? "scale(0.99)" : "scale(1)",
-          overflow: "visible",
+          transition: "opacity 0.3s ease, border-color 0.25s ease, box-shadow 0.25s ease",
+          /* No transform here — transforms on accordion parents cause
+             GPU layer promotion which blanks child content on repaint */
         }}
       >
-        {/* Header */}
+        {/* Header — always visible */}
         <button
-          onClick={() => setOpen(!open)}
+          onClick={() => setOpen(o => !o)}
           className="w-full text-left flex items-start gap-3 p-5"
           aria-expanded={open}
           style={{ background: "none", border: "none", cursor: "pointer" }}
@@ -157,7 +158,6 @@ function TaskCard({ task, done, onToggle, index }: {
               }}>
                 {ph.label}
               </span>
-              {/* XP badge */}
               <span style={{
                 fontSize: "0.62rem", fontWeight: 700,
                 color: "#7c5cff",
@@ -169,8 +169,15 @@ function TaskCard({ task, done, onToggle, index }: {
                 <Zap size={9} /> {xp} XP
               </span>
             </div>
-            <p style={{ fontSize: "0.84rem", color: "#9b8ec8", lineHeight: 1.5, display: open ? "none" : undefined }}
-               className="line-clamp-1">
+            <p
+              style={{
+                fontSize: "0.84rem", color: "#9b8ec8", lineHeight: 1.5,
+                overflow: "hidden",
+                maxHeight: open ? 0 : "3em",
+                opacity: open ? 0 : 1,
+                transition: "max-height 0.22s ease, opacity 0.18s ease",
+              }}
+            >
               {task.what}
             </p>
           </div>
@@ -184,8 +191,15 @@ function TaskCard({ task, done, onToggle, index }: {
           />
         </button>
 
-        {/* Expanded */}
-        {open && (
+        {/* Detail — always in DOM, revealed with max-height so no remount */}
+        <div
+          ref={detailRef}
+          style={{
+            overflow: "hidden",
+            maxHeight: open ? 1200 : 0,
+            transition: "max-height 0.38s cubic-bezier(0.4,0,0.2,1)",
+          }}
+        >
           <div className="task-detail" style={{ borderTop: "1px solid rgba(200,184,255,0.25)", padding: "20px 22px 22px" }}>
             <div className="grid sm:grid-cols-2 gap-3 mb-5">
               {[
@@ -243,7 +257,7 @@ function TaskCard({ task, done, onToggle, index }: {
               </button>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
