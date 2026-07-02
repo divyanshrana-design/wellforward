@@ -2,11 +2,28 @@
 
 import { useEffect, useRef, useState } from "react";
 
+/* ─────────────────────────────────────────────────────────────────────────
+   useReveal — adds ".visible" when card enters viewport.
+   Includes an inView pre-check (card already on screen before observer
+   fires) plus a 600 ms fallback so cards never stay invisible.
+───────────────────────────────────────────────────────────────────────── */
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    /* If the element is already on screen, reveal immediately */
+    const rect = el.getBoundingClientRect();
+    const inView =
+      rect.top < window.innerHeight && rect.bottom > 0;
+    if (inView) {
+      el.classList.add("visible");
+      return;
+    }
+
+    /* Otherwise use IntersectionObserver */
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -14,101 +31,28 @@ function useReveal() {
           obs.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.05 }
     );
     obs.observe(el);
-    return () => obs.disconnect();
+
+    /* Safety fallback — if the observer never fires, reveal after 600 ms */
+    const timer = setTimeout(() => {
+      el.classList.add("visible");
+      obs.disconnect();
+    }, 600);
+
+    return () => {
+      obs.disconnect();
+      clearTimeout(timer);
+    };
   }, []);
+
   return ref;
 }
 
-// A single bento tile. `area` maps it to a CSS grid-area for the bento layout.
-function SurvivalCard({
-  num,
-  title,
-  urgency,
-  summary,
-  accentGradient,
-  icon,
-  area,
-  featured = false,
-  delay = 0,
-  detail,
-}: {
-  num: string;
-  title: string;
-  urgency: string;
-  urgencyColor: string;
-  summary: string;
-  accentGradient: string;
-  icon: string;
-  area: string;
-  featured?: boolean;
-  delay?: number;
-  detail: React.ReactNode;
-}) {
-  const ref = useReveal();
-  const [open, setOpen] = useState(false);
-
-  return (
-    <article
-      ref={ref}
-      className={`reveal survival-card${featured ? " survival-card--featured" : ""}${open ? " is-open" : ""}`}
-      style={{
-        transitionDelay: `${delay}ms`,
-        "--accent-gradient": accentGradient,
-        gridArea: area,
-      } as React.CSSProperties}
-      onClick={() => setOpen(!open)}
-      role="button"
-      aria-expanded={open}
-      tabIndex={0}
-      onKeyDown={e => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setOpen(!open))}
-    >
-      {/* Eyebrow row: tiny title label + floating icon chip */}
-      <header className="survival-card__head">
-        <span className="survival-card__label">{title}</span>
-        <span className="survival-card__icon" aria-hidden="true">{icon}</span>
-      </header>
-
-      {/* Giant gradient number */}
-      <span
-        className="survival-num"
-        style={{ background: accentGradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}
-      >
-        {num}
-      </span>
-
-      {/* Headline */}
-      <h3 className="survival-card__title">{title}</h3>
-
-      {/* Summary - trimmed on small tiles, full on the featured tile */}
-      <p className="survival-card__summary">{summary}</p>
-
-      {/* Footer: urgency pill + expand toggle pinned to the bottom */}
-      <div className="survival-card__footer">
-        <span className="survival-card__pill">{urgency}</span>
-        <span className="survival-card__toggle">
-          {open ? "Hide" : "How to"}
-          <span className="survival-card__chevron" style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>↓</span>
-        </span>
-      </div>
-
-      {/* Expanded detail */}
-      {open && (
-        <div
-          className="survival-card__detail"
-          style={{ animation: "slideUp 0.3s ease" }}
-          onClick={e => e.stopPropagation()}
-        >
-          {detail}
-        </div>
-      )}
-    </article>
-  );
-}
-
-// Reusable step list inside detail panels
+/* ─────────────────────────────────────────────────────────────────────────
+   Reusable step list inside detail panels
+───────────────────────────────────────────────────────────────────────── */
 function Steps({ steps }: { steps: { text: string }[] }) {
   return (
     <ol style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -117,12 +61,13 @@ function Steps({ steps }: { steps: { text: string }[] }) {
           <span style={{
             minWidth: 24, height: 24,
             borderRadius: "50%",
-            background: "rgba(124,92,255,0.1)",
+            background: "rgba(124,92,255,0.10)",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: "0.7rem",
             fontWeight: 700,
             color: "#7c5cff",
             flexShrink: 0,
+            marginTop: 1,
           }}>
             {i + 1}
           </span>
@@ -135,7 +80,9 @@ function Steps({ steps }: { steps: { text: string }[] }) {
   );
 }
 
-// Tip box
+/* ─────────────────────────────────────────────────────────────────────────
+   Tip box
+───────────────────────────────────────────────────────────────────────── */
 function Tip({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
@@ -154,6 +101,154 @@ function Tip({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+   SurvivalCard — bento tile with a max-height accordion for the detail.
+
+   Key rules that eliminate the GPU blank bug:
+   • Detail is ALWAYS in the DOM — never conditionally rendered.
+   • maxHeight: 0 → 1400px transition drives open/close.
+   • NO transform on the article (no new GPU compositing context).
+   • Hover lift lives on a ::before pseudo or inner element, not on article.
+   • The "How to" toggle is a <button> so click events don't bubble to article.
+───────────────────────────────────────────────────────────────────────── */
+function SurvivalCard({
+  num,
+  title,
+  urgency,
+  summary,
+  accentGradient,
+  icon,
+  area,
+  featured = false,
+  delay = 0,
+  detail,
+}: {
+  num: string;
+  title: string;
+  urgency: string;
+  urgencyColor?: string;
+  summary: string;
+  accentGradient: string;
+  icon: string;
+  area: string;
+  featured?: boolean;
+  delay?: number;
+  detail: React.ReactNode;
+}) {
+  const ref = useReveal();
+  const [open, setOpen] = useState(false);
+
+  return (
+    /* reveal wrapper — handles the entrance animation only */
+    <div
+      ref={ref}
+      className="reveal"
+      style={{
+        transitionDelay: `${delay}ms`,
+        gridArea: area,
+        /* keep height in the bento grid anchored to content, not stretched */
+        alignSelf: "start",
+      }}
+    >
+      <article
+        className={`survival-card${featured ? " survival-card--featured" : ""}${open ? " is-open" : ""}`}
+        style={{
+          /* CSS custom prop for the accent bloom pseudo-element */
+          "--accent-gradient": accentGradient,
+        } as React.CSSProperties}
+      >
+        {/* ── Card header: label + floating icon chip ── */}
+        <header className="survival-card__head">
+          <span className="survival-card__label">{title}</span>
+          <span className="survival-card__icon" aria-hidden="true">{icon}</span>
+        </header>
+
+        {/* ── Giant gradient number ── */}
+        <span
+          className="survival-num"
+          style={{
+            background: accentGradient,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+          }}
+        >
+          {num}
+        </span>
+
+        {/* ── Headline ── */}
+        <h3 className="survival-card__title">{title}</h3>
+
+        {/* ── Summary — fades out when expanded so it doesn't double-up with detail ── */}
+        <p
+          className="survival-card__summary"
+          style={{
+            maxHeight: open ? 0 : "10em",
+            opacity: open ? 0 : 1,
+            marginBottom: open ? 0 : undefined,
+            overflow: "hidden",
+            transition:
+              "max-height 0.30s cubic-bezier(0.4,0,0.2,1), opacity 0.22s ease, margin-bottom 0.30s ease",
+            pointerEvents: open ? "none" : undefined,
+          }}
+        >
+          {summary}
+        </p>
+
+        {/* ── Footer: urgency pill + "How to" toggle button ──
+            The toggle is a real <button> so its click does not
+            propagate to a parent article click handler.           */}
+        <div className="survival-card__footer">
+          <span className="survival-card__pill">{urgency}</span>
+          <button
+            type="button"
+            className="survival-card__toggle"
+            aria-expanded={open}
+            onClick={() => setOpen(o => !o)}
+          >
+            {open ? "Hide" : "How to"}
+            <span
+              className="survival-card__chevron"
+              style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+            >
+              ↓
+            </span>
+          </button>
+        </div>
+
+        {/* ── Detail panel — ALWAYS in DOM, max-height drives reveal ──
+            overflow:hidden on the outer shell clips the content.
+            The inner div adds padding so the padding also animates in.  */}
+        <div
+          style={{
+            overflow: "hidden",
+            maxHeight: open ? 1400 : 0,
+            opacity: open ? 1 : 0,
+            transition:
+              "max-height 0.46s cubic-bezier(0.4,0,0.2,1), opacity 0.30s ease",
+          }}
+          aria-hidden={!open}
+        >
+          <div
+            className="survival-card__detail"
+            style={{
+              /* small upward drift only on open, no full slideUp that starts at opacity:0 */
+              transform: open ? "translateY(0)" : "translateY(10px)",
+              transition: "transform 0.38s cubic-bezier(0.4,0,0.2,1)",
+            }}
+          >
+            {detail}
+          </div>
+        </div>
+
+      </article>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SurvivalSection — exported page section
+───────────────────────────────────────────────────────────────────────── */
 export default function SurvivalSection() {
   const headRef = useReveal();
 
@@ -165,7 +260,7 @@ export default function SurvivalSection() {
       urgency: "Do before you land",
       urgencyColor: "#5a3ee8",
       summary:
-        "The Irish Residence Permit is the most time-sensitive thing on this list. Book your appointment online before you even arrive. Appointments fill up fast, Leave it too late and you could be waiting months.",
+        "The Irish Residence Permit is the most time-sensitive thing on this list. Book your appointment online before you even arrive. Appointments fill up fast. Leave it too late and you could be waiting months.",
       accentGradient: "linear-gradient(135deg, #7c5cff, #c8b8ff)",
       detail: (
         <div>
@@ -245,7 +340,7 @@ export default function SurvivalSection() {
       urgency: "Day of arrival",
       urgencyColor: "#7c5cff",
       summary:
-        "A Leap card is a reloadable travel card for Dublin buses, the DART train, and the Luas tram. €2 per journey, and trips under 90 minutes are free if you change between buses. Get the student version for 50% off.",
+        "A Leap card is a reloadable travel card for Dublin buses, the DART train, and the Luas tram. Around €2 per journey, and trips under 90 minutes are free if you change between buses. Get the student version for 50% off.",
       accentGradient: "linear-gradient(135deg, #b87dff, #7ec8ff)",
       detail: (
         <div>
@@ -259,7 +354,7 @@ export default function SurvivalSection() {
             { text: "Your upgraded card is posted to you within a week. In the meantime, use the regular card." },
           ]} />
           <Tip>
-            Always tap on AND tap off when using the Leap card on Dublin Bus. If you forget to tap off, you you will be charged the maximum fare for that route.
+            Always tap on AND tap off when using the Leap card on Dublin Bus. If you forget to tap off, you will be charged the maximum fare for that route.
           </Tip>
         </div>
       ),
@@ -322,10 +417,7 @@ export default function SurvivalSection() {
           </p>
         </div>
 
-        {/* Bento grid - card 01 is the tall feature on the left, 02 wide top-right,
-            03 tall on the right, 04 + 05 across the bottom. Layout is driven by
-            named grid-areas in globals.css (.survival-bento) and collapses to a
-            single column on mobile. */}
+        {/* Bento grid */}
         <div className="survival-bento">
           {cards.map((card, i) => (
             <SurvivalCard
@@ -338,7 +430,7 @@ export default function SurvivalSection() {
           ))}
         </div>
 
-        {/* Bottom note */}
+        {/* Bottom disclaimer note */}
         <div
           style={{
             marginTop: 48,

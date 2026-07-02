@@ -615,15 +615,15 @@ p { line-height: 1.7; }
   border: 1px solid rgba(124, 92, 255, 0.10);
   border-radius: 22px;
   padding: 24px 24px 22px;
+  /* Shadow animates instead of transform — no GPU compositing context created */
   box-shadow: 0 10px 30px -16px rgba(58, 40, 92, 0.22);
-  cursor: pointer;
   overflow: hidden;
   isolation: isolate;
   transition:
-    transform 0.5s var(--ease-out),
-    box-shadow 0.5s var(--ease-out),
-    border-color 0.4s ease;
-  will-change: transform;
+    box-shadow 0.45s var(--ease-out),
+    border-color 0.35s ease;
+  /* NO will-change: transform — that creates a new stacking context and
+     causes child repaints to go blank on Webkit/Blink */
 }
 /* soft accent wash that blooms from the top-right on hover */
 .survival-card::before {
@@ -643,8 +643,8 @@ p { line-height: 1.7; }
 
 .survival-card:hover,
 .survival-card:focus-visible {
-  transform: translateY(-6px);
-  box-shadow: 0 26px 60px -22px rgba(124, 92, 255, 0.45);
+  /* Lift effect via deeper shadow only — no transform so no GPU blank */
+  box-shadow: 0 22px 56px -18px rgba(124, 92, 255, 0.42);
   border-color: rgba(124, 92, 255, 0.30);
   outline: none;
 }
@@ -821,18 +821,27 @@ p { line-height: 1.7; }
 }
 
 /* ---- Expanded detail -------------------------------------------- */
+/* Note: the overflow:hidden + maxHeight transition lives on the parent
+   wrapper div (inline styles in SurvivalCard). This class just handles
+   spacing and the dividing line. */
 .survival-card__detail {
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px dashed rgba(124, 92, 255, 0.18);
 }
 
+/* Toggle button — strip browser defaults */
+.survival-card__toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
 /* ---- Reduced motion --------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .survival-card,
   .survival-card__icon { transition: none; }
-  .survival-card:hover,
-  .survival-card:focus-visible { transform: none; }
   .survival-card:hover .survival-card__icon { transform: none; }
   .survival-card::before { transition: none; }
 }
